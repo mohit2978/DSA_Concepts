@@ -6,12 +6,12 @@ class Graph{
 
 	int V;
 	// array of list<int>
-	list<int> *l;
+	vector<int> *l;
 
 public:
 	Graph(int v){
 		V = v;
-		l = new list<int>[V];
+		l = new vector<int>[V];
 	}
 
 	void addEdge(int i,int j,bool undir=true){

@@ -5,7 +5,7 @@ using namespace std;
 class Node{
 public:
 	string name;
-	list<string> nbrs;
+	vector<string> nbrs;
 
 	Node(string name){
 		this->name = name;
