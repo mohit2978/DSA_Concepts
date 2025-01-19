@@ -179,5 +179,38 @@ cout<<"print 2d vector--------------------------"<<endl;
     printing end--------------------------------
     
     */
+   vector<int>v5={4,5,6,7,8,9,10,11,12};
+
+   for(auto it=v5.begin();it!=v5.end();++it){
+    *it=*it+1;
+   }
+    cout<<"----------see incremented value----------------"<<endl;
+   for(auto x:v5){
+    cout<<x<<" ";
+   }
+    cout<<"--------------------------------"<<endl;
+    // we do not want iterator to change value so use const iterator thats only read only
+   vector<int>vec={4,5,6,7,8,9,10,11,12};
+      vector<int>::const_iterator it;
+   cout<<"----------see const iterator value----------------"<<endl;
+    cout << "Elements in the vector: ";
+    for (it = vec.cbegin(); it != vec.cend(); ++it) {
+        cout << *it << " "; // Access value (read-only)
+        // *it = 10; // Error: Cannot modify value using const_iterator
+    }
+    cout << endl;
+
+     cout<<"--------------------------------";
+
+     /*
+     Output:
+        ----------see incremented value----------------
+        5 6 7 8 9 10 11 12 13 --------------------------------
+        ----------see const iterator value----------------
+        Elements in the vector: 4 5 6 7 8 9 10 11 12 
+        --------------------------------
+     
+     
+     */
     return 0;
 }
