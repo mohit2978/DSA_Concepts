@@ -3,15 +3,22 @@ using namespace std;
 
 int main(){
     vector<int> v = {1, 2, 3, 4, 5};
- 
+
     for (int i : v) {
         cout << i << " ";
      }
         cout<<"\n";
     vector<pair<int,int>>v1;
+
+    // by default all value zero in case of vector<int>
+    //in case of bool it is false by default
+
     for(int i=0;i<4;i++){
         v1.push_back({i,i+1});
     }
+
+    //like push_back() for insert we have pop_back() to delete for last element!!
+
     //for each loop
     for(pair<int,int>el:v1){
         cout<<el.first<<" "<<el.second<<endl;
@@ -212,5 +219,25 @@ cout<<"print 2d vector--------------------------"<<endl;
      
      
      */
+    cout<<endl;
+    //initialise vector by array
+    // used when input is as an array and you need vector
+    int arr[5]={20,30,40,50,60};
+    vector<int>vecArr(arr,arr+5);
+    cout<<"Size of vector is "<<vecArr.size()<<endl;
+    //in case input an array initialise vecArr(arr, arr+n)
+    /*
+    Size of vector is 5
+    */
+
+   vector<int>vecCopy=vecArr; 
+   //vecCopy is copy of vecArr any operation on vecCopy not affect vecArr
+
+   vector<int>&vecCopy2=vecArr;
+   //vecCopy2 is not copy of vecArr any operation on vecCopy will definitely affect vecArr
+   //whenever passing any STL container to function we pass by reference
+   //so function can perform changes on the container
+
+   
     return 0;
 }
