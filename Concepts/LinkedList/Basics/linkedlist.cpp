@@ -14,6 +14,62 @@ struct ListNode {
 
 class Solution {
 public:
+    //insert at head
+    ListNode* insertAtHead(ListNode* &head, int X) {
+        ListNode* node=new ListNode(X);
+        node->next=head;
+        head=node;
+        return head;
+    }
+
+    //insert at tail
+    ListNode* insertAtTail(ListNode* &head, int X) {
+        ListNode *node=new ListNode(X);
+        if(head==nullptr){
+            head=node;
+            return head;
+        }
+        ListNode *tmp=head;
+        while(tmp->next!=nullptr){
+            tmp=tmp->next;
+        }
+        tmp->next=node;
+        return head;
+    }
+
+    //insert at kth position
+
+    ListNode* insertAtKthPosition(ListNode* &head, int X, int K) {
+        if(K==1) return insertAtHead(head,X);
+        ListNode * tmp=head;
+        for(int i=1;i<K-1;i++){
+            tmp=tmp->next;
+        }
+        ListNode * list=tmp->next;
+        ListNode * node=new ListNode(X);
+        tmp->next=node;
+        node->next=list;
+        return head;
+    }
+    //insert node having val val before node of val X
+    //it is possible X is not present in LL
+    ListNode* insertBeforeX(ListNode* &head, int X, int val) {
+        if(head==nullptr) return head;
+        if(head->val==X) return insertAtHead(head,val);
+        ListNode * tmp=head;
+        ListNode * prev=nullptr;
+        while(tmp!=nullptr && tmp->val!=X){
+            prev=tmp;
+            tmp=tmp->next;
+        }
+        if(tmp==nullptr) return head; //if X is not present then return as it is
+        ListNode* node=new ListNode(val);
+        prev->next=node;
+        node->next=tmp;
+        return head;
+    }
+    
+
     //delete 1st node
     ListNode* deleteHead(ListNode* &head) {
         if(head==nullptr|| head->next==nullptr) return nullptr;
