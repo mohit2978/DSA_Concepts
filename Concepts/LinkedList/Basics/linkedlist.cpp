@@ -5,7 +5,7 @@ using namespace std;
 struct ListNode {
     int val; 
     ListNode* next;
-    
+
     //constructors
     ListNode(int data1) : val(data1), next(nullptr) {} 
     ListNode(int data1, ListNode* next1) : val(data1), next(next1) {} 
@@ -33,6 +33,39 @@ public:
         return head;
 
     }
+
+    //delete kth node if k=1 delete head fucntion call if we have size too
+    //then if k== size we can can deleteTail but here we have no size
+    ListNode* deleteKthNode(ListNode* &head, int k) {
+        if(head==nullptr) return head;
+        if (k==1) return deleteHead(head);
+        ListNode* tmp=head;
+        for(int i=1;i<k-1;i++){
+            tmp=tmp->next;
+        }
+        ListNode *deletenode=tmp->next;
+        tmp->next=deletenode->next;
+        delete deletenode;
+        return head;
+    }
+
+    //delete node with value X
+
+    ListNode* deleteNodeWithValueX(ListNode* &head, int X) {
+        if(head->val==X) return deleteHead(head);
+        ListNode * prev=nullptr;
+        ListNode * curr= head;
+        while(curr!=nullptr && curr->val!=X  ){
+            //first check curr !=null then check for curr->val
+            prev=curr;
+            curr=curr->next;
+        }
+        if(curr==nullptr) return head;
+        prev->next=curr->next;
+        delete curr;
+        return head;
+    }
+
     //Function for Linked List Traversal
     vector<int> LLTraversal(ListNode* head) {
        vector<int>v;
