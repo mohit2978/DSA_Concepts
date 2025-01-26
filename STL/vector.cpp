@@ -238,6 +238,7 @@ cout<<"print 2d vector--------------------------"<<endl;
    //whenever passing any STL container to function we pass by reference
    //so function can perform changes on the container
 
+  vector<int>v[4];// array of vectors v[0],v[1],v[2],v[3] all are vectors
    
     return 0;
 }
