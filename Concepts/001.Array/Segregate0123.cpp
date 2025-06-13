@@ -2,7 +2,7 @@
 using namespace std;
 
 
-int solve(){
+void solve(){
    int arr[]={0,3,2,1,3,3,0,2,2,1,1,2};
    int size=sizeof(arr)/sizeof(arr[0]);
    int pt0=-1;
