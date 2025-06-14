@@ -1,0 +1,5 @@
+*.exe
+*.class
+*.idea
+.idea
+.vscode/
