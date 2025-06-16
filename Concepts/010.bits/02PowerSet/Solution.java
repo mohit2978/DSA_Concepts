@@ -1,3 +1,4 @@
+import java.util.*;
 class Solution {
     public List<List<Integer>> powerSet(int[] nums) {
         int n=nums.length;
@@ -15,6 +16,17 @@ class Solution {
             res.add(subset);
         }
      return res;
+    }
+    public static void main(String[] args) {
+        int[] nums = {1,2,3,4};
+        Solution sol = new Solution(); 
+        List<List<Integer>>res=sol.powerSet(nums);
+        System.out.println(res);
+/*
+Output:
+[[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3], [4], [1, 4], [2, 4], [1, 2, 4], [3, 4], [1, 3, 4], [2, 3, 4], [1, 2, 3, 4]]
+*/
+
     }
  
 }
