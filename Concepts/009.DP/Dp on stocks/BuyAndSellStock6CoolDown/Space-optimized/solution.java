@@ -31,8 +31,9 @@ class Solution {
                 }
             }
             ahead=cur;
+            cur=new int[2][k+1];//need to add this else it will not work!!
         }
-        return cur[0][0];
+        return ahead[0][0];
 
     }
 
@@ -48,8 +49,24 @@ class Solution {
     }
 }
 
-//Don't know what's wrong here 
+/*
+            ahead=cur;
+            cur=new int[2][k+1];/
 
-//[1,2,3,0,2]
-//output-4
-//expected-3
+            Here need to create a new array each time!!
+            In Buy and Sell2 optimized one there was no need
+            see when cur and head points to same array
+            in there if buy=0
+
+            cur[0]=ahead[0]
+            then buy=1 
+            cur[1]=ahead[1];
+            No problem
+
+            now see buy=0
+            cur[0]=-arr[ind]+ahead[1];
+            this is cur value which is same as ahead[0] now what if
+            cur[1]=arr[ind] +ahead[0];
+            but ahead[0] is being updated already
+
+*/
