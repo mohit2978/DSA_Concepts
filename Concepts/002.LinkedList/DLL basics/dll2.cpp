@@ -29,8 +29,71 @@ struct ListNode
 
 // Solution class
 class Solution {
+
+    ListNode * deleteHead(ListNode* head) {
+        if(head==nullptr || head->next==nullptr) return nullptr;
+        ListNode* newHead=head->next;
+        newHead->prev=nullptr;
+        delete head;
+        return newHead;
+    }
+
+     ListNode* insertBeforeHead(ListNode* head, int X) {
+         ListNode * node=new ListNode(X);
+        if(head==nullptr ) return node;
+
+        node->next=head;
+        head->prev=node;
+        head=node;
+        return head;
+
+    }
+
 public:
 
+    ListNode* deleteKthElement(ListNode* head, int k) {
+        if(k==1) return deleteHead(head);
+        ListNode * curr=head;
+        for(int i=1;i<k;i++){
+            curr=curr->next;
+        }
+        ListNode * previous=curr->prev;
+        ListNode * after=curr->next;
+
+        previous->next=after;
+        if(after!=nullptr) after->prev=previous;
+
+        curr->prev=nullptr;
+        curr->next=nullptr;
+
+        delete curr;
+        return head;
+    }
+
+    /*
+    Given a node's reference within a doubly linked list, 
+    remove that node from the linked list while preserving the list's integrity.
+
+
+
+    You will only be given the node's reference, not the head of the list.
+   It is guaranteed that the given node will not be the head of the list. For the custom testcase, give the index(0-indexed) of the node to be removed.
+
+   in case of CLL Update the previous node’s next and next node’s prev, ensuring circularity is maintained
+    */
+    void deleteGivenNode(ListNode* node) {
+        ListNode * previous =node->prev;
+        ListNode * after=node->next;
+
+        if(previous!=nullptr) previous->next=after;
+        if(after!=nullptr) after->prev=previous;
+
+        node->next = nullptr;
+        node->prev = nullptr;
+
+        delete node;
+
+    }
     ListNode* insertBeforeHead1(ListNode* head, int X) {
         ListNode* newHead = new ListNode(X, head, nullptr);
         
@@ -48,6 +111,52 @@ public:
         head=node;
         return head;
 
+    }
+
+    ListNode* insertBeforeTail(ListNode* head, int X) {
+        ListNode * node=new ListNode(X);
+        if(head==nullptr) return node;
+        if(head->next==nullptr){
+            node->next=head;
+            head->prev=node;
+            head=node;
+            return head;
+        }
+        ListNode * curr=head;
+         while (curr->next !=nullptr){
+            curr=curr->next;
+         }
+         ListNode * prevNode=curr->prev;
+         prevNode->next=node;
+         node->prev=prevNode;
+         node->next=curr;
+         curr->prev=node;
+         return head;
+    }
+    //O(1) remember to chnage pointers of next and prev node 
+    // also prev and next can be accessed by staying on curr node 
+    void insertBeforeGivenNode(ListNode* node, int X) {
+        ListNode * prevNode=node->prev;
+        ListNode * newNode=new ListNode(X);
+        if(prevNode!=nullptr) prevNode->next=newNode;
+        newNode->next=node;
+        newNode->prev=prevNode;
+        node->prev=newNode;
+
+    }
+    ListNode* insertBeforeKthPosition(ListNode* head, int X, int K) {
+        if(K==1) return insertBeforeHead(head,X);
+        ListNode * node=new ListNode(X);
+        ListNode * curr=head;
+        for(int i=1;i<K;i++){
+            curr=curr->next;
+        }
+        ListNode * prevNode=curr->prev;
+        prevNode->next=node;
+        node->prev=prevNode;
+        node->next=curr;
+        curr->prev=node;
+        return head;
     }
 };
 
