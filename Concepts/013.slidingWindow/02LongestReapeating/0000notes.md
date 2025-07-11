@@ -1,0 +1,1 @@
+![alt text](<02 longest reapeating_250711_225039.jpg>)
