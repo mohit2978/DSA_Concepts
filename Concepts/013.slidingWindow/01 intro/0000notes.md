@@ -1,0 +1,8 @@
+![alt text](<012 ptr sliding window_250711_223007_1.jpg>) 
+![alt text](<012 ptr sliding window_250711_223007_2.jpg>) 
+![alt text](<012 ptr sliding window_250711_223007_3.jpg>)
+ ![alt text](<012 ptr sliding window_250711_223007_4.jpg>) 
+ ![alt text](<012 ptr sliding window_250711_223007_5.jpg>)
+  ![alt text](<012 ptr sliding window_250711_223007_6.jpg>) 
+  ![alt text](<012 ptr sliding window_250711_223007_7.jpg>) 
+  ![alt text](<012 ptr sliding window_250711_223007_8.jpg>)
