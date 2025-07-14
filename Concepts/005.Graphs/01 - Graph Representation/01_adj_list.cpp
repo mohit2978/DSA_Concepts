@@ -6,7 +6,7 @@ class Graph{
 
 	int V;
 	// array of list<int>
-	vector<int> *l;
+	vector<int>*l;
 
 public:
 	Graph(int v){
