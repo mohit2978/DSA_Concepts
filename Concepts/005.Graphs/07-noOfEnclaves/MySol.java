@@ -8,8 +8,8 @@ class Solution {
             int newi=i+dir[d][0];
             int newj=j+dir[d][1];
             int tres=helper(newi,newj,grid,dir);
-            if(tres==-1) res=-1;
-            else if(res!=-1 )res+=tres;
+            if(tres==-1) res=-1;// do not chnage to return as need to visit all other connected to this
+            else if(res!=-1 )res+=tres; // do not remove if as then res will be added when res=-1 which we do not want
         }
          
         return  res;

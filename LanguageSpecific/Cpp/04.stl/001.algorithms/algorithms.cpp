@@ -32,7 +32,7 @@ int main(){
         };
 
         
-    sort(v1.begin(), v1.end(), [](const std::pair<int, int>& a, const std::pair<int, int>& b) {
+    sort(v1.begin(), v1.end(), [](pair<int, int>& a,  pair<int, int>& b) {
         if (a.first == b.first) {
             return a.second < b.second; // Compare second elements if first are equal
         }
@@ -40,5 +40,7 @@ int main(){
     });   
 
     print(v1);//(100, 1) (3, 2) (3, 5) (2, 1) (2, 4) (1, 2) (1, 7) (1, 100) (1, 200) 
+
+    //can see lambdas in cpp yashvant kanetkar 
     return 0;
 }
