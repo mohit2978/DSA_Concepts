@@ -1,7 +1,7 @@
 
+# Notes
 
-
-
+![alt text](image.png)
 
 
 ```cpp
@@ -142,10 +142,85 @@ long long solve(int n,long long t, vector<int>a){
 ```
 ![alt text](Scanned_20250807-1958.jpg)
 
+when the array contains only positive numbers, the two pointers / sliding window technique becomes perfectly suitable and efficient.
+
+```cpp
+
+#include <bits/stdc++.h>
+using namespace std;
+
+long long countSegmentsLessThanT(int n, vector<int>& a, long long t) {
+    long long count = 0;
+    long long sum = 0;
+    int l = 0;
+
+    for (int r = 0; r < n; ++r) {
+        sum += a[r];
+        while (sum >= t && l <= r) {
+            sum -= a[l++];
+        }
+        count += (r - l + 1); // all subarrays [l..r], [l+1..r], ..., [r..r]
+    }
+
+    return count;
+}
+
+int main() {
+    int n = 5;
+    vector<int> a = {1, 2, 1, 2, 1};
+    long long t = 4;
+    cout << countSegmentsLessThanT(n, a, t) << endl;  // Output: 10
+    return 0;
+}
+
+```
+
+### ✅ What r - l + 1 Means
+This counts how many subarrays ending at index r and starting at any index between l and r.
+
+In our case:
+
+Start at l = 1 → [2, 3, 4]
+
+Start at 2 → [3, 4]
+
+Start at 3 → [4]
+
+So:
 
 
+Subarrays ending at r=3:
+
+[2, 3, 4]
+
+[3, 4]
+
+[4]
+→ Total = 3 = r - l + 1
 
 
+### 🔢 What n(n+1)/2 Means
+Here, n = r - l + 1 = 3
+
+This counts all subarrays (any start and end) inside the segment [l..r], regardless of whether they end at r.
+
+From the subarray [2, 3, 4]:
+
+All possible subarrays:
+
+[2]
+
+[2, 3]
+
+[2, 3, 4]
+
+[3]
+
+[3, 4]
+
+[4]
+
+→ Total = 3*(3+1)/2 = 6
 
 
 
