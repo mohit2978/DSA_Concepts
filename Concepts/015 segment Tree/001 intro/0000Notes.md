@@ -31,9 +31,12 @@
 ## Update Query
 
 
+![alt text](Scanned_20250807-1517-01.jpg)
 
 
+![alt text](Scanned_20250807-1517-02.jpg) 
 
+![alt text](Scanned_20250807-1517-03.jpg) 
 
 
 
