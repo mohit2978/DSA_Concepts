@@ -1,8 +1,15 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-/* Define P as a shorthand for
-the pair<int, pair<int,int>> type */
+/*
+Time Complexity: O(ElogE) (where E is the number of edges in the graph)
+In the worst case, the min-heap will store all the E edges, and insertion 
+operation on the min-heap takes O(logE) time taking overall O(ElogE) time.
+
+Space Complexity: O(E + V) (where V is the number of nodes in the graph)
+The min-heap will store all edges in worst-case taking O(E) space and the
+ visited array takes O(V) space.
+*/
 #define P pair<int,int>
 
 class Solution{
@@ -10,20 +17,11 @@ public:
 
     // Function to get the sum of weights of edges in MST
     int spanningTree(int V, vector<vector<int>> adj[]) {
-        
-        // Min-Heap to store pair of {edge, node}
         priority_queue <P, vector<P>, greater<P>> pq;
-        
-        // Visited array
         vector<int> visited(V, 0);
-        
-        // Push any arbitrary initial node
         pq.push({0,0});
-        
-        // To store the weight of MST
+    
         int sum = 0;
-        
-        // Until the priority queue is not empty
         while(!pq.empty()) {
             
             auto p = pq.top();
