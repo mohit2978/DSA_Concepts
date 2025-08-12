@@ -170,8 +170,93 @@ public:
 };
 ```
 
+>Note:In heaps upHeapify is only callled when we adding only 1 value.Rest all we have downHeapify.
+
+## Basic Heap code 
+
+```cpp 
+
+#include <bits/stdc++.h>
+using namespace std;
+
+class Heap {
+        void upHeapify(int i){
+            if(i==0) return;
+           int parIdx=(i-1)/2;
+           if(v[parIdx]>v[i]){
+               swap(v[parIdx],v[i]);
+               upHeapify(parIdx);
+           }
+       }
+       
+       void downHeapify(int idx){
+           int resIdx=idx;
+           int lIdx=2*idx+1;
+           int rIdx=2*idx+2;
+           if(lIdx<v.size()&& v[lIdx]<v[resIdx]) resIdx=lIdx;
+           if(rIdx<v.size() && v[rIdx]<v[resIdx]) resIdx=rIdx;
+           if(resIdx!=idx){
+               swap(v[resIdx],v[idx]);
+               downHeapify(resIdx);
+           }
+           
+       }
+    public:
+   vector<int> v;
+    void insert(int val){
+        v.push_back(val);
+        if(v.size()==1) return;
+        upHeapify(v.size()-1);
+    }
+    
+    void Heapify(int index) {
+        downHeapify(0);
+    }
+    
+    void delete_from_heap(){
+        int n=v.size();
+        if(n==1) {
+            v.pop_back();
+            return;
+        }
+        swap(v[n-1],v[0]);
+        v.pop_back();
+        Heapify(0);
+    }
+    
+};
 
 
+
+int main() {
+    Heap* h1 = new Heap();
+    int n;
+    cin>>n;
+    for(int i=0; i<n; i++)
+    {
+        string command;
+        cin>>command;
+        if(command=="insert"){
+            int value;
+            cin>>value;
+            h1->insert(value);
+        }
+        else if(command=="delete")
+        {
+            h1->delete_from_heap();
+        }
+        else if(command=="print"){
+            for(auto j: h1->v)
+            {
+                cout<<j<<" ";
+            }
+            cout<<endl;
+        }
+    }
+
+}
+
+```
 
 
 
