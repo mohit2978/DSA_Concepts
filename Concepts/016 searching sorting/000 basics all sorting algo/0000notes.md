@@ -257,12 +257,60 @@ int main() {
 }
 
 ```
+### Count sort
+
+```cpp
+#include <bits/stdc++.h>
+
+using namespace std;
+
+vector<int> countsort(vector<int>& arr) {
+    int n = arr.size();
+
+    int mnval=INT_MAX;
+    int maxval = 0;
+    for (int i = 0; i < n; i++){
+        maxval = max(maxval, arr[i]);
+        mnval=min(mnval,arr[i]);
+    }
+
+    // create and initialize count array
+    vector<int> count(maxval-mnval + 1, 0);
+    // count frequency of each element
+    for (int i = 0; i < n; i++)
+        count[arr[i]-mnval]++;
+
+    // compute prefix sum
+    for (int i = 1; i <= maxval-mnval; i++){
+        count[i] += count[i - 1];
+    }
+    
+    // build output array
+    vector<int> ans(n);
+    for (int i = n - 1; i >= 0; i--) {
+        int idx=count[arr[i]-mnval] - 1;
+        ans[idx] = arr[i];
+        count[arr[i]-mnval]--;
+    }
+
+    return ans;
+}
+
+int main() {
+    vector<int> arr = {7,8,9,5,5,5,6,8,8,8,9,7,6};
+    vector<int> sorted = countsort(arr);
+
+    for (int x : sorted)
+        cout << x << " ";
+
+    return 0;
+}
+```
+
+Output 5 5 5 6 6 7 7 8 8 8 8 9 9 
 
 
-
-
-
-
+![alt text](image.png)
 
 
 
