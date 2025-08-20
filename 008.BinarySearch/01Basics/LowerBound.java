@@ -1,5 +1,6 @@
 /*
-Given a sorted array of nums and an integer x, write a program to find the lower bound of x. The lower bound algorithm finds the first or the smallest index in a sorted array where the value at that index is greater than or equal to a given key i.e. x.
+Given a sorted array of nums and an integer x, write a program to find the lower bound of x. The lower bound algorithm
+ finds the first or the smallest index in a sorted array where the value at that index is greater than or equal to a given key i.e. x.
 
 If no such index is found, return the size of the array.
 
@@ -24,3 +25,20 @@ class Solution {
        return bs(nums,si,ei,x);
      }
 }
+
+
+/*
+
+In C++, `std::lower_bound (from <algorithm>)` is used to find the first position in a sorted range where a given value x could be inserted without breaking the order.
+
+Syntax-->`auto it = lower_bound(begin, end, x);`
+
+
+begin, end → iterators of the range (must be sorted in ascending order).
+
+x → the value you are searching for.
+
+Returns an iterator pointing to the first element that is `≥ x.`
+
+If all elements are `< x`, it returns end.
+*/
