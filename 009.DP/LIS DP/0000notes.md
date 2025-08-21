@@ -197,8 +197,53 @@ int main() {
 ```
 
 
+Print LIs O(n^2)
 
+O(nlgn) cannot print LIS
 
+```cpp
+
+class Solution {
+  public:
+    vector<int> longestIncreasingSubsequence(vector<int>& nums) {
+    int n=nums.size();
+        int res=1;
+        int resIdx=0;//should be zero for decreasing subsequence
+        vector<int> dp(n,1);
+        vector<int>par(n,0);
+        for(int i=1;i<n;i++){
+            par[i]=i;
+            for(int j=i-1;j>=0;j--){
+                if(nums[i]>nums[j]){
+                    if(dp[j]+1>=dp[i]){
+                        dp[i]=dp[j]+1;
+                        par[i]=j;
+                    }
+                }
+            }
+
+            if(dp[i]>res){
+                res=dp[i];
+                resIdx=i;
+            }
+        }
+
+        vector<int> resArr;
+
+        int k=resIdx;
+
+        while(par[k]!=k){
+            resArr.push_back(nums[k]);
+            k=par[k];
+        }
+         resArr.push_back(nums[k]);
+        reverse(resArr.begin(),resArr.end());
+
+        return resArr;
+}
+};
+
+```
 
 
 
