@@ -246,6 +246,46 @@ class Solution {
 ```
 
 
+## Number of LIS 
+
+
+```cpp
+
+class Solution {
+public:
+    int numberOfLIS(vector<int> nums) {
+        int n=nums.size();
+        int res=1;
+        vector<int> dp(n,1);
+        vector<int>num(n,1);
+        for(int i=1;i<n;i++){
+
+            for(int j=i-1;j>=0;j--){
+                if(nums[i]>nums[j]){
+                    if(dp[j]+1>dp[i]){
+                        dp[i]=dp[j]+1;
+                        num[i]=num[j];
+                    }else if(dp[j]+1==dp[i]){
+                        num[i]+=num[j];
+                    }
+                }
+            }
+
+            res=max(dp[i],res);
+        }
+        int ans=0;
+        for(int i=0;i<n;i++){
+            if(dp[i]==res) ans+=num[i];
+        }
+        return ans;
+    }
+};
+
+```
+
+So both approaches are very important O(n^2) and O(nlgn)
+
+
 
 
 
