@@ -29,6 +29,10 @@ class Solution{
 
 ```
 
+![alt text](Scanned_20250826-2338-01.jpg) 
+![alt text](Scanned_20250826-2338-02.jpg)
+ ![alt text](Scanned_20250826-2338-03.jpg) 
+ ![alt text](Scanned_20250826-2338-04.jpg)
 
 ## Rajneesh way 
 
@@ -58,3 +62,27 @@ class Solution{
     	}
 };
 ```
+
+seems quite logical 
+
+`i+1==j`--> one matrix only so return 0;
+
+`k=i+1 to <=j-1` -->  as from front we leave anelement and from last we leave an element
+
+then next is also simple !!
+
+
+![alt text](Scanned_20250827-0002.jpg)
+
+ ![alt text](Scanned_20250827-0003.jpg)
+
+
+
+
+
+
+
+
+
+
+
