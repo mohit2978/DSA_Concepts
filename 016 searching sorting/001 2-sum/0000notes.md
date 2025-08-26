@@ -87,3 +87,56 @@ nums =[3,3],target=6
 Output-->[1,1]
 
 expected-->[0,1]
+
+![alt text](image.png)
+
+Here we need indexes so we cannot sort 
+
+## Brute 
+
+```cpp
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        int i,j;
+        vector<int>arr={-1,-1};
+        for(i=0;i<nums.size();i++){
+            for(j=i+1;j<nums.size();j++){
+            if(nums[i]+nums[j]==target)
+            {
+             arr={i,j};
+                break;}
+            }
+        
+            if(arr[0]!=-1)
+                break;
+        }
+    
+    return arr;}
+};
+```
+
+## Better 
+
+```cpp
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        vector<int>res;
+        unordered_map<int,int>mp;
+        for(int i=0;i<nums.size();i++){
+            mp[nums[i]]=i;
+        }
+        for(int i=0;i<nums.size();i++){
+            int val=target-nums[i];
+           if( mp.find(val)!= mp.end() && mp[val]!=i){
+                res.push_back(i);
+                res.push_back(mp[target-nums[i]]);
+                return res;
+            }
+        }
+        return {-1,-1};
+    }
+};
+```
