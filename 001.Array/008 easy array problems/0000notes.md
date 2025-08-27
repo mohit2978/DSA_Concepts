@@ -27,7 +27,7 @@ public:
 tc-->O(n)
 
 ## Equilibrium point 
-
+![img.png](img.png)
 
 ```cpp
 
