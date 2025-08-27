@@ -2,6 +2,8 @@
 
 ## Bruteforce
 
+For all problems in group we can start with this bruteforce 
+
 ```cpp
 class Solution {
 public:
