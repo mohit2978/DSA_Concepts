@@ -1,6 +1,5 @@
-#include<iostream>
-using namespace std;
-/*Example 1:
+# Notes
+Example 1:
 Input : x = 2.0000 , n = 10
 
 Output : 1024.0000
@@ -15,14 +14,25 @@ Output : 0.2500
 Explanation : Answer = 2^(-2) = 1/4 => 0.25.
 
 Constraints:
+
 -100.0 <= x <= 100.0
--231 <= n <= 231 - 1
--104 <= xn <= 104
+
+-2^31 <= n <= 2^31 - 1
+
+-10^4 <= xn <= 10^4
+
 Either x is not zero or n>0.
+
 n is an integer.
+
 Note:
+
 In output print 6 digits places after decimal point.
-*/
+
+```cpp
+#include<iostream>
+using namespace std;
+
 int power(int a,int b){
      if(b==0) return 1;
         if(b<0){
@@ -46,3 +56,7 @@ int main(){
     cout<<power(a,b);
     return 0;
 }
+
+```
+
+tc-->O(logn)
