@@ -84,9 +84,36 @@ public:
 };
 
 ```
+One more way is this 
 
+```cpp
 
+class Solution {
 
+public:
+    vector<vector<int>> pascalTriangleIII(int n) {
+        vector<vector<int>> res;
+        int size=2;
+        for(int i=1;i<=n;i++){
+          if(i==1) res.push_back({1});
+          else {
+            vector<int>v(size,0);
+            v[0]=1;
+            v[size-1]=1;
+            int n=res.size();
+            for(int j=1;j<size-1;j++){
+                v[j]=res[n-1][j]+res[n-1][j-1];
+            }
+            res.push_back(v);
+            size++;
+          }
+        }
+        return res;
+    }
+};
+```
+
+Using sum of above row
 
 
 
