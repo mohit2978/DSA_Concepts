@@ -96,13 +96,41 @@ public:
 };
 
 ```
+## Roatate matrix by 90 degreee
+
+![img.png](img.png)
+
+Solution:
+
+![img_1.png](img_1.png)
+
+![img_2.png](img_2.png)
+
+Reverse each row means if row is 1,2,3,4 we make it to 4,3,2,1
+
+```cpp
+
+class Solution {
+public:
+    void rotateMatrix(vector<vector<int>>& matrix) {
+        int n = matrix.size();
+        
+        // Transpose the matrix
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                swap(matrix[i][j], matrix[j][i]);
+            }
+        }
+        
+        // Reverse each row of the matrix
+        for (int i = 0; i < n; i++) {
+            reverse(matrix[i].begin(), matrix[i].end());
+        }
+    }
+};
 
 
-
-
-
-
-
+```
 
 
 
