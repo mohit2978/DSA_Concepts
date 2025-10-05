@@ -2,8 +2,6 @@
 
 ## Find the repeating and missing number
 
-
-
 Given an integer array nums of size n containing values from [1, n] and each value appears exactly once in the array, except for A, which appears twice and B which is missing.
 
 
@@ -73,7 +71,41 @@ int java
 int for max 32 bit or 10^9 
 long for max 64 bit or 10^18 no long long
 
+### Bitwise code 
 
+```cpp
+class Solution {
+public:
+    vector<int> findMissingRepeatingNumbers(vector<int> arr) {
+        int n=arr.size();
+        int xr=0;
+        for(int i=0;i<n;i++){
+            xr^=arr[i];
+            xr^=(i+1);
+        }
+        int num=(xr& ~(xr-1));
+        int zero=0,one=0;
+        for(int i=0;i<n;i++){
+          if((num & arr[i])==0) zero^=arr[i];
+          else one^=arr[i];
+        }
+
+        for(int i=1;i<=n;i++){
+          if((num & i)==0) zero^=i;
+          else one^=i;
+        }
+
+        int cnt=0;
+        for(int i=0;i<n;i++){
+          if(arr[i]==zero) cnt++;
+        }
+        if(cnt==2) return {zero,one };
+
+        return {one,zero};
+
+    }
+};
+```
 
 
 
