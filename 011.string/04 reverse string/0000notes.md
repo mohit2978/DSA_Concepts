@@ -85,6 +85,34 @@ see string methods
 | **`push_back()`** | `str1.push_back(ch);` | Appends a **single character** (`char`) to the end of the string. |
 | **`+` operator** | `result = str1 + str2;` | Creates and returns a **new string** that is the concatenation of `str1` and `str2`. |
 
+---
+ #### here k is length 
+
+| Scenario | C++ (`std::string::substr`) | Java (`String.substring`) | Example (Assuming s = "example" and i = 2) |
+| :--- | :--- | :--- | :--- |
+| **From the beginning (index 0) with a specific length ($k$)** | `s.substr(0, k)` | `s.substring(0, k)` | `s.substr(0, 3)` / `s.substring(0, 3)` returns "exa" |
+| **From a starting index ($i$) to the end of the string** | `s.substr(i)` | `s.substring(i)` | `s.substr(2)` / `s.substring(2)` returns "ample" |
+| **From a starting index ($i$) with a specific length ($k$)** | `s.substr(i, k)` | `s.substring(i, i + k)` | `s.substr(2, 3)` returns "amp" / `s.substring(2, 5)` returns "amp" |
+
+---
+### Now k is exclusive last index
+
+🔢 Substring with Start and End IndicesThis table assumes:Start Index: $i$ (inclusive)
+
+End Index: $k$ (exclusive - the index after the last character)
+ 
+| Scenario                                 | C++ (std::string::substr) | Java (String.substring) | Example (Assuming s = "example", start index i=2, end index k=5) |
+|------------------------------------------|----------------------------|---------------------------|-------------------------------------------------------------------|
+| Extract substring from i to k (exclusive) | s.substr(i, k - i)         | s.substring(i, k)         | s.substr(2, 3) / s.substring(2, 5) returns "amp"                  |
+
+### k is inclusive index
+
+#### End Index ($k$) is InclusiveThis means the character at index $k$ IS included in the result. You must adjust your code for both languages to accommodate this.
+
+| Scenario                     | C++ (std::string::substr) | Java (String.substring) | Length Calculation | Example (s = "example", i = 2, k = 5)      | Result  |
+|-----------------------------|----------------------------|--------------------------|---------------------|---------------------------------------------|---------|
+| From i to k (Inclusive)     | s.substr(i, k - i + 1)     | s.substring(i, k + 1)    | Length = k − i + 1  | s.substr(2, 4) / s.substring(2, 6)         | "ampl"  |
+
 ## cpp function
 
 ```cpp
@@ -192,3 +220,38 @@ Each word is stored in a list and then concatenated in reverse order, which also
 - Space Complexity: O(n)
 The words list stores each extracted word, requiring O(k) space, where k is the total number of characters in all words (essentially O(n)).
 The result string requires O(n) space as well.
+
+Let us see sc with O(1) solution
+
+```cpp
+class Solution {
+    void reverseString(string &s, int start, int end) {
+        while (start < end) {
+            swap(s[start++], s[end--]);
+        }
+    }
+public:
+    string reverseWords(string s) {
+       int n=s.size();
+       reverseString(s, 0, n - 1);
+       int i=0,j=0,st=0,ed=0;
+       //vector<string>strVec;
+       while(i<n){
+          while(i<n && s[i]==' ') i++;
+          if(i==n) break;
+          st=j;//string str;
+          while(i<n && s[i]!=' '){
+              s[j++]=s[i++];
+          }
+          ed=j-1;
+          reverseString(s, st,ed);
+         //if(i!=k) strVec.push_back(s.substr(k,i-k));
+          if (i < n) {
+              s[j++] = ' ';
+            }
+       }
+      if (j > 0 && s[j - 1] == ' ') j--;
+      return s.substr(0,j);
+    } 
+};
+```
