@@ -31,6 +31,12 @@ Output: "skills coding amazing"
 
 Explanation: The input string has leading and trailing spaces, as well as multiple spaces between the words "amazing", "coding", and "skills". After trimming the leading and trailing spaces and reducing the multiple spaces between words to a single space, the words are "amazing", "coding", and "skills". Reversing the order of these words gives "skills", "coding", and "amazing". The output string should not have any leading or trailing spaces and should have exactly one space between each word.
 
+### Constraints:
+
+* **String Length:** $1 \le \text{s.length} \le 10^4$
+* **Character Set:** `s` contains English letters (upper-case and lower-case), digits, and spaces (`' '`).
+* **Content Guarantee:** There is at least one word in `s`.
+
 ### Mycode
 
 ```cpp
@@ -78,3 +84,111 @@ see string methods
 | **`+=` operator** | `str1 += str2;` | The simplest way to append a string, a single character, or a C-style string. |
 | **`push_back()`** | `str1.push_back(ch);` | Appends a **single character** (`char`) to the end of the string. |
 | **`+` operator** | `result = str1 + str2;` | Creates and returns a **new string** that is the concatenation of `str1` and `str2`. |
+
+## cpp function
+
+```cpp
+size_t start_index = i;
+size_t end_index = k; // Exclusive end index
+
+// The length is the difference between the indices
+size_t length = end_index - start_index;
+
+std::string result = s.substr(start_index, length);
+```
+The variable k (or end_index) is the exclusive end index, meaning:
+
+- The character at index k is not included in the resulting substring (result).
+
+- The substring stops immediately before the character at index k.
+
+This convention is crucial because it makes calculating the length simple: it's just `end_index - start_index`.
+
+| Index ($n$) | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+| :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| Char | P | r | o | g | r | a | m | m | i | n | g |
+
+```cpp
+#include <iostream>
+#include <string>
+
+int main() {
+    std::string s = "Programming";
+
+    // 1. Define the indices
+    size_t start_index = 3;  // i (Inclusive start)
+    size_t end_index = 7;    // k (Exclusive end: stops BEFORE index 7)
+
+    // 2. Calculate the Length
+    size_t length = end_index - start_index;
+
+    // length = 7 - 3 = 4
+
+    // 3. Extract the substring
+    std::string result = s.substr(start_index, length);
+
+    std::cout << "Original String: " << s << std::endl;
+    std::cout << "Start Index (i): " << start_index << std::endl;
+    std::cout << "End Index (k, exclusive): " << end_index << std::endl;
+    std::cout << "Calculated Length: " << length << std::endl;
+    std::cout << "Resulting Substring: " << result << std::endl;
+    
+    // Output: Resulting Substring: gram
+    
+    return 0;
+}
+```
+
+#### Output
+
+```text
+Original String: Programming
+Start Index (i): 3
+End Index (k, exclusive): 7
+Calculated Length: 4
+Resulting Substring: gram
+```
+Now our question code becomes
+
+```cpp
+class Solution {
+public:
+    string reverseWords(string s) {
+       int n=s.size();
+       int i=0;
+       vector<string>strVec;
+       while(i<n){
+          while(i<n && s[i]==' ') i++;
+          int k=i;//string str;
+          while(i<n && s[i]!=' '){
+              i++;
+          }
+         if(i!=k) strVec.push_back(s.substr(k,i-k));
+       }
+      i=0;
+      int j=strVec.size()-1;
+      while(i<j){
+        swap(strVec[i++],strVec[j--]);
+      }
+      string res;
+      i=0;
+      while(i<strVec.size()){
+        res.append(strVec[i]);
+        if(i!=strVec.size()-1) res.append(" ");
+        i++;
+      }
+      return res;
+    } 
+};
+```
+
+### Complexity Analysis:
+- Time Complexity: O(n) (where n is the length of the input string)
+
+    The input string is scanned once to extract words, taking O(n) time, where n is the length of the input string.
+Each word is stored in a list and then concatenated in reverse order, which also takes O(n).
+
+
+- Space Complexity: O(n)
+The words list stores each extracted word, requiring O(k) space, where k is the total number of characters in all words (essentially O(n)).
+The result string requires O(n) space as well.
