@@ -31,6 +31,16 @@ Explanation:
 
 7 appears two times in the array and 4 is missing from nums.
 
+![alt text](Scanned_20251210-2105-01.jpg)
+
+![alt text](Scanned_20251210-2105-02.jpg)
+
+![alt text](Scanned_20251210-2105-03.jpg)
+
+![alt text](Scanned_20251210-2105-04.jpg)
+
+![alt text](Scanned_20251210-2105-05.jpg)
+
 ```cpp
 class Solution {
 public:
