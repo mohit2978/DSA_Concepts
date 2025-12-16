@@ -25,6 +25,8 @@ Given an array of positive integers `nums` and an integer `threshold` (also refe
 * `1 <= nums[i] <= 10^6`
 * `nums.length <= threshold <= 10^6`
 
+![alt text](Scanned_20251217-0254.jpg)
+
 ```cpp
 
 class Solution {
