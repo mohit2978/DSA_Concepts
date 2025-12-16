@@ -198,4 +198,33 @@ int main() {
 ![alt text](<005bs min max problems_231231_215058.jpg>)
 
  ![alt text](<005bs min max problems_231231_215058(1).jpg>) ![alt text](<005bs min max problems_231231_215058(2).jpg>) ![alt text](<005bs min max problems_231231_215058(3).jpg>) ![alt text](<005bs min max problems_231231_215058(4).jpg>) ![alt text](<005bs min max problems_231231_215058(5).jpg>) ![alt text](<005bs min max problems_231231_215058(6).jpg>) ![alt text](<005bs min max problems_231231_215058(7).jpg>) ![alt text](<005bs min max problems_231231_215058(8).jpg>) ![alt text](<005bs min max problems_231231_215058(9).jpg>) ![alt text](<005bs min max problems_231231_215058(10).jpg>) ![alt text](<005bs min max problems_231231_215058(11).jpg>) ![alt text](<005bs min max problems_231231_215058(12).jpg>) ![alt text](<005bs min max problems_231231_215058(13).jpg>) ![alt text](<005bs min max problems_231231_215058(14).jpg>) ![alt text](<005bs min max problems_231231_215058(15).jpg>) ![alt text](<005bs min max problems_231231_215058(16).jpg>) ![alt text](<005bs min max problems_231231_215058(17).jpg>) ![alt text](<005bs min max problems_231231_215058(18).jpg>) ![alt text](<005bs min max problems_231231_215058(19).jpg>) ![alt text](<005bs min max problems_231231_215058(20).jpg>) ![alt text](<005bs min max problems_231231_215058(21).jpg>) ![alt text](<005bs min max problems_231231_215058(22).jpg>) ![alt text](<005bs min max problems_231231_215058(23).jpg>) ![alt text](<005bs min max problems_231231_215058(24).jpg>) ![alt text](<005bs min max problems_231231_215058(25).jpg>) ![alt text](<005bs min max problems_231231_215058(26).jpg>) ![alt text](<005bs min max problems_231231_215058(27).jpg>) ![alt text](<005bs min max problems_231231_215058(28).jpg>) ![alt text](<005bs min max problems_231231_215058(29).jpg>) ![alt text](<005bs min max problems_231231_215058(30).jpg>) ![alt text](<005bs min max problems_231231_215058(31).jpg>) ![alt text](<005bs min max problems_231231_215058(32).jpg>)
- ![alt text](<005bs min max problems_231231_215058(33).jpg>) ![alt text](<005bs min max problems_231231_215058(34).jpg>) ![alt text](<005bs min max problems_231231_215058(35).jpg>) ![alt text](<005bs min max problems_231231_215058(36).jpg>) ![alt text](<005bs min max problems_231231_215058(37).jpg>) ![alt text](<005bs min max problems_231231_215058(38).jpg>) ![alt text](<005bs min max problems_231231_215058(39).jpg>) ![alt text](<005bs min max problems_231231_215058(40).jpg>) ![alt text](<005bs min max problems_231231_215058(41).jpg>) ![alt text](<005bs min max problems_231231_215058(42).jpg>) ![alt text](<005bs min max problems_231231_215058(43).jpg>) ![alt text](<005bs min max problems_231231_215058(44).jpg>) ![alt text](<005bs min max problems_231231_215058(45).jpg>) ![alt text](<005bs min max problems_231231_215058(46).jpg>) ![alt text](<005bs min max problems_231231_215058(47).jpg>) ![alt text](<005bs min max problems_231231_215058(48).jpg>) ![alt text](<005bs min max problems_231231_215058(49).jpg>) ![alt text](<005bs min max problems_231231_215058(50).jpg>) ![alt text](<005bs min max problems_231231_215058(51).jpg>) ![alt text](<005bs min max problems_231231_215058(52).jpg>) ![alt text](<005bs min max problems_231231_215058(53).jpg>) ![alt text](<005bs min max problems_231231_215058(54).jpg>) ![alt text](<005bs min max problems_231231_215058(55).jpg>) ![alt text](<005bs min max problems_231231_215058(56).jpg>) ![alt text](<005bs min max problems_231231_215058(57).jpg>)
+
+ ![alt text](<005bs min max problems_231231_215058(33).jpg>) ![alt text](<005bs min max problems_231231_215058(34).jpg>) 
+ 
+  ## Square root
+ same code but now we see si<=ei ,now we need to increment or decement si and  ei ,we cannot keep si=mid or ei=mid now as now on si=ei when we dont chnage and keep si=mid then it will never be change and be in TLE.
+
+so we keep si=mid+1 and at last return (si-1)
+
+```cpp
+class Solution {
+public:
+    int mySqrt(int x) {
+        if(x==0 ||x==1) return x;
+        int si=1;
+        int ei=x-1;
+        while(si<=ei){
+            int mid=(si+ei)/2;
+            if(mid>(x/mid)) ei=mid-1;
+            else si=mid+1;
+        }
+        return (si-1);
+    }
+};
+```
+ 
+ ![alt text](<005bs min max problems_231231_215058(35).jpg>) 
+ 
+
+
+ ![alt text](<005bs min max problems_231231_215058(36).jpg>) ![alt text](<005bs min max problems_231231_215058(37).jpg>) ![alt text](<005bs min max problems_231231_215058(38).jpg>) ![alt text](<005bs min max problems_231231_215058(39).jpg>) ![alt text](<005bs min max problems_231231_215058(40).jpg>) ![alt text](<005bs min max problems_231231_215058(41).jpg>) ![alt text](<005bs min max problems_231231_215058(42).jpg>) ![alt text](<005bs min max problems_231231_215058(43).jpg>) ![alt text](<005bs min max problems_231231_215058(44).jpg>) ![alt text](<005bs min max problems_231231_215058(45).jpg>) ![alt text](<005bs min max problems_231231_215058(46).jpg>) ![alt text](<005bs min max problems_231231_215058(47).jpg>) ![alt text](<005bs min max problems_231231_215058(48).jpg>) ![alt text](<005bs min max problems_231231_215058(49).jpg>) ![alt text](<005bs min max problems_231231_215058(50).jpg>) ![alt text](<005bs min max problems_231231_215058(51).jpg>) ![alt text](<005bs min max problems_231231_215058(52).jpg>) ![alt text](<005bs min max problems_231231_215058(53).jpg>) ![alt text](<005bs min max problems_231231_215058(54).jpg>) ![alt text](<005bs min max problems_231231_215058(55).jpg>) ![alt text](<005bs min max problems_231231_215058(56).jpg>) ![alt text](<005bs min max problems_231231_215058(57).jpg>)
