@@ -25,7 +25,24 @@ Given an array of positive integers `nums` and an integer `threshold` (also refe
 * `1 <= nums[i] <= 10^6`
 * `nums.length <= threshold <= 10^6`
 
-![alt text](Scanned_20251217-0254.jpg)
+
+## Solution Explaination
+
+$\sum (x[i]/div) \leq \text{limit}$ we need to find $\underline{\text{div}}$
+
+---
+
+**Base case:** if $\sum x[i] \leq \text{limit} \Rightarrow \text{div} = 1$
+
+
+ if $\text{div} > \max(x[i])$
+then $\sum x[i] \text{ /div} = 0$
+But we need $\leq \text{limit}$ not to zero
+& $\text{limit} \leq 10^6$
+
+So at max  $\text{div} = \max(x[i])$
+
+So for $2$ to $max(x[i])$ we need to check by **Binary Search** !!
 
 ```cpp
 
