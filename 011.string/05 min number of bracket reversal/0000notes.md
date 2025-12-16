@@ -108,7 +108,117 @@ Case 2: When $x$ is Odd ($x = 2k + 1$)If $x$ is odd, the remainder $x \pmod 2 = 
 &= k + 1
 \end{align*}$$Since $k + 1 = k + 1$, the identity holds.This identity is a neat trick used in integer-based algorithms to effectively perform the ceiling operation $\lceil \dots \rceil$ without relying on floating-point arithmetic.
 
+Above one is only valid for ceil(x/2)
+----
+In general for ceil of (x/y) we use formula 
 
+# Methods for Integer Ceiling Division $\left\lceil \frac{N}{D} \right\rceil$
+
+Here are two primary methods for calculating the ceiling of a division between two positive integers ($N$ and $D$) in C++.
+
+---
+
+## Method 1: Mathematical Formula (Recommended for Integers)
+
+This is the most efficient and widely used method as it relies only on **integer arithmetic**, avoiding the overhead and potential precision issues of floating-point numbers.
+
+The formula is:
+$$\text{Ceiling}(N, D) = \frac{N + D - 1}{D}$$
+*(Note: The division operation used here is standard C++ integer division, which inherently performs the floor operation $\lfloor \cdot \rfloor$.)*
+
+### How it Works:
+
+* **Case 1: $N$ is Perfectly Divisible by $D$**
+    * Example: $N=10, D=5$. $\frac{10}{5} = 2$.
+    * Formula: $\frac{10 + 5 - 1}{5} = \frac{14}{5}$. Integer division gives $\lfloor 2.8 \rfloor = 2$. (Correct)
+
+* **Case 2: $N$ is NOT Perfectly Divisible by $D$**
+    * Example: $N=11, D=5$. $\lceil \frac{11}{5} \rceil = \lceil 2.2 \rceil = 3$.
+    * Formula: $\frac{11 + 5 - 1}{5} = \frac{15}{5}$. Integer division gives $3$. (Correct)
+
+### C++ Code Example (Method 1)
+
+```cpp
+#include <iostream>
+
+long long ceil_division_integer(long long numerator, long long denominator) {
+    // This formula works for positive numerator and positive denominator.
+    if (denominator == 0) {
+        // Handle division by zero error
+        std::cerr << "Error: Division by zero.\n";
+        return -1; 
+    }
+    
+    // N + D - 1 / D
+    return (numerator + denominator - 1) / denominator;
+}
+
+int main() {
+    long long N1 = 11;
+    long long D1 = 5; // Expected: ceil(2.2) = 3
+    
+    long long N2 = 10;
+    long long D2 = 5; // Expected: ceil(2.0) = 2
+    
+    long long result1 = ceil_division_integer(N1, D1);
+    long long result2 = ceil_division_integer(N2, D2);
+
+    std::cout << N1 << " / " << D1 << " ceiling is: " << result1 << "\n";
+    std::cout << N2 << " / " << D2 << " ceiling is: " << result2 << "\n";
+
+    return 0;
+}
+```
+
+## Method 2: Using Floating Point Conversion (`std::ceil`)
+
+This method is more readable and uses the standard mathematical function, but it involves floating-point arithmetic, which is generally slightly slower and can sometimes introduce tiny precision errors (though highly unlikely in this simple context).
+
+### Steps:
+
+1.  Cast one of the integers to a `double` or `float`.
+2.  Perform the division.
+3.  Use `std::ceil()` from the `<cmath>` header.
+4.  Cast the result back to an integer type.
+
+### C++ Code Example (Method 2)
+
+```cpp
+#include <iostream>
+#include <cmath> // Required for std::ceil
+using namespace std;
+int ceil_division_float(int numerator, int denominator) {
+    if (denominator == 0) {
+        cerr << "Error: Division by zero.\n";
+        return -1;
+    }
+
+    // Cast numerator to double to force floating-point division
+    double result = static_cast<double>(numerator) / denominator;
+
+    // Calculate the ceiling and cast back to int
+    return static_cast<int>(ceil(result));
+}
+
+int main() {
+    int N1 = 11;
+    int D1 = 5;
+    
+    int N2 = 10;
+    int D2 = 5;
+
+    int result1 = ceil_division_float(N1, D1);
+    int result2 = ceil_division_float(N2, D2);
+
+    cout << N1 << " / " << D1 << " ceiling is: " << result1 << "\n";
+    cout << N2 << " / " << D2 << " ceiling is: " << result2 << "\n";
+
+    return 0;
+}
+```
+
+#### Recommendation
+For competitive programming and scenarios prioritizing speed and purity, Method 1 (The Integer Formula) is usually preferred as it avoids the overhead and potential issues of floating-point math.
 
 
 
