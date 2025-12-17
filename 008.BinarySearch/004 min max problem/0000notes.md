@@ -197,9 +197,52 @@ int main() {
 ```
 ![alt text](<005bs min max problems_231231_215058.jpg>)
 
- ![alt text](<005bs min max problems_231231_215058(1).jpg>) ![alt text](<005bs min max problems_231231_215058(2).jpg>) ![alt text](<005bs min max problems_231231_215058(3).jpg>) ![alt text](<005bs min max problems_231231_215058(4).jpg>) ![alt text](<005bs min max problems_231231_215058(5).jpg>) ![alt text](<005bs min max problems_231231_215058(6).jpg>) ![alt text](<005bs min max problems_231231_215058(7).jpg>) ![alt text](<005bs min max problems_231231_215058(8).jpg>) ![alt text](<005bs min max problems_231231_215058(9).jpg>) ![alt text](<005bs min max problems_231231_215058(10).jpg>) ![alt text](<005bs min max problems_231231_215058(11).jpg>) ![alt text](<005bs min max problems_231231_215058(12).jpg>) ![alt text](<005bs min max problems_231231_215058(13).jpg>) ![alt text](<005bs min max problems_231231_215058(14).jpg>) ![alt text](<005bs min max problems_231231_215058(15).jpg>) ![alt text](<005bs min max problems_231231_215058(16).jpg>) ![alt text](<005bs min max problems_231231_215058(17).jpg>) ![alt text](<005bs min max problems_231231_215058(18).jpg>) ![alt text](<005bs min max problems_231231_215058(19).jpg>) ![alt text](<005bs min max problems_231231_215058(20).jpg>) ![alt text](<005bs min max problems_231231_215058(21).jpg>) ![alt text](<005bs min max problems_231231_215058(22).jpg>) ![alt text](<005bs min max problems_231231_215058(23).jpg>) ![alt text](<005bs min max problems_231231_215058(24).jpg>) ![alt text](<005bs min max problems_231231_215058(25).jpg>) ![alt text](<005bs min max problems_231231_215058(26).jpg>) ![alt text](<005bs min max problems_231231_215058(27).jpg>) ![alt text](<005bs min max problems_231231_215058(28).jpg>) ![alt text](<005bs min max problems_231231_215058(29).jpg>) ![alt text](<005bs min max problems_231231_215058(30).jpg>) ![alt text](<005bs min max problems_231231_215058(31).jpg>) ![alt text](<005bs min max problems_231231_215058(32).jpg>)
+ ![alt text](<005bs min max problems_231231_215058(1).jpg>) ![alt text](<005bs min max problems_231231_215058(2).jpg>) ![alt text](<005bs min max problems_231231_215058(3).jpg>) ![alt text](<005bs min max problems_231231_215058(4).jpg>) ![alt text](<005bs min max problems_231231_215058(5).jpg>) ![alt text](<005bs min max problems_231231_215058(6).jpg>) ![alt text](<005bs min max problems_231231_215058(7).jpg>) ![alt text](<005bs min max problems_231231_215058(8).jpg>) ![alt text](<005bs min max problems_231231_215058(9).jpg>) ![alt text](<005bs min max problems_231231_215058(10).jpg>) ![alt text](<005bs min max problems_231231_215058(11).jpg>) ![alt text](<005bs min max problems_231231_215058(12).jpg>) ![alt text](<005bs min max problems_231231_215058(13).jpg>) ![alt text](<005bs min max problems_231231_215058(14).jpg>) ![alt text](<005bs min max problems_231231_215058(15).jpg>) ![alt text](<005bs min max problems_231231_215058(16).jpg>) ![alt text](<005bs min max problems_231231_215058(17).jpg>) ![alt text](<005bs min max problems_231231_215058(18).jpg>) ![alt text](<005bs min max problems_231231_215058(19).jpg>) ![alt text](<005bs min max problems_231231_215058(20).jpg>) ![alt text](<005bs min max problems_231231_215058(21).jpg>) ![alt text](<005bs min max problems_231231_215058(22).jpg>) ![alt text](<005bs min max problems_231231_215058(23).jpg>) ![alt text](<005bs min max problems_231231_215058(24).jpg>) ![alt text](<005bs min max problems_231231_215058(25).jpg>) ![alt text](<005bs min max problems_231231_215058(26).jpg>) ![alt text](<005bs min max problems_231231_215058(27).jpg>) ![alt text](<005bs min max problems_231231_215058(28).jpg>) ![alt text](<005bs min max problems_231231_215058(29).jpg>) ![alt text](<005bs min max problems_231231_215058(30).jpg>)
+ 
+ ```cpp
+ 
+ class Solution {
+    bool isItPossible(vector<int> nums, int h,int d){
+        long long sum=0;
+        for(int n:nums){
+            sum+=((n+d-1)/d);
+        }
+        return sum<=h;
+    }
+public:
+int minimumRateToEatBananas(vector<int> nums, int h) {
+        auto max_it=max_element(nums.begin(),nums.end());
+        int max_el=*max_it;
+        int si=1;
+        int ei=max_el;
+        while(si<=ei){
+            int mid=(si+ei)/2;
+            if(isItPossible(nums,h,mid)){
+                ei=mid-1;
+            }else{
+                si=mid+1;
+            }
+        }
 
- ![alt text](<005bs min max problems_231231_215058(33).jpg>) ![alt text](<005bs min max problems_231231_215058(34).jpg>) 
+        return (ei+1);
+    }
+};
+
+ ```
+
+using (n+d-1)/d to find ceil(n/d)...
+
+then simple for d we have range till from 1 till max(all arr[i]); as after that all will give 1 on ceil (x[i]/d) so no need to search their
+
+then if possible d to do in h time then we need to find more less so ei=mid-1 
+
+else si=mid+1
+
+ 
+  ![alt text](<005bs min max problems_231231_215058(31).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(32).jpg>)
+ ![alt text](<005bs min max problems_231231_215058(33).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(34).jpg>) 
  
   ## Square root
  same code but now we see si<=ei ,now we need to increment or decement si and  ei ,we cannot keep si=mid or ei=mid now as now on si=ei when we dont chnage and keep si=mid then it will never be change and be in TLE.
