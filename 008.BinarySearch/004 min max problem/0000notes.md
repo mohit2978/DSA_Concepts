@@ -222,6 +222,77 @@ public:
     }
 };
 ```
+
+### Nth root
+
+#### Problem Statement
+Given two positive integers `n` and `m`, you need to find the `nth` root of `m`. 
+The `nth` root of a number `m` is a number `x` such that $x^n = m$.
+
+If the `nth` root is an integer, return that integer value. If the `nth` root is not an integer (i.e., `m` is not a perfect `nth` power), return `-1`.
+
+---
+
+#### Example 1
+**Input:** `n = 3`, `m = 27`  
+**Output:** `3`  
+**Explanation:** $3^3 = 27$, so the 3rd root of 27 is 3.
+
+##### Example 2
+**Input:** `n = 4`, `m = 69`  
+**Output:** `-1`  
+**Explanation:** There is no integer `x` such that $x^4 = 69$.
+
+---
+
+#### Constraints
+* $1 \le n \le 30$
+* $1 \le m \le 10^9$
+
+```cpp
+class Solution {
+    int power(int mid, int n, int m) {
+        long long ans = 1, base = mid;
+        
+        while (n > 0) {
+            if (n % 2) {
+                ans = ans * base;
+                if (ans > m) return 2;  // Early exit
+                n--;
+            } 
+            else {
+                n /= 2;
+                base = base * base;
+                if(base > m) return 2;
+            }
+        }
+        if (ans == m) return 1;
+        return 0;
+    }
+public:
+  int NthRoot(int N, int M) {
+       if(M==1) return 1;
+       if(N==1) return M;
+      int si=2;
+      int ei=M-1;
+      while(si<=ei){
+        int mid=(si+ei)/2;
+        int pow=power(mid,N,M);
+        if(pow==1) return mid;
+        else if(pow==0) si=mid+1;
+        else ei=mid-1;
+      }
+      return -1;
+    }
+};
+
+```
+
+#### Complexity Analysis
+- Time Complexity
+The time complexity is O(log(M) * log(N)) due to the binary search from 2 to M-1 and the power function.
+- Space Complexity
+The space complexity is O(1) as it uses a constant amount of extra space.
  
  ![alt text](<005bs min max problems_231231_215058(35).jpg>) 
  
