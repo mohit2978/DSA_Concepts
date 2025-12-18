@@ -480,3 +480,232 @@ The space complexity is O(1) as it uses a constant amount of extra space.
  ![alt text](<005bs min max problems_231231_215058(55).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(56).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(57).jpg>)
+
+ # Q3 Agggresive cows
+
+## AGGRCOW - Aggressive cows
+
+**Problem Code:** AGGRCOW
+**Topics:** Binary Search
+
+Link--> https://www.spoj.com/problems/AGGRCOW/
+
+---
+
+### Problem Description
+
+Farmer John has built a new long barn, with $N$ ($2 \le N \le 100,000$) stalls. The stalls are located along a straight line at positions $x_1, \dots, x_N$ ($0 \le x_i \le 1,000,000,000$).
+
+His $C$ ($2 \le C \le N$) cows don't like this barn layout and become aggressive towards each other once put into a stall. To prevent the cows from hurting each other, FJ wants to assign the cows to the stalls, such that the minimum distance between any two of them is as large as possible. What is the largest minimum distance?
+
+### Input
+
+- **t**: the number of test cases, then $t$ test cases follow.
+- **Line 1**: Two space-separated integers: $N$ and $C$.
+- **Lines 2..N+1**: Line $i+1$ contains an integer stall location, $x_i$.
+
+### Output
+
+For each test case, output one integer: the largest minimum distance.
+
+---
+
+### Example
+
+**Input:**
+```text
+1
+5 3
+1
+2
+8
+4
+9
+```
+**Output:**
+
+```text 
+3
+```
+
+ ```cpp
+
+ int agressiveCows(){
+    int n,c;
+    cin>>n>>c;
+    int arr[n];
+    for(int i=0;i<n;i++){
+        cin>>arr[i];
+    }
+    sort(arr,arr+n);
+    int lo=0,hi=arr[n-1]-arr[0];
+    while(lo<=hi){
+        int mid=(lo+hi)/2;
+        int lastCowPlacedPos=arr[0];
+        int cowPlaced=1;
+        for(int i=1;i<n;i++){
+            if(arr[i]-lastCowPlacedPos>=mid){
+                cowPlaced++;
+                lastCowPlacedPos=arr[i];
+            }
+            if(cowPlaced==c) break;
+        }
+        if(c==cowPlaced) lo=mid+1;
+        else hi=mid-1;
+    }
+    return hi;
+}
+void solve(){
+    int tc;
+    cin>>tc;
+    for(int i=0;i<tc;i++){
+        cout<<agressiveCows()<<endl;
+    }
+}
+```
+
+Full code 
+
+```cpp
+#include<bits/stdc++.h>
+using namespace std;
+
+#define ff              first
+#define ss              second
+#define ll             long long
+#define lli 				long long int
+#define pb              push_back
+#define mp              make_pair
+#define pii             pair<int,int>
+#define vi              vector<int>
+#define mii             map<int,int>
+#define umii			unordered_map<int, int>
+#define pq_max          priority_queue<int>
+#define pq_min          priority_queue<int,vi,greater<int> >
+#define setbits(x)      __builtin_popcountll(x)
+#define zrobits(x)      __builtin_ctzll(x)
+#define mod             1000000007
+#define inf             1e18
+#define ps(x,y)         fixed<<setprecision(y)<<x
+#define mid(s,e)         (s+(e-s)/2)
+#define mk(arr,n,type)  type *arr=new type[n];
+#define w(t)            int t; cin>>t; while(t--)
+#define DEBUG(x) 		cout << '>' << #x << ':' << x << endl;
+#define REP(i,n) 		for(int i=0;i<(n);i++)
+#define FOR(i,a,b) 		for(int i=(a);i<=(b);i++)
+#define FORD(i,a,b) 	for(int i=(a);i>=(b);i--)
+
+void fio()
+{
+    ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
+    #ifndef ONLINE_JUDGE
+        freopen("input.txt", "r", stdin);
+        freopen("output.txt", "w", stdout);
+    #endif
+}
+int agressiveCows(){
+    int n,c;
+    cin>>n>>c;
+    int arr[n];
+    for(int i=0;i<n;i++){
+        cin>>arr[i];
+    }
+    sort(arr,arr+n);
+    int lo=0,hi=arr[n-1]-arr[0];
+    while(lo<=hi){
+        int mid=(lo+hi)/2;
+        int lastCowPlacedPos=arr[0];
+        int cowPlaced=1;
+        for(int i=1;i<n;i++){
+            if(arr[i]-lastCowPlacedPos>=mid){
+                cowPlaced++;
+                lastCowPlacedPos=arr[i];
+            }
+            if(cowPlaced==c) break;
+        }
+        if(c==cowPlaced) lo=mid+1;
+        else hi=mid-1;
+    }
+    return hi;
+}
+void solve(){
+    int tc;
+    cin>>tc;
+    for(int i=0;i<tc;i++){
+        cout<<agressiveCows()<<endl;
+    }
+}
+int main(int argc, char const *argv[]) {
+    fio();
+    solve();
+    return 0;
+}
+
+```
+
+# Q4 2485. Find the Pivot Integer
+
+**Difficulty:** Easy
+**Topics:** Math, Prefix Sum
+
+Link-->https://leetcode.com/problems/find-the-pivot-integer/description/
+
+---
+
+### Problem Description
+
+Given a positive integer `n`, find the pivot integer `x` such that:
+
+- The sum of all elements between `1` and `x` inclusively equals the sum of all elements between `x` and `n` inclusively.
+
+Return the pivot integer `x`. If no such integer exists, return `-1`. It is guaranteed that there will be at most one pivot index for the given input.
+
+---
+
+### Examples
+
+**Example 1:**
+
+**Input:** `n = 8`
+**Output:** `6`
+**Explanation:** `6` is the pivot integer since: `1 + 2 + 3 + 4 + 5 + 6 = 6 + 7 + 8 = 21`.
+
+**Example 2:**
+
+**Input:** `n = 1`
+**Output:** `1`
+**Explanation:** `1` is the pivot integer since: `1 = 1`.
+
+**Example 3:**
+
+**Input:** `n = 4`
+**Output:** `-1`
+**Explanation:** It can be proved that no such integer exist.
+
+---
+
+### Constraints
+
+- `1 <= n <= 1000`
+
+
+```cpp
+
+class Solution {
+    public int pivotInteger(int n) {
+        int s=(n*(n+1))/2;
+        int lo=1;
+        int hi=n;
+        while(lo<=hi){
+            int x=(lo+hi)/2;
+            int s1=(x*(x+1))/2;
+            int s2=s-s1+x;
+            if(s1==s2) return x;
+            else if(s1<s2) lo=x+1;
+            else hi=x-1;
+        }
+        return -1;
+        
+    }
+}
+```
