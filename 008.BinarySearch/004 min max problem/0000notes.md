@@ -1,4 +1,4 @@
-## Q1  Find the Smallest Divisor Given a Threshold
+# Q1  Find the Smallest Divisor Given a Threshold
 
 ## Problem Description
 
@@ -91,7 +91,7 @@ public:
     O(1), excluding the input array.
 
 
-    # Methods for Integer Ceiling Division $\left\lceil \frac{N}{D} \right\rceil$
+## Methods for Integer Ceiling Division $\left\lceil \frac{N}{D} \right\rceil$
 
 Here are two primary methods for calculating the ceiling of a division between two positive integers ($N$ and $D$) in C++.
 
@@ -195,9 +195,126 @@ int main() {
     return 0;
 }
 ```
+# Q2  Minimum days to make M bouquets
+
+## Problem Statement
+You are given 'N' roses and you are also given an array 'arr' where 'arr[i]' denotes that the 'ith' rose will bloom on the 'arr[i]th' day. You can only pick already bloomed roses that are adjacent to make a bouquet. Exactly 'k' adjacent bloomed roses are required to make a single bouquet. 
+
+Find the minimum number of days required to make at least 'm' bouquets, each containing 'k' roses. Return -1 if it is not possible.
+
+---
+
+### Examples
+
+**Example 1:**
+- **Input:** `n = 8, arr = [7, 7, 7, 7, 13, 11, 12, 7], m = 2, k = 3`
+- **Output:** `12`
+- **Explanation:** - On the 12th day, the first 4 flowers and the last 3 flowers will have bloomed. 
+    - Array status: `[7, 7, 7, 7, _, 11, 12, 7]` (where numbers ≤ 12 are bloomed).
+    - We can make one bouquet with the first 3 flowers and another with the last 3 flowers.
+
+**Example 2:**
+- **Input:** `n = 5, arr = [1, 10, 3, 10, 2], m = 3, k = 2`
+- **Output:** `-1`
+- **Explanation:** - To make 3 bouquets of 2 flowers each, we need at least 6 flowers (3 * 2 = 6). 
+    - Since we only have 5 flowers, it is impossible.
+
+**Example 3:**
+- **Input:** `n = 5, arr = [1, 10, 3, 10, 2], m = 3, k = 1`
+- **Output:** `3`
+- **Explanation:**
+    - On day 3, flowers at indices 0, 2, and 4 have bloomed. 
+    - Each can form a bouquet since `k=1`. Total = 3 bouquets.
+
+---
+
+### Constraints
+- `1 <= n <= 10^5`
+- `1 <= arr[i] <= 10^9`
+- `1 <= m <= 10^6`
+- `1 <= k <= n`
+
+---
+ ### Code
+
+ ```cpp
+class Solution {
+  bool isItPossible(vector<int>& nums,int k, int m,int day){
+    int cnt=0;
+    for(int n:nums){
+      if(n<=day){ 
+        cnt++;
+        
+      }else{
+        if(cnt>=k){
+          m-=(cnt/k);
+        }
+        cnt=0;
+      }
+    } 
+
+    if(cnt>=k){
+        m-=(cnt/k);
+    }
+    return (m<=0);
+  }
+public:
+int roseGarden(int n,vector<int> nums, int k, int m) {
+  long long prod=k*m;
+  if(n<prod) return -1;
+  auto max_it=max_element(nums.begin(),nums.end());
+  int max_el=*max_it;
+  auto min_it=min_element(nums.begin(),nums.end());
+  int min_el=*min_it;
+  int si=min_el;
+  int ei=max_el;
+  while(si<=ei){
+  int mid=(si+ei)/2;
+  if(isItPossible(nums,k,m,mid)){
+    ei=mid-1;
+    }else{
+      si=mid+1;
+    }
+  }
+
+    return (ei+1);   
+  }
+};
+ ```
+
+
 ![alt text](<005bs min max problems_231231_215058.jpg>)
 
- ![alt text](<005bs min max problems_231231_215058(1).jpg>) ![alt text](<005bs min max problems_231231_215058(2).jpg>) ![alt text](<005bs min max problems_231231_215058(3).jpg>) ![alt text](<005bs min max problems_231231_215058(4).jpg>) ![alt text](<005bs min max problems_231231_215058(5).jpg>) ![alt text](<005bs min max problems_231231_215058(6).jpg>) ![alt text](<005bs min max problems_231231_215058(7).jpg>) ![alt text](<005bs min max problems_231231_215058(8).jpg>) ![alt text](<005bs min max problems_231231_215058(9).jpg>) ![alt text](<005bs min max problems_231231_215058(10).jpg>) ![alt text](<005bs min max problems_231231_215058(11).jpg>) ![alt text](<005bs min max problems_231231_215058(12).jpg>) ![alt text](<005bs min max problems_231231_215058(13).jpg>) ![alt text](<005bs min max problems_231231_215058(14).jpg>) ![alt text](<005bs min max problems_231231_215058(15).jpg>) ![alt text](<005bs min max problems_231231_215058(16).jpg>) ![alt text](<005bs min max problems_231231_215058(17).jpg>) ![alt text](<005bs min max problems_231231_215058(18).jpg>) ![alt text](<005bs min max problems_231231_215058(19).jpg>) ![alt text](<005bs min max problems_231231_215058(20).jpg>) ![alt text](<005bs min max problems_231231_215058(21).jpg>) ![alt text](<005bs min max problems_231231_215058(22).jpg>) ![alt text](<005bs min max problems_231231_215058(23).jpg>) ![alt text](<005bs min max problems_231231_215058(24).jpg>) ![alt text](<005bs min max problems_231231_215058(25).jpg>) ![alt text](<005bs min max problems_231231_215058(26).jpg>) ![alt text](<005bs min max problems_231231_215058(27).jpg>) ![alt text](<005bs min max problems_231231_215058(28).jpg>) ![alt text](<005bs min max problems_231231_215058(29).jpg>) ![alt text](<005bs min max problems_231231_215058(30).jpg>)
+ ![alt text](<005bs min max problems_231231_215058(1).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(2).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(3).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(4).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(5).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(6).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(7).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(8).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(9).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(10).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(11).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(12).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(13).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(14).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(15).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(16).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(17).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(18).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(19).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(20).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(21).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(22).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(23).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(24).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(25).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(26).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(27).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(28).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(29).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(30).jpg>)
  
  ```cpp
  
@@ -341,4 +458,25 @@ The space complexity is O(1) as it uses a constant amount of extra space.
  
 
 
- ![alt text](<005bs min max problems_231231_215058(36).jpg>) ![alt text](<005bs min max problems_231231_215058(37).jpg>) ![alt text](<005bs min max problems_231231_215058(38).jpg>) ![alt text](<005bs min max problems_231231_215058(39).jpg>) ![alt text](<005bs min max problems_231231_215058(40).jpg>) ![alt text](<005bs min max problems_231231_215058(41).jpg>) ![alt text](<005bs min max problems_231231_215058(42).jpg>) ![alt text](<005bs min max problems_231231_215058(43).jpg>) ![alt text](<005bs min max problems_231231_215058(44).jpg>) ![alt text](<005bs min max problems_231231_215058(45).jpg>) ![alt text](<005bs min max problems_231231_215058(46).jpg>) ![alt text](<005bs min max problems_231231_215058(47).jpg>) ![alt text](<005bs min max problems_231231_215058(48).jpg>) ![alt text](<005bs min max problems_231231_215058(49).jpg>) ![alt text](<005bs min max problems_231231_215058(50).jpg>) ![alt text](<005bs min max problems_231231_215058(51).jpg>) ![alt text](<005bs min max problems_231231_215058(52).jpg>) ![alt text](<005bs min max problems_231231_215058(53).jpg>) ![alt text](<005bs min max problems_231231_215058(54).jpg>) ![alt text](<005bs min max problems_231231_215058(55).jpg>) ![alt text](<005bs min max problems_231231_215058(56).jpg>) ![alt text](<005bs min max problems_231231_215058(57).jpg>)
+ ![alt text](<005bs min max problems_231231_215058(36).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(37).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(38).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(39).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(40).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(41).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(42).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(43).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(44).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(45).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(46).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(47).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(48).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(49).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(50).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(51).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(52).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(53).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(54).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(55).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(56).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(57).jpg>)
