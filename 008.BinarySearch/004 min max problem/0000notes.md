@@ -643,6 +643,34 @@ int main(int argc, char const *argv[]) {
 
 ```
 
+### Code partial 
+
+```cpp
+class Solution {
+public:
+    int aggressiveCows(vector<int> &arr, int k) {
+        int n=arr.size();
+        sort(arr.begin(),arr.end());
+    int lo=0,hi=arr[n-1]-arr[0];
+    while(lo<=hi){
+        int mid=(lo+hi)/2;
+        int lastCowPlacedPos=arr[0];
+        int cowPlaced=1;
+        for(int i=1;i<n;i++){
+            if(arr[i]-lastCowPlacedPos>=mid){
+                cowPlaced++;
+                lastCowPlacedPos=arr[i];
+            }
+            if(cowPlaced==k) break;
+        }
+        if(k==cowPlaced) lo=mid+1;
+        else hi=mid-1;
+    }
+    return hi;
+    }
+};
+```
+
 # Q4 2485. Find the Pivot Integer
 
 **Difficulty:** Easy
