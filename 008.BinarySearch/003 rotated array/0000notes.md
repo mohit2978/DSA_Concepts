@@ -132,6 +132,80 @@ public:
     }
 };
 ```
+
+## Q3 Find how many time array is rotated
+
+Given an integer array nums of size n, sorted in ascending order with distinct values. The array has been right rotated an unknown number of times, between 0 and n-1 (including). Determine the number of rotations performed on the array.
+
+---
+
+Example 1
+
+Input : nums = [4, 5, 6, 7, 0, 1, 2, 3]
+
+Output: 4
+
+Explanation: The original array should be [0, 1, 2, 3, 4, 5, 6, 7]. So, we can notice that the array has been rotated 4 times.
+
+---
+
+Example 2
+
+Input: nums = [3, 4, 5, 1, 2]
+
+Output: 3
+
+Explanation: The original array should be [1, 2, 3, 4, 5]. So, we can notice that the array has been rotated 3 times.
+
+---
+
+Example 3
+
+Input: nums = [4, 5, 1, 2]
+
+Output:
+
+2
+
+----
+
+Constraints
+
+ - n == nums.length
+ - 1 <= n <= $10^4$
+ - -$10^4$ <= nums[i] <= $10^4$
+ - All the integers of nums are unique.
+
+
+```cpp
+class Solution {
+public:
+    int findKRotation(vector<int> &arr)  {
+        int si=0;
+      int ei=arr.size()-1;
+       int ans = INT_MAX;  
+       int index=-1;
+      while(si<=ei){
+        int mid=(si+ei)/2;
+        if(arr[mid]>=arr[si]){
+            if(arr[si]<ans){
+                ans=arr[si];
+                index=si;
+            }
+            si=mid+1;
+        }else{
+            if(arr[mid]<ans){
+                ans=arr[mid];
+                index=mid;
+            }
+            ei=mid-1;
+        }
+      }
+      return index;
+    }
+};
+```
+
 ![alt text](<003rotated array_240105_131613.jpg>)
  ![alt text](<003rotated array_240105_131613(1).jpg>) ![alt text](<003rotated array_240105_131613(2).jpg>) ![alt text](<003rotated array_240105_131613(3).jpg>) ![alt text](<003rotated array_240105_131613(4).jpg>) ![alt text](<003rotated array_240105_131613(5).jpg>) ![alt text](<003rotated array_240105_131613(6).jpg>) ![alt text](<003rotated array_240105_131613(7).jpg>) ![alt text](<003rotated array_240105_131613(8).jpg>)
 
