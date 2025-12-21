@@ -737,3 +737,71 @@ class Solution {
     }
 }
 ```
+
+# Q5 book allocation problem 
+
+
+Given an array nums of n integers, where nums[i] represents the number of pages in the i-th book, and an integer m representing the number of students, allocate all the books to the students so that each student gets at least one book, each book is allocated to only one student, and the allocation is contiguous.
+
+
+
+Allocate the books to m students in such a way that the maximum number of pages assigned to a student is minimized. If the allocation of books is not possible, return -1.
+
+
+Example 1
+
+Input: nums = [12, 34, 67, 90], m=2
+
+Output: 113
+
+Explanation: The allocation of books will be 12, 34, 67 | 90. One student will get the first 3 books and the other will get the last one.
+
+Example 2
+
+Input: nums = [25, 46, 28, 49, 24], m=4
+
+Output: 71
+
+Explanation: The allocation of books will be 25, 46 | 28 | 49 | 24.
+
+
+```cpp
+
+class Solution {
+    bool booksallocatedTomStudents(vector<int> &arr, int m,long long k){
+        int student=1;
+        int i=0;
+        long long sum=0;
+        while(i<arr.size()){
+            sum+=arr[i];
+            if(sum>k) {
+                student++;
+                sum=arr[i];
+            }
+            i++;
+        }
+        return student<=m;
+    } 
+public:
+    int findPages(vector<int> &arr, int m)  {
+        long long si=*max_element(arr.begin(),arr.end());
+        //si is max element as if we take min element it will not satisfy to give that min 
+        //element to all m students
+        long long ei=accumulate(arr.begin(),arr.end(),0);
+        if(m==1) return ei;
+        if (m > arr.size()) return -1;//edge case
+        while(si<=ei){
+            long long mid=(si+ei)/2;
+            if(booksallocatedTomStudents(arr,m,mid)) {
+                ei=mid-1;
+            }
+            else si=mid+1;
+        }
+        return si;
+    }
+};
+```
+
+If we able to fill for less than m students we need less values
+
+![alt text](Scanned_20251221-1646.jpg)

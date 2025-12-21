@@ -211,6 +211,42 @@ public:
 
 ![alt text](<003rotated array_240105_131613(9).jpg>) 
 
-![alt text](<003rotated array_240105_131613(10).jpg>) ![alt text](<003rotated array_240105_131613(11).jpg>) ![alt text](<003rotated array_240105_131613(12).jpg>) ![alt text](<003rotated array_240105_131613(13).jpg>) ![alt text](<003rotated array_240105_131613(14).jpg>) ![alt text](<003rotated array_240105_131613(15).jpg>) ![alt text](<003rotated array_240105_131613(16).jpg>) ![alt text](<003rotated array_240105_131613(17).jpg>) ![alt text](<003rotated array_240105_131613(18).jpg>) ![alt text](<003rotated array_240105_131613(19).jpg>) ![alt text](<003rotated array_240105_131613(20).jpg>) ![alt text](<003rotated array_240105_131613(21).jpg>)
+![alt text](<003rotated array_240105_131613(10).jpg>) ![alt text](<003rotated array_240105_131613(11).jpg>) ![alt text](<003rotated array_240105_131613(12).jpg>) ![alt text](<003rotated array_240105_131613(13).jpg>) ![alt text](<003rotated array_240105_131613(14).jpg>) ![alt text](<003rotated array_240105_131613(15).jpg>) ![alt text](<003rotated array_240105_131613(16).jpg>) ![alt text](<003rotated array_240105_131613(17).jpg>) ![alt text](<003rotated array_240105_131613(18).jpg>) 
+![alt text](<003rotated array_240105_131613(19).jpg>)
+
+```java
+class Solution {
+    public int peakIndexInMountainArray(int[] arr) {
+         int n=arr.length;
+        int lo=0;
+        int hi=n-1;
+        while(lo<hi){
+            int mid=(lo+hi)/2;
+
+            if(mid>0&&mid<n){
+                if(arr[mid]>arr[mid-1]&& arr[mid]>arr[mid+1]) return mid;
+                else if(arr[mid]<arr[mid-1] && arr[mid]>arr[mid+1]) hi=mid-1; 
+                else lo=mid+1;
+            }
+            else   if(mid==0){
+                return arr[0]>arr[1]?0:1;
+            }
+            else if(mid==n-2){
+                return arr[n-1]>arr[n-2]?n-1:n-2;
+            }
+   
+        }
+        return lo;
+      }
+}
+```
+
+Complexity Analysis: 
+Time Complexity:O(logN), N is size of the given array. As binary search is being used to find the minimum.
+
+Space Complexity: As no additional space is used, so the Space Complexity is O(1).
+
+ ![alt text](<003rotated array_240105_131613(20).jpg>) 
+![alt text](<003rotated array_240105_131613(21).jpg>)
 
 
