@@ -22,7 +22,12 @@ Input: matrix=[ [1, 3, 8], [2, 3, 4], [1, 2, 5] ]
 Output: 3
 
 Explanation: If we find the linear sorted array, the array becomes 1 1 2 2 3 3 4 5 8. So, median = 3
-
+![alt text](Scanned_20251221-1443-01.jpg)
+ ![alt text](Scanned_20251221-1443-02.jpg) 
+ ![alt text](Scanned_20251221-1443-03.jpg) 
+ ![alt text](Scanned_20251221-1443-04.jpg) 
+ ![alt text](Scanned_20251221-1443-05.jpg) 
+![alt text](Scanned_20251221-1443-06.jpg) 
 ### Code
 
 
