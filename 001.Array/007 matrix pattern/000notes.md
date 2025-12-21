@@ -1,6 +1,6 @@
 # Notes
 
-## Spiral Matrix
+## Q1 Spiral Matrix
 
 ![alt text](image.png)
 
@@ -47,7 +47,7 @@ public:
 };
 
 ```
-## Diagonal traversal
+## Q2 Diagonal traversal
 
 ![alt text](image-1.png)
 
@@ -96,7 +96,7 @@ public:
 };
 
 ```
-## Roatate matrix by 90 degreee
+## Q3 Roatate matrix by 90 degreee
 
 ![img.png](img.png)
 

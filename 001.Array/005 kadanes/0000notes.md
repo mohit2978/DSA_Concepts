@@ -144,3 +144,63 @@ class Solution {
     }
 }
 ```
+Circular sum means after the array ends at last index we go to first index
+
+sum==gmin satifies in case of all negatives and in that we return gmax i.e. max of all negatives as in this case if we do max(gmax,sum-gmin) =>(sum-gmin ) will give zero ,gmax will be max negative number so max(max negtive number ,0)=0 so we return only gmax here
+
+max(gmax-gmin)
+
+
+gmax: This is the best sum found in a straight line (Scenario A). It assumes the best part of the array is contiguous and doesn't need to wrap around.
+
+sum - gmin: This is the best sum found by wrapping around (Scenario B). It assumes the "best" parts are at the edges and the "worst" part is in the middle.
+
+
+### Circular Maximum Subarray Sum: Logic Breakdown
+
+The logic behind the return statement `return sum == gmin ? gmax : Math.max(gmax, sum - gmin);` handles the two primary ways a maximum sum can exist in a circular array.
+
+---
+
+### 1. The Two Scenarios
+In a circular array, the maximum sum subarray can appear in two forms:
+
+* **Scenario A: The "Normal" Case (Non-circular)** The maximum sum is a standard contiguous subarray located somewhere in the middle of the array. This is exactly what **Kadane’s Algorithm** (represented by your `gmax`) calculates.
+* **Scenario B: The "Circular" Case (Wrapping around)** The maximum sum starts near the end of the array and wraps around to the beginning.
+
+
+
+---
+
+### 2. The Logic: `sum - gmin`
+To calculate the circular sum (Scenario B), we use a subtraction method:
+If the maximum subarray wraps around the ends, then the elements **not** included in that maximum must form a contiguous **minimum subarray** sitting in the middle.
+
+**The Relationship:** $$\text{Total Sum} = \text{Maximum Subarray (Circular)} + \text{Minimum Subarray (Middle)}$$
+
+**The Solution:** $$\text{Maximum Subarray (Circular)} = \text{Total Sum} - \text{Minimum Subarray (Middle)}$$
+
+This is why we calculate `gmin` (the global minimum subarray) and then evaluate `sum - gmin`.
+
+---
+
+### 3. The Edge Case: `sum == gmin`
+This check handles the situation where **all numbers in the array are negative** (e.g., `[-3, -2, -1]`).
+
+**If all numbers are negative:**
+1.  `gmax` would be `-1` (the largest single element).
+2.  `sum` would be `-6`.
+3.  `gmin` would also be `-6` (the entire array is the minimum subarray).
+4.  **The Problem:** If you strictly used the circular formula, you would get `sum - gmin` $\rightarrow$ `-6 - (-6) = 0`.
+
+Since a subarray must contain at least one element, `0` is an incorrect result for an all-negative array. The condition `sum == gmin` detects that the minimum subarray is the entire array. In this case, we ignore the circular logic and return `gmax`.
+
+---
+
+### 4. Summary Table
+
+| Component | Logic |
+| :--- | :--- |
+| **`sum == gmin`** | If total sum equals the minimum subarray, all elements are negative. |
+| **`? gmax`** | If true, return the largest single negative number. |
+| **`: Math.max(gmax, sum - gmin)`** | Otherwise, compare the **Normal Case** vs. the **Circular Case**. |
