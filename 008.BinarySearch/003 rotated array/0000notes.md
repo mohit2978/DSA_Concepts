@@ -231,7 +231,7 @@ class Solution {
             else   if(mid==0){
                 return arr[0]>arr[1]?0:1;
             }
-            else if(mid==n-2){
+            else if(mid==n-2){//this is not required as covered by mid>0 &&mid<n 1st if iske bina bhi submit hora
                 return arr[n-1]>arr[n-2]?n-1:n-2;
             }
    
