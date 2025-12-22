@@ -1,0 +1,8 @@
+# Notes
+
+# Q1 count inversion
+
+![alt text](<002count inversions and bs_231231_172741(1).jpg>) ![alt text](<002count inversions and bs_231231_172741(2).jpg>) ![alt text](<002count inversions and bs_231231_172741(3).jpg>) ![alt text](<002count inversions and bs_231231_172741(4).jpg>) ![alt text](<002count inversions and bs_231231_172741(5).jpg>)
+
+
+![alt text](<002count inversions and bs_231231_172741(6).jpg>) ![alt text](<002count inversions and bs_231231_172741(7).jpg>) ![alt text](<002count inversions and bs_231231_172741(8).jpg>) ![alt text](<002count inversions and bs_231231_172741(9).jpg>) ![alt text](<002count inversions and bs_231231_172741(10).jpg>) ![alt text](<002count inversions and bs_231231_172741(11).jpg>) ![alt text](<002count inversions and bs_231231_172741(12).jpg>) ![alt text](<002count inversions and bs_231231_172741(13).jpg>) ![alt text](<002count inversions and bs_231231_172741(14).jpg>) ![alt text](<002count inversions and bs_231231_172741(15).jpg>) ![alt text](<002count inversions and bs_231231_172741(16).jpg>) ![alt text](<002count inversions and bs_231231_172741(17).jpg>) ![alt text](<002count inversions and bs_231231_172741(18).jpg>) ![alt text](<002count inversions and bs_231231_172741(19).jpg>) ![alt text](<002count inversions and bs_231231_172741(20).jpg>) ![alt text](<002count inversions and bs_231231_172741(21).jpg>) ![alt text](<002count inversions and bs_231231_172741(22).jpg>) 
