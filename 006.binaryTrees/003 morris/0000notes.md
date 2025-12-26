@@ -1,3 +1,10 @@
+# Notes
+![alt text](003_morris.jpg)
+![alt text](003_morris(1).jpg) ![alt text](003_morris(2).jpg) ![alt text](003_morris(3).jpg)
+![alt text](003_morris(4).jpg) ![alt text](003_morris(5).jpg) ![alt text](003_morris(6).jpg) ![alt text](003_morris(7).jpg) ![alt text](003_morris(8).jpg) ![alt text](003_morris(9).jpg) ![alt text](003_morris(10).jpg) ![alt text](003_morris(11).jpg) ![alt text](003_morris(12).jpg) ![alt text](003_morris(13).jpg) ![alt text](003_morris(14).jpg) ![alt text](003_morris(15).jpg) ![alt text](003_morris(16).jpg) ![alt text](003_morris(17).jpg) ![alt text](003_morris(18).jpg) ![alt text](003_morris(19).jpg) ![alt text](003_morris(20).jpg) ![alt text](003_morris(21).jpg) ![alt text](003_morris(22).jpg) ![alt text](003_morris(23).jpg) ![alt text](003_morris(24).jpg) ![alt text](003_morris(25).jpg) ![alt text](003_morris(26).jpg) ![alt text](003_morris(27).jpg) ![alt text](003_morris(28).jpg) ![alt text](003_morris(29).jpg) 
+
+### Inorder morris
+```cpp
 /**
  * Definition for a binary tree node.
  * struct TreeNode {
@@ -83,3 +90,5 @@ int main() {
 
     return 0;
 }
+
+```

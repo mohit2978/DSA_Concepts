@@ -1,3 +1,7 @@
+# Notes
+
+```cpp
+
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -55,3 +59,6 @@ int main() {
     print(vec);
     return 0;
 }
+```
+![alt text](001_traversals_easy_med.jpg)
+![alt text](001_traversals_easy_med(1).jpg) ![alt text](001_traversals_easy_med(2).jpg) ![alt text](001_traversals_easy_med(3).jpg) ![alt text](001_traversals_easy_med(4).jpg) ![alt text](001_traversals_easy_med(5).jpg) ![alt text](001_traversals_easy_med(6).jpg) ![alt text](001_traversals_easy_med(7).jpg) ![alt text](001_traversals_easy_med(8).jpg) ![alt text](001_traversals_easy_med(9).jpg) ![alt text](001_traversals_easy_med(10).jpg) ![alt text](001_traversals_easy_med(11).jpg) ![alt text](001_traversals_easy_med(12).jpg) ![alt text](001_traversals_easy_med(13).jpg) ![alt text](001_traversals_easy_med(14).jpg) ![alt text](001_traversals_easy_med(15).jpg) ![alt text](001_traversals_easy_med(16).jpg) ![alt text](001_traversals_easy_med(17).jpg) ![alt text](001_traversals_easy_med(18).jpg) ![alt text](001_traversals_easy_med(19).jpg) 
