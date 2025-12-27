@@ -1,0 +1,17 @@
+# Notes
+![alt text](<010flatten bt and bt to dll_240401_000940.jpg>)
+![alt text](<010flatten bt and bt to dll_240401_000940(1).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(2).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(3).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(4).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(5).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(6).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(7).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(8).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(9).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(10).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(11).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(12).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(13).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(14).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(15).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(16).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(17).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(18).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(19).jpg>)
+
+
+
+![alt text](<010flatten bt and bt to dll_240401_000940(20).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(21).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(22).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(23).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(24).jpg>) ![alt text](<010flatten bt and bt to dll_240401_000940(25).jpg>)
+
+
+
+![alt text](<010flatten bt and bt to dll_240401_000940(26).jpg>) 
+
+
+
+
+
+
