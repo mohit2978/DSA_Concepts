@@ -5,3 +5,7 @@
 
 ![alt text](<007 LIS_231121_163402(7).jpg>) ![alt text](<007 LIS_231121_163402(8).jpg>) ![alt text](<007 LIS_231121_163402(9).jpg>) ![alt text](<007 LIS_231121_163402(10).jpg>) ![alt text](<007 LIS_231121_163402(11).jpg>) ![alt text](<007 LIS_231121_163402(12).jpg>) ![alt text](<007 LIS_231121_163402(13).jpg>) ![alt text](<007 LIS_231121_163402(14).jpg>) ![alt text](<007 LIS_231121_163402(15).jpg>)
 
+
+### All 4 variations
+![alt text](014summary_240415_110023.jpg)
+![alt text](014summary_240415_110023(1).jpg) ![alt text](014summary_240415_110023(2).jpg)
