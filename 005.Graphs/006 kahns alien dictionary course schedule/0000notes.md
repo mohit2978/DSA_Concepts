@@ -1,0 +1,51 @@
+# Notes
+
+![alt text](<005kahns aliendisctionary courseschedule_240307_120321.jpg>)
+
+
+ ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(1).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(2).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(3).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(4).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(5).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(6).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(7).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(8).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(9).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(10).jpg>)
+
+
+
+
+![alt text](<005kahns aliendisctionary courseschedule_240307_120321(11).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(12).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(13).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(14).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(15).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(16).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(17).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(18).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(19).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(20).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(21).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(22).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(23).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(24).jpg>) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

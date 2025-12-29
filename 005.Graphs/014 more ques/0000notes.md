@@ -1,0 +1,50 @@
+# Notes
+
+
+![alt text](013ques_240113_014640.jpg)
+
+![alt text](013ques_240113_014640(1).jpg) ![alt text](013ques_240113_014640(2).jpg) ![alt text](013ques_240113_014640(3).jpg) ![alt text](013ques_240113_014640(4).jpg) ![alt text](013ques_240113_014640(5).jpg)
+
+
+
+
+![alt text](013ques_240113_014640(6).jpg) ![alt text](013ques_240113_014640(7).jpg) ![alt text](013ques_240113_014640(8).jpg) ![alt text](013ques_240113_014640(9).jpg) ![alt text](013ques_240113_014640(10).jpg) ![alt text](013ques_240113_014640(11).jpg) ![alt text](013ques_240113_014640(12).jpg) ![alt text](013ques_240113_014640(13).jpg) ![alt text](013ques_240113_014640(14).jpg) ![alt text](013ques_240113_014640(15).jpg) ![alt text](013ques_240113_014640(16).jpg) ![alt text](013ques_240113_014640(17).jpg) ![alt text](013ques_240113_014640(18).jpg) ![alt text](013ques_240113_014640(19).jpg) ![alt text](013ques_240113_014640(20).jpg) ![alt text](013ques_240113_014640(21).jpg) ![alt text](013ques_240113_014640(22).jpg) ![alt text](013ques_240113_014640(23).jpg) ![alt text](013ques_240113_014640(24).jpg) ![alt text](013ques_240113_014640(25).jpg) ![alt text](013ques_240113_014640(26).jpg) ![alt text](013ques_240113_014640(27).jpg) ![alt text](013ques_240113_014640(28).jpg) ![alt text](013ques_240113_014640(29).jpg) ![alt text](013ques_240113_014640(30).jpg) ![alt text](013ques_240113_014640(31).jpg) ![alt text](013ques_240113_014640(32).jpg) ![alt text](013ques_240113_014640(33).jpg) ![alt text](013ques_240113_014640(34).jpg) ![alt text](013ques_240113_014640(35).jpg) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

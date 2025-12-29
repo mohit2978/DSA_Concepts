@@ -1,0 +1,54 @@
+# Notes
+
+![alt text](<002matrix graph ques_240423_191737.jpg>)
+
+ ![alt text](<002matrix graph ques_240423_191737(1).jpg>) ![alt text](<002matrix graph ques_240423_191737(2).jpg>) ![alt text](<002matrix graph ques_240423_191737(3).jpg>) ![alt text](<002matrix graph ques_240423_191737(4).jpg>) ![alt text](<002matrix graph ques_240423_191737(5).jpg>) ![alt text](<002matrix graph ques_240423_191737(6).jpg>) ![alt text](<002matrix graph ques_240423_191737(7).jpg>) ![alt text](<002matrix graph ques_240423_191737(8).jpg>) ![alt text](<002matrix graph ques_240423_191737(9).jpg>) ![alt text](<002matrix graph ques_240423_191737(10).jpg>) ![alt text](<002matrix graph ques_240423_191737(11).jpg>) ![alt text](<002matrix graph ques_240423_191737(12).jpg>) ![alt text](<002matrix graph ques_240423_191737(13).jpg>) ![alt text](<002matrix graph ques_240423_191737(14).jpg>) ![alt text](<002matrix graph ques_240423_191737(15).jpg>) ![alt text](<002matrix graph ques_240423_191737(16).jpg>) ![alt text](<002matrix graph ques_240423_191737(17).jpg>) ![alt text](<002matrix graph ques_240423_191737(18).jpg>) ![alt text](<002matrix graph ques_240423_191737(19).jpg>) ![alt text](<002matrix graph ques_240423_191737(20).jpg>) ![alt text](<002matrix graph ques_240423_191737(21).jpg>) ![alt text](<002matrix graph ques_240423_191737(22).jpg>) ![alt text](<002matrix graph ques_240423_191737(23).jpg>) ![alt text](<002matrix graph ques_240423_191737(24).jpg>) ![alt text](<002matrix graph ques_240423_191737(25).jpg>) ![alt text](<002matrix graph ques_240423_191737(26).jpg>) ![alt text](<002matrix graph ques_240423_191737(27).jpg>) ![alt text](<002matrix graph ques_240423_191737(28).jpg>) ![alt text](<002matrix graph ques_240423_191737(29).jpg>) ![alt text](<002matrix graph ques_240423_191737(30).jpg>) ![alt text](<002matrix graph ques_240423_191737(31).jpg>) ![alt text](<002matrix graph ques_240423_191737(32).jpg>) ![alt text](<002matrix graph ques_240423_191737(33).jpg>) ![alt text](<002matrix graph ques_240423_191737(34).jpg>) ![alt text](<002matrix graph ques_240423_191737(35).jpg>) ![alt text](<002matrix graph ques_240423_191737(36).jpg>) ![alt text](<002matrix graph ques_240423_191737(37).jpg>) ![alt text](<002matrix graph ques_240423_191737(38).jpg>) ![alt text](<002matrix graph ques_240423_191737(39).jpg>) ![alt text](<002matrix graph ques_240423_191737(40).jpg>) ![alt text](<002matrix graph ques_240423_191737(41).jpg>) ![alt text](<002matrix graph ques_240423_191737(42).jpg>)
+
+
+
+
+
+
+![alt text](<002matrix graph ques_240423_191737(43).jpg>) ![alt text](<002matrix graph ques_240423_191737(44).jpg>) ![alt text](<002matrix graph ques_240423_191737(45).jpg>) ![alt text](<002matrix graph ques_240423_191737(46).jpg>) ![alt text](<002matrix graph ques_240423_191737(47).jpg>)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
