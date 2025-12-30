@@ -4,12 +4,11 @@
 
 
 
+![alt text](<012sliding puzzle k similar strings_240307_120605.jpg>)
 
 
 
-
-
-
+![alt text](<012sliding puzzle k similar strings_240307_120605(1).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(2).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(3).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(4).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(5).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(6).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(7).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(8).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(9).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(10).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(11).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(12).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(13).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(14).jpg>) ![alt text](<012sliding puzzle k similar strings_240307_120605(15).jpg>) 
 
 
 

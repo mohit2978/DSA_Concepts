@@ -7,10 +7,10 @@
 
 
 
+![alt text](<011basics easy ques_240113_014544.jpg>)
 
 
-
-
+![alt text](<011basics easy ques_240113_014544(1).jpg>) ![alt text](<011basics easy ques_240113_014544(2).jpg>) ![alt text](<011basics easy ques_240113_014544(3).jpg>) ![alt text](<011basics easy ques_240113_014544(4).jpg>) ![alt text](<011basics easy ques_240113_014544(5).jpg>) ![alt text](<011basics easy ques_240113_014544(6).jpg>) ![alt text](<011basics easy ques_240113_014544(7).jpg>) ![alt text](<011basics easy ques_240113_014544(8).jpg>) ![alt text](<011basics easy ques_240113_014544(9).jpg>) ![alt text](<011basics easy ques_240113_014544(10).jpg>) ![alt text](<011basics easy ques_240113_014544(11).jpg>) ![alt text](<011basics easy ques_240113_014544(12).jpg>) ![alt text](<011basics easy ques_240113_014544(13).jpg>) ![alt text](<011basics easy ques_240113_014544(14).jpg>) ![alt text](<011basics easy ques_240113_014544(15).jpg>) ![alt text](<011basics easy ques_240113_014544(16).jpg>) ![alt text](<011basics easy ques_240113_014544(17).jpg>) ![alt text](<011basics easy ques_240113_014544(18).jpg>) ![alt text](<011basics easy ques_240113_014544(19).jpg>) ![alt text](<011basics easy ques_240113_014544(20).jpg>) ![alt text](<011basics easy ques_240113_014544(21).jpg>) ![alt text](<011basics easy ques_240113_014544(22).jpg>)
 
 
 
