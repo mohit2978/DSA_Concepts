@@ -1,0 +1,12 @@
+# Notes
+
+![alt text](<005 Comparator and comparable_240516_030950.jpg>)
+
+![alt text](<005 Comparator and comparable_240516_030950(1).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(2).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(3).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(4).jpg>) 
+
+
+
+![alt text](<005 Comparator and comparable_240516_030950(5).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(6).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(7).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(8).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(9).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(10).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(11).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(12).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(13).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(14).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(15).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(16).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(17).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(18).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(19).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(20).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(21).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(22).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(23).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(24).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(25).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(26).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(27).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(28).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(29).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(30).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(31).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(32).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(33).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(34).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(35).jpg>) ![alt text](<005 Comparator and comparable_240516_030950(36).jpg>) 
+
+
+
