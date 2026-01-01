@@ -95,6 +95,45 @@ class Solution {
 
 ![alt text](Scanned_20260101-2134.jpg)
 
+### LCS of 3 strings
+
+Link--> https://www.geeksforgeeks.org/problems/lcs-of-three-strings0028/1
+
+```cpp
+class Solution {
+  public:
+    int lcsOf3(string& s1, string& s2, string& s3) {
+        int n = s1.size();
+        int m = s2.size();
+        int o = s3.size();
+
+        // Create a 3D DP table initialized to 0
+        // Size: (n+1) x (m+1) x (o+1)
+        vector<vector<vector<int>>> dp(n + 1, vector<vector<int>>(m + 1, vector<int>(o + 1, 0)));
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                for (int k = 1; k <= o; k++) {
+                    
+                    if (s1[i-1] == s2[j-1] && s2[j-1] == s3[k-1]) {
+                        dp[i][j][k] = 1 + dp[i-1][j-1][k-1];
+                    } else {
+                        // Take max of moving back in any one of the 3 directions
+                        dp[i][j][k] = max({dp[i-1][j][k], 
+                                           dp[i][j-1][k], 
+                                           dp[i][j][k-1]});
+                    }
+                }
+            }
+        }
+        return dp[n][m][o];
+        
+    }
+};
+
+
+```
+
 ![alt text](<004 dp on string_231121_163402(8).jpg>) ![alt text](<004 dp on string_231121_163402(9).jpg>) ![alt text](<004 dp on string_231121_163402(10).jpg>) ![alt text](<004 dp on string_231121_163402(11).jpg>) ![alt text](<004 dp on string_231121_163402(12).jpg>) ![alt text](<004 dp on string_231121_163402(13).jpg>) ![alt text](<004 dp on string_231121_163402(14).jpg>) ![alt text](<004 dp on string_231121_163402(15).jpg>) ![alt text](<004 dp on string_231121_163402(16).jpg>) ![alt text](<004 dp on string_231121_163402(17).jpg>) ![alt text](<004 dp on string_231121_163402(18).jpg>) ![alt text](<004 dp on string_231121_163402(19).jpg>) 
 
 
