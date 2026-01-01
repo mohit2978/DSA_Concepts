@@ -95,7 +95,9 @@ public:
         }
 
         // 4. Move both pointers until 'fast' reaches the end
-        // When fast->next is null, slow will be one node *before* the target
+        // When fast->next is null, slow will be one node *before* 
+        //the target, so in our code we using one more pointer but 
+        //i guess this approach is far more better
         while (fast->next != nullptr) {
             fast = fast->next;
             slow = slow->next;
