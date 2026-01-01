@@ -449,4 +449,59 @@ class Solution {
 
 ![alt text](<004 dp on string_231121_163402(8).jpg>) ![alt text](<004 dp on string_231121_163402(9).jpg>) ![alt text](<004 dp on string_231121_163402(10).jpg>) ![alt text](<004 dp on string_231121_163402(11).jpg>) ![alt text](<004 dp on string_231121_163402(12).jpg>) ![alt text](<004 dp on string_231121_163402(13).jpg>) ![alt text](<004 dp on string_231121_163402(14).jpg>) ![alt text](<004 dp on string_231121_163402(15).jpg>) ![alt text](<004 dp on string_231121_163402(16).jpg>) ![alt text](<004 dp on string_231121_163402(17).jpg>) ![alt text](<004 dp on string_231121_163402(18).jpg>) ![alt text](<004 dp on string_231121_163402(19).jpg>) 
 
+# The "One Entity" Rule of Interval DP
 
+Your observation is exactly right: **Interval DP is defined by boundaries ($i$ and $j$) within a single object.** In problems like **LCS**, the indices $i$ and $j$ refer to two completely different strings. In **Interval DP**, both $i$ and $j$ refer to the **same** string or array, creating a "window" that looks inward.
+
+---
+
+### 1. Comparison: LCS vs. Interval DP
+
+| Feature | Two-String DP (e.g., LCS) | Interval DP (e.g., LPS, MCM) |
+| :--- | :--- | :--- |
+| **Input Type** | 2 different strings/arrays | 1 single string/array |
+| **State $dp[i][j]$** | $i$ is for String A, $j$ is for String B | Both $i$ and $j$ are indices in the **same** string |
+| **Physical Meaning** | "How much of String A matches String B?" | "What is the property of the segment between $i$ and $j$?" |
+| **Traversal** | Row-by-Row (Linear) | **Gap Method (Diagonal)** |
+
+
+
+---
+
+### 2. Why the Gap Method doesn't work for 2 Strings
+The Gap Method relies on the fact that as a gap increases, it encompasses smaller sub-segments of the **same space**.
+
+* **In LCS (Two Strings):** If you move $i$ in String A, it has no physical relationship to index $j$ in String B. They are like two parallel lines that never meet.
+* **In Interval DP (One String):** $i$ and $j$ are moving toward or away from each other on the same line. To know the answer for the "big" range $[0, 10]$, you **must** know the answer for the "inner" range $[1, 9]$.
+
+
+
+---
+
+### 3. The Only Exception: The "Palindrome Trick"
+The only time these two worlds overlap is when we turn a "one-string" problem into a "two-string" problem. 
+
+To find the **Longest Palindromic Subsequence** of String $S$:
+1.  **Interval Way:** Use the Gap Method on String $S$.
+2.  **LCS Way:** Use standard 2D DP on String $S$ and its reverse $S^R$. 
+
+In the second method, you are treating the reversed string as a "second entity," allowing you to use simple row-by-row DP instead of the Gap Method.
+
+---
+
+### 4. Summary of Dependencies
+
+* **Standard DP (LCS):**
+    $dp[i][j]$ depends on $dp[i-1][j]$ and $dp[i][j-1]$.
+    *(Looking at shorter prefixes of two strings)*.
+
+* **Interval DP (LPS):**
+    $dp[i][j]$ depends on $dp[i+1][j-1]$.
+    *(Looking at the inner heart of the same string)*.
+
+
+
+---
+
+### Conclusion
+**Interval DP is about the relationship between two points in the same space.** Because two different strings do not share a common "inner range," the Gap Method and Interval DP logic are reserved for single-entity problems.
