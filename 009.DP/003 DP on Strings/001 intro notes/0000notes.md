@@ -316,6 +316,78 @@ class Solution {
  ![alt text](<004 dp on string_231121_163402(6).jpg>) 
  ![alt text](<004 dp on string_231121_163402(7).jpg>) 
 
+ # Longest Common Subsequence (LCS) Formula
+
+The **Longest Common Subsequence** of two strings is calculated using a 2D Dynamic Programming table. For two strings $S1$ (length $n$) and $S2$ (length $m$), the value $dp[i][j]$ represents the length of the LCS of the prefix $S1[0 \dots i-1]$ and $S2[0 \dots j-1]$.
+
+---
+
+### 1. The Mathematical Formula
+
+The recurrence relation is defined as follows:
+
+$$
+dp[i][j] = 
+\begin{cases} 
+0 & \text{if } i=0 \text{ or } j=0 \\
+1 + dp[i-1][j-1] & \text{if } S1[i-1] = S2[j-1] \\
+\max(dp[i-1][j], dp[i][j-1]) & \text{if } S1[i-1] \neq S2[j-1] 
+\end{cases}
+$$
+
+---
+
+### 2. Logic Breakdown
+
+#### **Base Case (Initialization)**
+When $i=0$ or $j=0$, one of the strings is empty. An empty string has no characters in common with any other string, so:
+* `dp[0][j] = 0` for all $j$
+* `dp[i][0] = 0` for all $i$
+
+#### **Case 1: Characters Match ($S1[i-1] == S2[j-1]$)**
+If the characters at the current indices match, they contribute to the common subsequence. We take the result from the prefixes *excluding* these characters (the diagonal cell) and add 1.
+
+
+
+#### **Case 2: Characters Do Not Match ($S1[i-1] \neq S2[j-1]$)**
+If the characters don't match, the current LCS length is the best we could do by either:
+1.  Ignoring the current character of $S1$ (`dp[i-1][j]`)
+2.  Ignoring the current character of $S2$ (`dp[i][j-1]`)
+
+We take the **maximum** of these two. 
+
+> **Note on Redundancy:** We do not include $dp[i-1][j-1]$ in the `max()` because $dp[i-1][j]$ and $dp[i][j-1]$ already consider that diagonal value in their own calculations. Thus, $dp[i-1][j-1]$ is already "covered."
+
+
+
+---
+
+### 3. Complexity Analysis
+* **Time Complexity:** $O(n \times m)$ — Every cell in the matrix is computed once.
+* **Space Complexity:** $O(n \times m)$ — A 2D array is used to store all states.
+
+---
+
+### 4. Summary Table of Dependencies
+
+| Scenario | Dependency | Direction |
+| :--- | :--- | :--- |
+| **Match** | $1 + dp[i-1][j-1]$ | Diagonal Up-Left |
+| **No Match** | $\max(dp[i-1][j], dp[i][j-1])$ | Top or Left |
+
+### Why is $dp[i-1][j-1]$ ignored when characters don't match?
+
+When $S1[i-1] \neq S2[j-1]$, the formula is:
+$$dp[i][j] = \max(dp[i-1][j], dp[i][j-1])$$
+
+We do **not** need to include $dp[i-1][j-1]$ because it is **redundant**. 
+
+**The Proof:**
+1. $dp[i-1][j]$ is calculated as $\max(dp[i-2][j], dp[i-1][j-1])$. Thus, $dp[i-1][j] \ge dp[i-1][j-1]$.
+2. $dp[i][j-1]$ is calculated as $\max(dp[i-1][j-1], dp[i][j-2])$. Thus, $dp[i][j-1] \ge dp[i-1][j-1]$.
+
+Since both neighbors are already at least as large as the diagonal value, the diagonal value can never be the "maximum" in a way that changes the result.
+
 ##  LCS Memoization
 
 ```cpp
