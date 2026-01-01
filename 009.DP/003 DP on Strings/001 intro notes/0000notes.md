@@ -521,6 +521,78 @@ class Solution {
 
 ![alt text](<004 dp on string_231121_163402(8).jpg>) ![alt text](<004 dp on string_231121_163402(9).jpg>) ![alt text](<004 dp on string_231121_163402(10).jpg>) ![alt text](<004 dp on string_231121_163402(11).jpg>) ![alt text](<004 dp on string_231121_163402(12).jpg>) ![alt text](<004 dp on string_231121_163402(13).jpg>) ![alt text](<004 dp on string_231121_163402(14).jpg>) ![alt text](<004 dp on string_231121_163402(15).jpg>) ![alt text](<004 dp on string_231121_163402(16).jpg>) ![alt text](<004 dp on string_231121_163402(17).jpg>) ![alt text](<004 dp on string_231121_163402(18).jpg>) ![alt text](<004 dp on string_231121_163402(19).jpg>) 
 
+
+# Comparison: Sliding Window vs. Interval DP
+
+While both **Interval DP** and **Sliding Window** involve looking at "ranges" or "segments" of data, they are fundamentally different tools used for different categories of problems.
+
+The simplest way to distinguish them: **Sliding Window** is for finding a "good" segment, while **Interval DP** is for finding the "best" way to combine or break down segments.
+
+---
+
+### 1. Key Differences at a Glance
+
+| Feature | Sliding Window | Interval DP (Gap Method) |
+| :--- | :--- | :--- |
+| **Goal** | Find a contiguous subarray that meets a specific condition (sum, unique chars). | Find the optimal result for a range by merging smaller sub-ranges. |
+| **Pointer Movement** | Linear ($i$ and $j$ move forward based on a condition). | Diagonal (window expands from size 1 up to $N$). |
+| **Time Complexity** | $O(N)$ — Very efficient. | $O(N^2)$ or $O(N^3)$ — Much slower. |
+| **Dependencies** | No dependency on sub-segments; just add or remove elements as you slide. | Large ranges **must** wait for smaller "inner" ranges to be solved first. |
+
+---
+
+### 2. When to use Sliding Window
+Use this when you are looking for a **contiguous** block that satisfies a constraint. You expand the window (move `j`) until you break the rule, then shrink it (move `i`) until the rule is satisfied again.
+
+**Classic Examples:**
+* Longest Subarray with sum $\le K$.
+* Smallest window containing all characters of another string.
+* Maximum sum of $K$ consecutive elements.
+
+
+
+---
+
+### 3. When to use Interval DP
+Use this when the problem asks for an **optimal value** (Min, Max, or Total count) for a range $[i, j]$, and the solution for that range depends on the results of smaller intervals inside it (like $[i+1, j-1]$) or by splitting it into two pieces $[i, k]$ and $[k+1, j]$.
+
+**Classic Examples:**
+* **Longest Palindromic Subsequence:** Depends on the inner range $[i+1, j-1]$.
+* **Matrix Chain Multiplication:** Depends on splitting the range $[i, j]$ at every possible $k$.
+* **Burst Balloons:** The value of the last balloon depends on what happened in the sub-intervals before it.
+
+
+
+---
+
+### 4. Comparison of "State"
+
+**Sliding Window State:**
+We typically do not store a table. We maintain a running variable (like `currentSum` or a `HashMap`) as we slide across the array.
+* **Memory:** Usually $O(1)$ or $O(K)$.
+
+**Interval DP State:**
+We store a 2D table `dp[i][j]` where every possible pair of $i$ and $j$ represents the "best" answer for that specific range.
+* **Memory:** $O(N^2)$.
+
+---
+
+### 5. Summary
+
+* **Sliding Window:** * **Philosophy:** "Expansion and Contraction."
+    * **Order:** Two pointers move from index $0$ to $n$.
+    * **Use Case:** Finding a specific segment.
+* **Interval DP:** * **Philosophy:** "Inside-Out / Merging."
+    * **Order:** Gap Method (Diagonal). Solve for length 1, then 2, then 3...
+    * **Use Case:** Optimizing a range based on its sub-parts.
+
+
+
+---
+
+### Why you can't use Sliding Window for Palindromic Subsequence
+In a **Subsequence**, the characters do not have to be next to each other. Sliding window only looks at contiguous blocks (Substrings). Because a subsequence can "skip" over characters, you need to store the results of all previous sub-ranges to decide if the current characters at $i$ and $j$ can be added to an existing sequence.
+
 # The "One Entity" Rule of Interval DP
 
 Your observation is exactly right: **Interval DP is defined by boundaries ($i$ and $j$) within a single object.** In problems like **LCS**, the indices $i$ and $j$ refer to two completely different strings. In **Interval DP**, both $i$ and $j$ refer to the **same** string or array, creating a "window" that looks inward.
