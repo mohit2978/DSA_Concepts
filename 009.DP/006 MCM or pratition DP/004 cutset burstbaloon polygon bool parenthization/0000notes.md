@@ -76,7 +76,9 @@ public:
     }
 };
 ```
+we put `int lans=(cut==si)?0:dp[si][cut-1];` as when cut =si then cut-1=si-1 and when si=0 cut-1 will be less than 0 so which gives segmentation faul in cpp and out of bound error in java
 
+similarly for `cut==ei` condition
 
  ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(17).jpg>) ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(18).jpg>) ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(19).jpg>) ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(20).jpg>) ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(21).jpg>) ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(22).jpg>) ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(23).jpg>) ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(24).jpg>) ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(25).jpg>) ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(26).jpg>)
 
