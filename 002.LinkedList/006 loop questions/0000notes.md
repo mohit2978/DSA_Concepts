@@ -44,6 +44,7 @@ At the meeting point, the fast pointer has traveled exactly twice the distance o
 1.  **Distance of Slow:** $T = L + d$
 2.  **Distance of Fast:** $H = L + nC + d$
 3.  **The Equation:**
+    The SubstitutionSince $H = 2vt$ and $T = vt$, we can substitute $vt$ with $T$:$$H = 2(T)$$
     $$L + nC + d = 2(L + d)$$
 4.  **Simplify:**
     $$L + nC + d = 2L + 2d$$

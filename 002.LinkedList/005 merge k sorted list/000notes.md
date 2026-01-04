@@ -3,6 +3,8 @@
 
 ![alt text](<003 merge k sorted list and reverse nodes_240412_185705 (1)(1).jpg>) 
 
+### Mergesort lists
+
 ```cpp
 #include <bits/stdc++.h>
 using namespace std;
@@ -77,7 +79,68 @@ int main(){
 }
 
 ```
+### Merge k sorted lists
 
+```java
+
+/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode() {}
+ *     ListNode(int val) { this.val = val; }
+ *     ListNode(int val, ListNode next) { this.val = val; this.next = next; }
+ * }
+ */
+class Solution {
+    public ListNode merge(ListNode h1,ListNode h2){
+        if(h1==null) return h2;
+        if(h2==null) return h1;
+        ListNode dummy=new ListNode(-1);
+        ListNode curr=dummy;
+        while(h1!=null&&h2!=null){
+            if(h1.val<h2.val){
+                ListNode node=new ListNode(h1.val);
+                curr.next=node;
+                h1=h1.next;
+            }
+            else{
+                ListNode node=new ListNode(h2.val);
+                curr.next=node;
+                h2=h2.next;
+            }
+            curr=curr.next;
+        }
+        while(h1!=null){
+             ListNode node=new ListNode(h1.val);
+                curr.next=node;
+                h1=h1.next;
+             curr=curr.next;
+            
+        }
+        while(h2!=null){
+              ListNode node=new ListNode(h2.val);
+                curr.next=node;
+                h2=h2.next;
+             curr=curr.next;
+        }
+        return dummy.next;
+    }
+    
+    public ListNode mergelist(ListNode[] lists,int si,int li){
+        if(si==li) return lists[si];
+        int mid=(si+li)/2;
+        ListNode l1=mergelist(lists,si,mid);
+        ListNode l2=mergelist(lists,mid+1,li);
+        return merge(l1,l2);
+    }
+    public ListNode mergeKLists(ListNode[] lists) {
+        if(lists.length==0) return null;
+        return mergelist(lists,0,lists.length-1);
+    }
+}
+```
 
 
 ![alt text](<003 merge k sorted list and reverse nodes_240412_185705 (1)(2).jpg>) ![alt text](<003 merge k sorted list and reverse nodes_240412_185705 (1)(3).jpg>) ![alt text](<003 merge k sorted list and reverse nodes_240412_185705 (1)(4).jpg>) ![alt text](<003 merge k sorted list and reverse nodes_240412_185705 (1)(5).jpg>) 
