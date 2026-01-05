@@ -62,6 +62,34 @@ public:
     }
 };
 ```
+## Count subset with sum K
+
+```cpp
+class Solution{
+	int MOD=1e9+7;
+	    int subsetSum(vector<int>&arr, int tar,int i,vector<vector<int>> &dp){
+        if(i==arr.size() || tar==0){
+            return dp[i][tar]=(tar==0?1:0);
+        }
+
+        if(dp[i][tar]!=-1) return dp[i][tar];
+        int cnt=0;
+        if(tar>=arr[i]) cnt=(cnt+subsetSum(arr,tar-arr[i],i+1,dp))%MOD;
+        cnt=(cnt+subsetSum(arr,tar,i+1,dp))%MOD;
+
+        return dp[i][tar]=cnt;
+
+    }  
+	public:
+	int perfectSum(vector<int>&arr, int K){
+   		vector<vector<int>> dp(arr.size()+1, vector<int>(K + 1, -1));
+        return subsetSum(arr,K,0,dp);
+	}
+};
+
+```
+
+
 
 ![alt text](<009 target set_231121_163402(3).jpg>) ![alt text](<009 target set_231121_163402(4).jpg>) ![alt text](<009 target set_231121_163402(5).jpg>) ![alt text](<009 target set_231121_163402(6).jpg>) ![alt text](<009 target set_231121_163402(7).jpg>) ![alt text](<009 target set_231121_163402(8).jpg>) ![alt text](<009 target set_231121_163402(9).jpg>) ![alt text](<009 target set_231121_163402(10).jpg>) ![alt text](<009 target set_231121_163402(11).jpg>) ![alt text](<009 target set_231121_163402(12).jpg>) ![alt text](<009 target set_231121_163402(13).jpg>) ![alt text](<009 target set_231121_163402(14).jpg>) ![alt text](<009 target set_231121_163402(15).jpg>) ![alt text](<009 target set_231121_163402(16).jpg>) ![alt text](<009 target set_231121_163402(17).jpg>) ![alt text](<009 target set_231121_163402(18).jpg>) ![alt text](<009 target set_231121_163402(19).jpg>) ![alt text](<009 target set_231121_163402(20).jpg>)
 
@@ -373,7 +401,38 @@ You should only use a map when the state space is **extremely sparse and large**
 
 [Image of a decision tree for choosing between array-based DP and map-based DP based on constraints]
 
-![alt text](<009 target set_231121_163402(21).jpg>) ![alt text](<009 target set_231121_163402(22).jpg>) ![alt text](<009 target set_231121_163402(23).jpg>) ![alt text](<009 target set_231121_163402(24).jpg>) ![alt text](<009 target set_231121_163402(25).jpg>) ![alt text](<009 target set_231121_163402(26).jpg>) ![alt text](<009 target set_231121_163402(27).jpg>) ![alt text](<009 target set_231121_163402(28).jpg>) ![alt text](<009 target set_231121_163402(29).jpg>) ![alt text](<009 target set_231121_163402(30).jpg>) ![alt text](<009 target set_231121_163402(31).jpg>)
+![alt text](<009 target set_231121_163402(21).jpg>) ![alt text](<009 target set_231121_163402(22).jpg>)
+
+
+```cpp
+class Solution
+{
+    int solveKS(vector<int>& wt, vector<int>& val, int n, int W,int i,vector<vector<int>>&dp){
+        if(i<0 || W==0){
+            return 0;
+        }
+        if(dp[i][W]!=-1) return dp[i][W];
+
+        int v1=0;
+        if(W>=wt[i]) v1=val[i]+solveKS(wt,val,n,W-wt[i],i,dp);
+        int v2=solveKS(wt,val,n,W,i-1,dp);
+
+        return dp[i][W]=max(v1,v2);
+
+    }
+    public:
+   int unboundedKnapsack(vector<int>& wt, vector<int>& val, int n, int W) {
+        vector<vector<int>>dp(n,vector<int>(W+1,-1));
+        return solveKS(wt,val,n,W,n-1,dp);
+       }
+};
+
+
+```
+ bs jha select kia hai vha bhi aage mt bdna!!
+
+
+ ![alt text](<009 target set_231121_163402(23).jpg>) ![alt text](<009 target set_231121_163402(24).jpg>) ![alt text](<009 target set_231121_163402(25).jpg>) ![alt text](<009 target set_231121_163402(26).jpg>) ![alt text](<009 target set_231121_163402(27).jpg>) ![alt text](<009 target set_231121_163402(28).jpg>) ![alt text](<009 target set_231121_163402(29).jpg>) ![alt text](<009 target set_231121_163402(30).jpg>) ![alt text](<009 target set_231121_163402(31).jpg>)
 
 
 
