@@ -403,7 +403,68 @@ public:
 
 So both approaches are very important O(n^2) and O(nlgn)
 
-![alt text](<006 LIS_231124_134844(5).jpg>) ![alt text](<006 LIS_231124_134844(6).jpg>) ![alt text](<006 LIS_231124_134844(7).jpg>) ![alt text](<006 LIS_231124_134844(8).jpg>)
+![alt text](<006 LIS_231124_134844(5).jpg>) ![alt text](<006 LIS_231124_134844(6).jpg>) ![alt text](<006 LIS_231124_134844(7).jpg>) 
+
+## Bitonic sequence code
+
+```cpp
+
+class Solution {
+    vector<int> dpLis;
+    vector<int> dpLds;
+    int LIS(vector<int>& nums) {
+        int n=nums.size();
+        int res=1;
+        dpLis.resize(n,1);
+        for(int i=1;i<n;i++){
+
+            for(int j=i-1;j>=0;j--){
+                if(nums[i]>nums[j]){
+                    dpLis[i]=max(dpLis[i],dpLis[j]+1);
+                }
+            }
+
+            res=max(dpLis[i],res);
+        }
+
+        return res;
+    }    
+    int LDS(vector<int>& nums) {
+        int n=nums.size();
+        int res=1;
+        dpLds.resize(n,1);
+        for(int i=n-1;i>=0;i--){
+
+            for(int j=i+1;j<n;j++){
+                if(nums[i]>nums[j]){
+                    dpLds[i]=max(dpLds[i],dpLds[j]+1);
+                }
+            }
+
+            res=max(dpLds[i],res);
+        }
+
+        return res;
+    }   
+  public:
+    int LongestBitonicSequence(vector<int> nums) {
+        LIS(nums);
+        LDS(nums);
+        int res=0;
+        int n=nums.size();
+        for(int i=0;i<n;i++){
+            res=max(res,dpLis[i]+dpLds[i]-1);
+        }
+        return res;
+    }
+};
+
+
+```
+
+
+
+![alt text](<006 LIS_231124_134844(8).jpg>)
 
 ## Longest Decreasing Subsequence (LDS)
 
