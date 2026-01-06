@@ -280,7 +280,40 @@ class Trie {
 }
 
 ```
+In competitive programming (like LeetCode), there is usually an additional unspoken constraint: the **Sum of Lengths ($\sum |L|$)** of all words is typically capped around $10^5$ or $5 \times 10^5$ to prevent memory overflow.
 
+### 1. Why $4 \times 10^8$ is Impossible
+If you tried to set `MAXN = 400,000,000`:
+* `int t[MAXN][26]` would require $400,000,000 \times 26 \times 4 \text{ bytes}$.
+* This calculation equals **41.6 Gigabytes** of RAM.
+* Most platforms limit you to **256 Megabytes**. Therefore, a static array of that size will cause a "Memory Limit Exceeded" (MLE) or a "Compilation Error."
+
+### 2. Why `90005` or `100005` Works
+The reason the code passes with a `MAXN` of only $\approx 10^5$ is that the test cases are designed to fit within standard memory limits.
+
+* **Prefix Sharing:** Many words share the same beginning. For example, "International" and "Internet" share the first 5 characters (`I-n-t-e-r`), so they only use 5 nodes for that prefix instead of 10.
+
+* **Test Case Limits:** Even if the *call limit* is high, the actual test data provided by the judge usually totals around 50,000 to 100,000 nodes to stay within the 256MB boundary.
+
+### 3. How to handle this safely in C++
+If you are worried about guessing `MAXN` incorrectly, the safest way to implement a Trie in C++ is the **Pointer-based approach**. It allocates memory dynamically only when a character actually appears, removing the need for a `MAXN` constant entirely.
+
+#### C++ Safe Pointer Insert
+```cpp
+// This version doesn't need MAXN at all.
+// It only consumes memory for the characters actually inserted.
+void insert(string word) {
+    Node* v = root;
+    for (char ch : word) {
+        int c = ch - 'a';
+        if (!v->child[c]) {
+            v->child[c] = new Node(); // Only creates what is needed
+        }
+        v = v->child[c];
+    }
+    v->eow = true;
+}
+```
 #### Cpp
 
 ```cpp
