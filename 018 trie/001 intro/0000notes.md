@@ -143,6 +143,69 @@ public:
 };
 
 ```
+or Simple Cpp
+
+```cpp
+
+class Trie{
+    struct Node{
+        bool eow;
+        vector<Node *>child;
+        Node(){
+            eow=false;
+            child.resize(26,nullptr);
+        }
+    };
+    Node * root;
+    public:
+
+    Trie(){
+        root=new Node();
+    }
+    void insert(string word) {
+        Node* node = root;
+        for (char ch : word) {
+            int idx = ch - 'a';
+            if (node->child[idx] == nullptr) {
+                node->child[idx] = new Node();
+            }
+            node = node->child[idx];
+        }
+        node->eow = true;  
+    }
+
+    bool search(string word) {
+        Node * node=root;
+        for(char ch:word){
+            if(node->child[ch-'a']==nullptr) return false;
+            node=node->child[ch-'a'];
+        }
+        return node->eow;
+    }
+
+    bool startsWith(string prefix) {
+        Node* node = root;
+        for (char ch : prefix) {
+            int idx = ch - 'a';
+            if (node->child[idx] == nullptr) {
+                return false;
+            }
+            node = node->child[idx];
+        }
+        return true;
+    }
+};
+
+/**
+ * Your Trie object will be instantiated and called as such:
+ * Trie* obj = new Trie();
+ * obj->insert(word);
+ * bool param_2 = obj->search(word);
+ * bool param_3 = obj->startsWith(prefix);
+ */
+
+```
+
 
 Below implementation is a solid static-array-based Trie, which is often faster in competitive programming due to better cache locality compared to object-oriented implementations.
 ```java
