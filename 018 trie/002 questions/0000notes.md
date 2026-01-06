@@ -193,6 +193,54 @@ public:
 
 ```
 
+# Time and Space Complexity of Trie Operations
+
+The performance of a Trie is primarily dependent on the length of the string ($L$) rather than the total number of strings ($N$) stored in the structure.
+
+### 1. Time Complexity
+
+| Operation | Time Complexity | Reason |
+| :--- | :--- | :--- |
+| **Insert** | $O(L)$ | You traverse each of the $L$ characters in the word. At each step, you either move to an existing child or create one new node. |
+| **Search** | $O(L)$ | You follow the path of characters in the word. If the path breaks before the word ends, the search fails. |
+| **Delete** | $O(L)$ | You traverse the word to find the target node, then update counters (or delete nodes) along that path of length $L$. |
+| **Starts With**| $O(L)$ | Similar to search, you follow the path for $L$ characters. If the path exists, the result is true. |
+
+
+
+---
+
+### 2. Space Complexity
+
+Space complexity is the most significant trade-off when using a Trie.
+
+* **Worst Case:** $O(\text{Total Characters} \times \text{Alphabet Size})$. 
+  * If there is **zero overlap** between words, every character of every word requires a new node.
+  * Each node contains an array/vector of size 26 (for 'a'-'z').
+* **Best Case:** $O(\text{Length of Longest Word} \times \text{Alphabet Size})$.
+  * This happens if all inserted words are prefixes of the same longest word (maximum overlap).
+
+
+
+---
+
+### 3. Comparison with Other Data Structures
+
+| Feature | Trie | Hash Table | Balanced BST |
+| :--- | :--- | :--- | :--- |
+| **Search Time** | $O(L)$ | $O(L)$ (to hash the string) | $O(L \cdot \log N)$ |
+| **Prefix Search**| **Supported** ($O(L)$) | Not Supported | Supported ($O(L \cdot \log N)$) |
+| **Space** | High (due to pointers) | Efficient | Efficient |
+| **Order** | Alphabetical | Unordered | Sorted |
+
+---
+
+### 4. Why is Deletion $O(L)$?
+In your implementation, deletion involves:
+1.  **Finding the word:** A downward pass of $O(L)$.
+2.  **Updating counts:** Decrementing the `countPrefix` at each of the $L$ nodes.
+3.  **Optional Cleanup:** If you choose to physically `delete` nodes when `countPrefix` reaches 0, you do it as you return from recursion or during the downward pass, which still only touches each of the $L$ nodes once.
+
 ![alt text](002_231121_163402(5).jpg) ![alt text](002_231121_163402(6).jpg) ![alt text](002_231121_163402(7).jpg) ![alt text](002_231121_163402(8).jpg) ![alt text](002_231121_163402(9).jpg) ![alt text](002_231121_163402(10).jpg) ![alt text](002_231121_163402(11).jpg) ![alt text](002_231121_163402(12).jpg) ![alt text](002_231121_163402(13).jpg) ![alt text](002_231121_163402(14).jpg) ![alt text](002_231121_163402(15).jpg) ![alt text](002_231121_163402(16).jpg) ![alt text](002_231121_163402(17).jpg) ![alt text](002_231121_163402(18).jpg) ![alt text](002_231121_163402(19).jpg) ![alt text](002_231121_163402(20).jpg) ![alt text](002_231121_163402(21).jpg) ![alt text](002_231121_163402(22).jpg) ![alt text](002_231121_163402(23).jpg) ![alt text](002_231121_163402(24).jpg) ![alt text](002_231121_163402(25).jpg) ![alt text](002_231121_163402(26).jpg)
 
 ![alt text](002_231121_163402(27).jpg) ![alt text](002_231121_163402(28).jpg) ![alt text](002_231121_163402(29).jpg) ![alt text](002_231121_163402(30).jpg) ![alt text](002_231121_163402(31).jpg) ![alt text](002_231121_163402(32).jpg) ![alt text](002_231121_163402(33).jpg) ![alt text](002_231121_163402(34).jpg) ![alt text](002_231121_163402(35).jpg) ![alt text](002_231121_163402(36).jpg) ![alt text](002_231121_163402(37).jpg) ![alt text](002_231121_163402(38).jpg) ![alt text](002_231121_163402(39).jpg) ![alt text](002_231121_163402(40).jpg) ![alt text](002_231121_163402(41).jpg) ![alt text](002_231121_163402(42).jpg) ![alt text](002_231121_163402(43).jpg)
