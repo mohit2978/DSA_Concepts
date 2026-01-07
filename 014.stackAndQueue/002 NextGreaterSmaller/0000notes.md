@@ -1,7 +1,7 @@
 # Notes
 ![alt text](<002Nger l Nser l range count_231121_163402.jpg>)
 
-![alt text](<002Nger l Nser l range count_231121_163402(1).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(2).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(3).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(4).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(5).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(6).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(7).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(8).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(9).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(10).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(11).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(12).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(13).jpg>)
+![alt text](<002Nger l Nser l range count_231121_163402(1).jpg>) 
 
 ---
 
@@ -317,3 +317,38 @@ The stack will look like: `[2, 5, 7, 9]`
 * **Smaller** in the name $\rightarrow$ **Increasing** Stack.
 
 *The stack property is always the **opposite** of the search target.*
+
+
+
+![alt text](<002Nger l Nser l range count_231121_163402(2).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(3).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(4).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(5).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(6).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(7).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(8).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(9).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(10).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(11).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(12).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(13).jpg>)
+
+
+---
+
+```cpp
+class StockSpanner {
+    stack<pair<int,int>> stk;
+    int day;
+public:
+    StockSpanner() {
+        day=0;
+        stk.push({-1,-1});
+    }
+    
+    int next(int price) {
+        while(stk.top().first!=-1 && stk.top().first<=price){
+            stk.pop();
+        }
+        int span=day-stk.top().second;
+        stk.push({price,day++});
+        return span;
+    }
+};
+
+/**
+ * Your StockSpanner object will be instantiated and called as such:
+ * StockSpanner* obj = new StockSpanner();
+ * int param_1 = obj->next(price);
+ */
+ ```
+`{-1,-1}` if you do not put and stk is empty and next() is called then span calucation will give memory error as nothing on top() and u are accessing it.
