@@ -4,11 +4,103 @@
 ![alt text](<004 loop questions_240218_115658 (1).jpg>)
  ![alt text](<004 loop questions_240218_115658 (1)(1).jpg>)
   ![alt text](<004 loop questions_240218_115658 (1)(2).jpg>)
+
+  ```cpp
+/*
+Definition of singly linked list:
+struct ListNode
+{
+    int val;
+    ListNode *next;
+    ListNode()
+    {
+        val = 0;
+        next = NULL;
+    }
+    ListNode(int data1)
+    {
+        val = data1;
+        next = NULL;
+    }
+    ListNode(int data1, ListNode *next1)
+    {
+        val = data1;
+        next = next1;
+    }
+};
+*/
+
+class Solution {
+public:
+    bool hasCycle(ListNode *head) {
+        ListNode * slow=head;
+        ListNode * fast=head;
+        while(fast!=nullptr && fast->next !=nullptr){
+            slow=slow->next;
+            fast=fast->next->next;
+            if (slow==fast) return true;
+        }
+        return false;
+    }
+};
+
+  ```
    ![alt text](<004 loop questions_240218_115658 (1)(3).jpg>)
     ![alt text](<004 loop questions_240218_115658 (1)(4).jpg>) 
    ![alt text](<004 loop questions_240218_115658 (1)(5).jpg>) 
    
+### Starting point of loop code
 
+```cpp
+
+/*
+Definition of singly linked list:
+struct ListNode
+{
+    int val;
+    ListNode *next;
+    ListNode()
+    {
+        val = 0;
+        next = NULL;
+    }
+    ListNode(int data1)
+    {
+        val = data1;
+        next = NULL;
+    }
+    ListNode(int data1, ListNode *next1)
+    {
+        val = data1;
+        next = next1;
+    }
+};
+*/
+
+class Solution {
+    ListNode * hasCycle(ListNode *head) {
+        ListNode * slow=head;
+        ListNode * fast=head;
+        while(fast!=nullptr && fast->next !=nullptr){
+            slow=slow->next;
+            fast=fast->next->next;
+            if (slow==fast) return fast;
+        }
+        return nullptr;
+    }
+public:
+    ListNode *findStartingPoint(ListNode *head) {
+        ListNode* fast=hasCycle(head);
+        if(fast==nullptr) return fast;
+        ListNode * slow=head;
+        while(slow!=fast){
+            slow=slow->next;
+            fast=fast->next;
+        }
+        return slow;
+    }
+};
+```
 
 # Mathematical Proof: Floyd’s Cycle-Finding Algorithm
 
@@ -237,8 +329,114 @@ This shows that the gap increases by exactly 1 step every time $t$ increases. Th
 
 ![alt text](<004 loop questions_240218_115658 (1)(7).jpg>) ![alt text](<004 loop questions_240218_115658 (1)(8).jpg>) ![alt text](<004 loop questions_240218_115658 (1)(9).jpg>) 
 
+```cpp
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+    ListNode * getTail(ListNode * head){
+        if(head==nullptr|| head->next==nullptr) return head;
+        ListNode * curr=head;
+        while(curr->next!=nullptr){
+            curr=curr->next;
+        }
+        return curr;
+    }
+    ListNode * hasCycle(ListNode *head) {
+        ListNode * slow=head;
+        ListNode * fast=head;
+        while(fast!=nullptr && fast->next !=nullptr){
+            slow=slow->next;
+            fast=fast->next->next;
+            if (slow==fast) return fast;
+        }
+        return nullptr;
+    }
+
+    ListNode *findStartingPoint(ListNode *head) {
+        ListNode* fast=hasCycle(head);
+        if(fast==nullptr) return fast;
+        ListNode * slow=head;
+        while(slow!=fast){
+            slow=slow->next;
+            fast=fast->next;
+        }
+        return slow;
+    }
+public:
+    ListNode *getIntersectionNode(ListNode *headA, ListNode *headB) {
+        if(headA==nullptr ||headB==nullptr) return nullptr;
+        ListNode * tail=getTail(headA);      
+        tail->next=headB;
+        ListNode* intPoint=findStartingPoint(headA);
+        tail->next=nullptr;
+        return intPoint;
+    }
+};
+```
 
 
+### Find length of loop of LL
+
+```cpp
+/*
+Definition of singly linked list:
+struct ListNode
+{
+    int val;
+    ListNode *next;
+    ListNode()
+    {
+        val = 0;
+        next = NULL;
+    }
+    ListNode(int data1)
+    {
+        val = data1;
+        next = NULL;
+    }
+    ListNode(int data1, ListNode *next1)
+    {
+        val = data1;
+        next = next1;
+    }
+};
+*/
+
+class Solution {
+    ListNode * hasCycle(ListNode *head) {
+        ListNode * slow=head;
+        ListNode * fast=head;
+        while(fast!=nullptr && fast->next !=nullptr){
+            slow=slow->next;
+            fast=fast->next->next;
+            if (slow==fast) return fast;
+        }
+        return nullptr;
+    }
+
+public:
+    int findLengthOfLoop(ListNode *head) {
+        ListNode * ptr=hasCycle(head);
+        if(ptr==nullptr) return 0;
+        ListNode * curr=ptr->next;
+        int len=1;
+        while(curr!=ptr){
+            curr=curr->next;
+            len++;
+        }
+        return len;
+
+    }
+};
+
+```
 
 
 
