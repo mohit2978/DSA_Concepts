@@ -133,7 +133,46 @@ public:
 
 
 
-![alt text](001_traversals_easy_med(4).jpg) ![alt text](001_traversals_easy_med(5).jpg) ![alt text](001_traversals_easy_med(6).jpg) ![alt text](001_traversals_easy_med(7).jpg) ![alt text](001_traversals_easy_med(8).jpg) ![alt text](001_traversals_easy_med(9).jpg)
+![alt text](001_traversals_easy_med(4).jpg) ![alt text](001_traversals_easy_med(5).jpg) ![alt text](001_traversals_easy_med(6).jpg)
+
+```cpp
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int data;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *      TreeNode(int val) : data(val) , left(nullptr) , right(nullptr) {}
+ * };
+ **/
+
+class Solution {
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        vector<int > res;
+        if(root==nullptr) return res;
+        queue<TreeNode *> q;
+        q.push(root);
+        while(q.size()>0){
+            int sz=q.size();
+            while(sz-->0){
+                TreeNode * node=q.front();
+                q.pop();
+                if(sz==0)res.push_back(node->data);
+                if(node->left!=nullptr) q.push(node->left);
+                if(node->right!=nullptr) q.push(node->right);
+            }
+        }
+        return res;
+    }
+};
+
+```
+
+
+
+ ![alt text](001_traversals_easy_med(7).jpg) ![alt text](001_traversals_easy_med(8).jpg) ![alt text](001_traversals_easy_med(9).jpg)
 
 
 
@@ -164,7 +203,7 @@ class Solution {
               while(sz-->0){
                   pair<Node*,int> rem=q.front();
                   q.pop();
-                  if(mp.find(rem.second)!=mp.end()){
+                  if(mp.find(rem.second)==mp.end()){
                       mp[rem.second]=rem.first;
                   }
                   if(rem.second<left) left=rem.second;
@@ -186,5 +225,108 @@ class Solution {
     }
 }
 ```
+
+----
+
+### Gemini top view code
+
+
+```cpp
+
+class Solution {
+public:
+    vector<int> topView(TreeNode *root) {
+        vector<int> res;
+        if (!root) return res; // Handle empty tree
+
+        // map horizontal distance -> first node's data encountered
+        unordered_map<int, int> mp; 
+        queue<pair<TreeNode*, int>> q;
+        
+        int left = 0, right = 0;
+        q.push({root, 0});
+
+        while (!q.empty()) {
+            pair<TreeNode*, int> rem = q.front();
+            q.pop();
+
+            TreeNode* node = rem.first;
+            int hd = rem.second; // Horizontal Distance
+
+            // CRITICAL: Only store the FIRST node seen at this HD
+            if (mp.find(hd) == mp.end()) {
+                mp[hd] = node->data;
+            }
+
+            // Update range for final result extraction
+            left = min(left, hd);
+            right = max(right, hd);
+
+            if (node->left) {
+                q.push({node->left, hd - 1});
+            }
+            if (node->right) {
+                q.push({node->right, hd + 1});
+            }
+        }
+
+        // Fill result from leftmost to rightmost distance
+        for (int i = left; i <= right; i++) {
+            res.push_back(mp[i]);
+        }
+        
+        return res;
+    }
+};
+```
  
- ![alt text](001_traversals_easy_med(12).jpg) ![alt text](001_traversals_easy_med(13).jpg) ![alt text](001_traversals_easy_med(14).jpg) ![alt text](001_traversals_easy_med(15).jpg) ![alt text](001_traversals_easy_med(16).jpg) ![alt text](001_traversals_easy_med(17).jpg) ![alt text](001_traversals_easy_med(18).jpg) ![alt text](001_traversals_easy_med(19).jpg) 
+ ![alt text](001_traversals_easy_med(12).jpg) ![alt text](001_traversals_easy_med(13).jpg)
+ 
+ ```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int data;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *      TreeNode(int val) : data(val) , left(nullptr) , right(nullptr) {}
+ * };
+ **/
+
+class Solution {
+  public:
+    vector <int> bottomView(TreeNode *root){
+        vector<int> res;
+         unordered_map<int,TreeNode*>mp;
+         queue<pair<TreeNode*,int>>q;
+         int left=0,right=0;
+         q.push({root,0});
+         while(q.size()>0){
+             int sz=q.size();
+             while(sz-->0){
+                 pair<TreeNode*,int> rem=q.front();
+                 q.pop();
+                  mp[rem.second]=rem.first;
+                 
+                 if(rem.second<left) left=rem.second;
+                 if(rem.second>right) right=rem.second;
+                 if(rem.first->left!=nullptr){
+                     q.push({rem.first->left,rem.second-1});
+                 }
+                  if(rem.first->right!=nullptr){
+                     q.push({rem.first->right,rem.second+1});
+                 }
+             }
+         }
+         
+         for(int i=left;i<=right;i++){
+             res.push_back(mp[i]->data);
+         }
+         return res;
+    }
+};
+
+ ```
+ 
+ 
+  ![alt text](001_traversals_easy_med(14).jpg) ![alt text](001_traversals_easy_med(15).jpg) ![alt text](001_traversals_easy_med(16).jpg) ![alt text](001_traversals_easy_med(17).jpg) ![alt text](001_traversals_easy_med(18).jpg) ![alt text](001_traversals_easy_med(19).jpg) 
