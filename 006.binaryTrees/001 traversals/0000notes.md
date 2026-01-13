@@ -330,3 +330,75 @@ class Solution {
  
  
   ![alt text](001_traversals_easy_med(14).jpg) ![alt text](001_traversals_easy_med(15).jpg) ![alt text](001_traversals_easy_med(16).jpg) ![alt text](001_traversals_easy_med(17).jpg) ![alt text](001_traversals_easy_med(18).jpg) ![alt text](001_traversals_easy_med(19).jpg) 
+
+  ## Binary Tree Zigzag Level Order Traversal
+
+**Difficulty:** Medium
+
+---
+
+#### **Problem Description**
+Given the `root` of a binary tree, return the **zigzag level order traversal** of its nodes' values. (i.e., from left to right, then right to left for the next level and alternate between).
+
+---
+
+#### **Examples**
+
+**Example 1:**
+* **Input:** `root = [3,9,20,null,null,15,7]`
+* **Output:** `[[3],[20,9],[15,7]]`
+* **Explanation:** * Level 1 (Left to Right): `[3]`
+    * Level 2 (Right to Left): `[20, 9]`
+    * Level 3 (Left to Right): `[15, 7]`
+
+**Example 2:**
+* **Input:** `root = [1]`
+* **Output:** `[[1]]`
+
+**Example 3:**
+* **Input:** `root = []`
+* **Output:** `[]`
+
+---
+
+#### **Constraints**
+* The number of nodes in the tree is in the range `[0, 2000]`.
+* `-100 <= Node.val <= 100`
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int data;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *      TreeNode(int val) : data(val) , left(nullptr) , right(nullptr) {}
+ * };
+ **/
+
+class Solution {
+public:
+    vector<vector<int> > zigzagLevelOrder(TreeNode* root) {
+        vector<vector<int> > res;
+        if(root==nullptr) return res;
+        queue<TreeNode *> q;
+        q.push(root);
+        int lvl=1;
+        while(q.size()>0){
+            int sz=q.size();
+            vector<int> tres;
+            while(sz-->0){
+                TreeNode * node=q.front();
+                q.pop();
+                tres.push_back(node->data);
+                if(node->left!=nullptr) q.push(node->left);
+                if(node->right!=nullptr) q.push(node->right);
+            }
+           if(lvl%2!=1) reverse(tres.begin(),tres.end());
+           res.push_back(tres);
+           lvl++;
+        }
+        return res;
+    }
+};
+```
