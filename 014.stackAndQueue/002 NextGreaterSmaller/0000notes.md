@@ -320,7 +320,37 @@ The stack will look like: `[2, 5, 7, 9]`
 
 
 
-![alt text](<002Nger l Nser l range count_231121_163402(2).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(3).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(4).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(5).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(6).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(7).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(8).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(9).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(10).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(11).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(12).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(13).jpg>)
+![alt text](<002Nger l Nser l range count_231121_163402(2).jpg>)
+ ![alt text](<002Nger l Nser l range count_231121_163402(3).jpg>)
+  ![alt text](<002Nger l Nser l range count_231121_163402(4).jpg>)
+   ![alt text](<002Nger l Nser l range count_231121_163402(5).jpg>)
+    ![alt text](<002Nger l Nser l range count_231121_163402(6).jpg>)
+     ![alt text](<002Nger l Nser l range count_231121_163402(7).jpg>)
+      
+```cpp
+      class Solution {
+public:
+    vector<int> nextGreaterElements(vector<int> &arr) {
+        stack<int>stk;
+        int n=arr.size();
+       vector<int>res(arr.size(),-1);
+       for(int i=0;i<2*arr.size();i++){
+        while(stk.size()>0 &&arr[i%n]>arr[stk.top()]){
+            res[stk.top()]=arr[i%n];
+            stk.pop();
+        }
+        if(i<n) stk.push(i);
+       }
+       return res;
+    }
+};
+```
+      
+![alt text](<002Nger l Nser l range count_231121_163402(8).jpg>)
+      
+
+      
+![alt text](<002Nger l Nser l range count_231121_163402(9).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(10).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(11).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(12).jpg>) ![alt text](<002Nger l Nser l range count_231121_163402(13).jpg>)
 
 
 ---
