@@ -644,3 +644,239 @@ Both works
 How would the approach change for the sum of the maximum elements in each subarray?
 
 Instead of a monotonic increasing stack, use a monotonic decreasing stack.
+
+Tc-->O(n)
+Sc-->O(n)
+
+# Q Sum of Subarray Ranges
+
+## Problem Statement
+You are given an integer array `nums`. The **range** of a subarray of `nums` is the difference between the largest and smallest element in the subarray.
+
+Return the **sum of all subarray ranges** of `nums`.
+
+A subarray is a contiguous **non-empty** sequence of elements within an array.
+
+---
+
+## Examples
+
+### Example 1
+**Input:** `nums = [1, 2, 3]`  
+**Output:** `4`  
+**Explanation:** The 6 subarrays of `nums` are:
+- `[1]`, range = 1 - 1 = 0
+- `[2]`, range = 2 - 2 = 0
+- `[3]`, range = 3 - 3 = 0
+- `[1, 2]`, range = 2 - 1 = 1
+- `[2, 3]`, range = 3 - 2 = 1
+- `[1, 2, 3]`, range = 3 - 1 = 2  
+**Total sum** = 0 + 0 + 0 + 1 + 1 + 2 = 4.
+
+### Example 2
+**Input:** `nums = [1, 3, 3]`  
+**Output:** `4`  
+**Explanation:** The 6 subarrays of `nums` are:
+- `[1]`, range = 1 - 1 = 0
+- `[3]`, range = 3 - 3 = 0
+- `[3]`, range = 3 - 3 = 0
+- `[1, 3]`, range = 3 - 1 = 2
+- `[3, 3]`, range = 3 - 3 = 0
+- `[1, 3, 3]`, range = 3 - 1 = 2  
+**Total sum** = 0 + 0 + 0 + 2 + 0 + 2 = 4.
+
+### Example 3
+**Input:** `nums = [4, -2, -3, 4, 1]`  
+**Output:** `59`
+
+---
+
+## Constraints
+- `1 <= nums.length <= 1000` (Note: Optimal solutions using Monotonic Stack can handle up to `10^5`)
+- `-10^9 <= nums[i] <= 10^9`
+
+---
+
+## Follow-up
+Can you find a solution with **O(n)** time complexity?
+
+## Sol 
+
+Here we need to find max nd min both for each subarray and return the sum of range
+
+So it is sum of all max - sum of all mins
+```cpp
+class Solution {
+    vector<int>nseol;
+    vector<int>nseor;
+    vector<int>ngeol;
+    vector<int>ngeor;
+    int MOD=1e9+7;
+    void nseorFun(vector<int> &arr,int n){
+        stack<int> s;
+        for(int i=0;i<n;i++){
+            while(s.size()>0 && arr[s.top()]>arr[i]){
+                nseor[s.top()]=i;
+                s.pop();
+            }
+            s.push(i);
+        }
+    }
+    void ngeorFun(vector<int> &arr,int n){
+        stack<int> s;
+        for(int i=0;i<n;i++){
+            while(s.size()>0 && arr[s.top()]<arr[i]){
+                ngeor[s.top()]=i;
+                s.pop();
+            }
+            s.push(i);
+        }
+    }
+
+    void nseolFun(vector<int> &arr,int n){
+        stack<int> s;
+        for(int i=n-1;i>=0;i--){
+            while(s.size()>0 && arr[s.top()]>=arr[i]){
+                nseol[s.top()]=i;
+                s.pop();
+            }
+            s.push(i);
+        }
+    }
+    void ngeolFun(vector<int> &arr,int n){
+        stack<int> s;
+        for(int i=n-1;i>=0;i--){
+            while(s.size()>0 && arr[s.top()]<=arr[i]){
+                ngeol[s.top()]=i;
+                s.pop();
+            }
+            s.push(i);
+        }
+    }
+   long long sumSubarrayMins(vector<int> &arr) {
+        int n=arr.size();
+        nseol.resize(n,-1);
+        nseor.resize(n,n);
+        nseolFun(arr,n);
+        nseorFun(arr,n);
+        long long ans=0;
+        for(int i=0;i<n;i++){
+            int left=i-nseol[i];
+            int right=nseor[i]-i;
+            long long freq=left *right;
+            long long tres=arr[i]*freq;
+            ans=ans+tres;
+        }
+        return ans;
+    }
+    long long sumSubarrayMaxs(vector<int> &arr) {
+        int n=arr.size();
+        ngeol.resize(n,-1);
+        ngeor.resize(n,n);
+        ngeolFun(arr,n);
+        ngeorFun(arr,n);
+        long long ans=0;
+        for(int i=0;i<n;i++){
+            int left=i-ngeol[i];
+            int right=ngeor[i]-i;
+            long long freq=left *right;
+            long long tres=arr[i]*freq;
+            ans=ans+tres;
+        }
+        return ans;
+    }
+public:
+    long long subArrayRanges(vector<int> &nums) {
+        return sumSubarrayMaxs(nums)-sumSubarrayMins(nums);
+    }
+};
+
+
+
+```
+or just use local variables
+```cpp
+
+class Solution {
+ 
+
+    void nseorFun(vector<int> &arr,int n,vector<int> &nseor){
+        stack<int> s;
+        for(int i=0;i<n;i++){
+            while(s.size()>0 && arr[s.top()]>arr[i]){
+                nseor[s.top()]=i;
+                s.pop();
+            }
+            s.push(i);
+        }
+    }
+    void ngeorFun(vector<int> &arr,int n,vector<int> &ngeor){
+        stack<int> s;
+        for(int i=0;i<n;i++){
+            while(s.size()>0 && arr[s.top()]<arr[i]){
+                ngeor[s.top()]=i;
+                s.pop();
+            }
+            s.push(i);
+        }
+    }
+
+    void nseolFun(vector<int> &arr,int n,vector<int> &nseol){
+        stack<int> s;
+        for(int i=n-1;i>=0;i--){
+            while(s.size()>0 && arr[s.top()]>=arr[i]){
+                nseol[s.top()]=i;
+                s.pop();
+            }
+            s.push(i);
+        }
+    }
+    void ngeolFun(vector<int> &arr,int n,vector<int> &ngeol){
+        stack<int> s;
+        for(int i=n-1;i>=0;i--){
+            while(s.size()>0 && arr[s.top()]<=arr[i]){
+                ngeol[s.top()]=i;
+                s.pop();
+            }
+            s.push(i);
+        }
+    }
+   long long sumSubarrayMins(vector<int> &arr) {
+        int n=arr.size();
+        vector<int>nseol(n,-1);
+        vector<int>nseor(n,n);
+        nseolFun(arr,n,nseol);
+        nseorFun(arr,n,nseor);
+        long long ans=0;
+        for(int i=0;i<n;i++){
+            int left=i-nseol[i];
+            int right=nseor[i]-i;
+            long long freq=left *right;
+            long long tres=arr[i]*freq;
+            ans=ans+tres;
+        }
+        return ans;
+    }
+    long long sumSubarrayMaxs(vector<int> &arr) {
+        int n=arr.size();
+        vector<int>ngeol(n,-1);
+        vector<int>ngeor(n,n);
+        ngeolFun(arr,n,ngeol);
+        ngeorFun(arr,n,ngeor);
+        long long ans=0;
+        for(int i=0;i<n;i++){
+            int left=i-ngeol[i];
+            int right=ngeor[i]-i;
+            long long freq=left *right;
+            long long tres=arr[i]*freq;
+            ans=ans+tres;
+        }
+        return ans;
+    }
+public:
+    long long subArrayRanges(vector<int> &nums) {
+        return sumSubarrayMaxs(nums)-sumSubarrayMins(nums);
+    }
+};
+
+```
