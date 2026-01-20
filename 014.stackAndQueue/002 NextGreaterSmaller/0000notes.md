@@ -382,3 +382,265 @@ public:
  */
  ```
 `{-1,-1}` if you do not put and stk is empty and next() is called then span calucation will give memory error as nothing on top() and u are accessing it.
+
+
+# Q Sum of Subarray Minimums
+
+**Difficulty:** Medium  
+**Topics:** Array, Dynamic Programming, Stack, Monotonic Stack  
+
+---
+
+## Problem Description
+
+Given an array of integers `arr`, find the sum of `min(b)`, where `b` ranges over every (contiguous) subarray of `arr`. Since the answer may be large, return the answer **modulo $10^9 + 7$**.
+
+### Example 1:
+**Input:** `arr = [3, 1, 2, 4]`  
+**Output:** `17`  
+**Explanation:** Subarrays are `[3]`, `[1]`, `[2]`, `[4]`, `[3,1]`, `[1,2]`, `[2,4]`, `[3,1,2]`, `[1,2,4]`, `[3,1,2,4]`.  
+Minimums are `3, 1, 2, 4, 1, 1, 2, 1, 1, 1`.  
+Sum is `17`.
+
+### Example 2:
+**Input:** `arr = [11, 81, 94, 43, 3]`  
+**Output:** `444`
+
+---
+
+## Constraints:
+
+* $1 \le \text{arr.length} \le 3 \cdot 10^4$
+* $1 \le \text{arr[i]} \le 3 \cdot 10^4$
+
+---
+### Bruteforce
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+
+   /* Function to find the sum of the 
+   minimum value in each subarray */
+   int sumSubarrayMins(vector<int> &arr) {
+       
+       // Size of array
+       int n = arr.size();
+       
+       int mod = 1e9 + 7; // Mod value
+       
+       // To store the sum
+       int sum = 0;
+       
+       // Traverse on the array
+       for(int i=0; i < n; i++) {
+           
+           // To store the minimum of subarray
+           int mini = arr[i];
+           
+           /* Nested loop to get all 
+           subarrays starting from index i */
+           for(int j=i; j < n; j++) {
+               
+               // Update the minimum value
+               mini = min(mini, arr[j]);
+               
+               // Update the sum
+               sum = (sum + mini) % mod;
+           }
+       }
+       
+       // Return the computed sum
+       return sum;
+   }
+};
+
+int main() {
+   vector<int> arr = {3, 1, 2, 5};
+   
+   /* Creating an instance of 
+   Solution class */
+   Solution sol; 
+   
+   /* Function call to find the sum of the 
+   minimum value in each subarray */
+   int ans = sol.sumSubarrayMins(arr);
+   
+   cout << "The sum of minimum value in each subarray is: " << ans;
+   
+   return 0;
+}
+
+```
+### Optimal
+
+
+![alt text](Scanned_20260120-2022-01.jpg)
+ ![alt text](Scanned_20260120-2022-02.jpg)
+
+
+
+
+
+
+
+
+
+
+
+To understand why we multiply `left` and `right`, it helps to think of it as a **grid of possibilities**.
+
+Every subarray is defined by two things: a **Starting Index** and an **Ending Index**. For a specific element $A[i]$ to be the "hero" (the minimum) of a subarray, that subarray **must** include $A[i]$.
+
+---
+
+### The Independent Choices
+We have two independent decisions to make to form a valid subarray where $A[i]$ is the minimum:
+
+1.  **Where can the subarray start?**
+    It can start at index $i$, or any index to the left of $i$, as long as we don't hit an element smaller than $A[i]$.
+    * The number of choices is `left`.
+2.  **Where can the subarray end?**
+    It can end at index $i$, or any index to the right of $i$, as long as we don't hit an element smaller than $A[i]$.
+    * The number of choices is `right`.
+
+### The Fundamental Counting Principle
+In combinatorics, if there are $n$ ways to do one thing and $m$ ways to do another, there are $n \times m$ ways to do both.
+
+Imagine $A[i]$ is at index 3, and your boundaries allow:
+* **Possible Starts:** {1, 2, 3} (**3 choices**)
+* **Possible Ends:** {3, 4, 5, 6} (**4 choices**)
+
+By picking **any** start point from the left set and **any** end point from the right set, you "trap" the element $A[i]$ inside a subarray where it is guaranteed to be the minimum.
+
+| Start Index | End Index | Resulting Subarray |
+| :--- | :--- | :--- |
+| 1 | 3 | $[A_1, A_2, A_3]$ |
+| 1 | 4 | $[A_1, A_2, A_3, A_4]$ |
+| 2 | 3 | $[A_2, A_3]$ |
+| 3 | 5 | $[A_3, A_4, A_5]$ |
+| ... | ... | ... |
+
+There are exactly $3 \times 4 = 12$ such combinations.
+
+---
+
+### Why not Addition?
+If you added them ($3 + 4 = 7$), you would only be counting the subarrays that *either* start at a new position *or* end at a new position, but not the combinations of both. Multiplication covers every possible window that spans across index $i$.
+
+### The "Contribution" Logic
+Once you have the total count (`freq`), you know exactly how many times $A[i]$ will appear as the minimum in the final sum.
+
+$$\text{Total Sum Contribution} = A[i] \times \text{freq}$$
+
+
+```cpp
+class Solution {
+    vector<int>nseol;
+    vector<int>nseor;
+    int MOD=1e9+7;
+    void nseorFun(vector<int> &arr,int n){
+        stack<int> s;
+        for(int i=0;i<n;i++){
+            while(s.size()>0 && arr[s.top()]>arr[i]){
+                nseor[s.top()]=i;
+                s.pop();
+            }
+            s.push(i);
+        }
+    }
+
+    void nseolFun(vector<int> &arr,int n){
+        stack<int> s;
+        for(int i=n-1;i>=0;i--){
+            //equal to for dupicates here
+            while(s.size()>0 && arr[s.top()]>=arr[i]){
+                nseol[s.top()]=i;
+                s.pop();
+            }
+            s.push(i);
+        }
+    }
+public:
+    int sumSubarrayMins(vector<int> &arr) {
+        int n=arr.size();
+        nseol.resize(n,-1);
+        nseor.resize(n,n);
+        nseolFun(arr,n);
+        nseorFun(arr,n);
+        int ans=0;
+        for(int i=0;i<n;i++){
+            int left=i-nseol[i];
+            int right=nseor[i]-i;
+            long long freq=left *right;
+            long long tres=(arr[i]*freq)%MOD;
+            ans=(ans+tres)%MOD;
+        }
+        return ans;
+    }
+};
+
+```
+
+OR
+
+```cpp
+
+class Solution {
+    vector<int>nseol;
+    vector<int>nseor;
+    int MOD=1e9+7;
+    void nseorFun(vector<int> &arr,int n){
+        stack<int> s;
+        for(int i=0;i<n;i++){
+            //equal to for duplicate here
+            while(s.size()>0 && arr[s.top()]>=arr[i]){
+                nseor[s.top()]=i;
+                s.pop();
+            }
+            s.push(i);
+        }
+    }
+
+    void nseolFun(vector<int> &arr,int n){
+        stack<int> s;
+        for(int i=n-1;i>=0;i--){
+            while(s.size()>0 && arr[s.top()]>arr[i]){
+                nseol[s.top()]=i;
+                s.pop();
+            }
+            s.push(i);
+        }
+    }
+public:
+    int sumSubarrayMins(vector<int> &arr) {
+        int n=arr.size();
+        nseol.resize(n,-1);
+        nseor.resize(n,n);
+        nseolFun(arr,n);
+        nseorFun(arr,n);
+        int ans=0;
+        for(int i=0;i<n;i++){
+            int left=i-nseol[i];
+            int right=nseor[i]-i;
+            long long freq=left *right;
+            long long tres=(arr[i]*freq)%MOD;
+            ans=(ans+tres)%MOD;
+        }
+        return ans;
+    }
+};
+
+
+```
+
+Both works
+
+
+### Followup 
+How would the approach change for the sum of the maximum elements in each subarray?
+
+Instead of a monotonic increasing stack, use a monotonic decreasing stack.
