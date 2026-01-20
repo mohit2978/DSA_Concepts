@@ -880,3 +880,128 @@ public:
 };
 
 ```
+
+# Q Remove K Digits
+
+## Problem Statement
+Given a string `num` representing a non-negative integer, and an integer `k`, return the smallest possible integer after removing `k` digits from `num`.
+
+---
+
+## Examples
+
+### Example 1
+**Input:** `num = "1432219"`, `k = 3`  
+**Output:** `"1219"`  
+**Explanation:** Remove the three digits 4, 3, and 2 to form the new number 1219 which is the smallest.
+
+### Example 2
+**Input:** `num = "10200"`, `k = 1`  
+**Output:** `"200"`  
+**Explanation:** Remove the leading 1 and the resulting number is 0200, which learns to 200 after removing the leading zero.
+
+### Example 3
+**Input:** `num = "10"`, `k = 2`  
+**Output:** `"0"`  
+**Explanation:** Remove all the digits from the number and it is left with nothing which is 0.
+
+---
+
+## Constraints
+* `1 <= k <= num.length <= 10^5`
+* `num` consists of only digits.
+* `num` does not have any leading zeros except for the number '0' itself.
+
+
+![alt text](Scanned_20260121-0030.jpg)
+
+
+```cpp
+
+class Solution {
+public:
+    string removeKdigits(string nums, int k) {
+        if(k==nums.size()) return "0";
+        stack<int> stk;
+        for(int i=0;i<nums.size();i++){
+            while(k>0 && stk.size()>0 && nums[stk.top()]>nums[i]){
+                stk.pop();
+                k--;
+            }
+            stk.push(i);
+        }
+
+        while(k>0 && stk.size()>0){
+            stk.pop();
+            k--;
+        }
+        if(stk.empty()) return "0";
+        string res = "";
+        while(!stk.empty()) {
+            res.push_back(nums[stk.top()]);
+            stk.pop();
+        }
+      
+        // Trimming the zeroes at the back
+        while(res.size() > 0 && 
+              res.back() == '0') {
+
+            res.pop_back();
+        }
+        
+        // Reverse to get the actual number
+        reverse(res.begin(), res.end());
+        
+        // Edge case
+        if(res.empty()) return "0";
+        
+        // Return the stored result
+        return res;
+
+    }
+};
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
