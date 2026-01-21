@@ -2,6 +2,44 @@
 ![alt text](<004asteroid collection largest area others_231121_163402.jpg>)
 ![alt text](<004asteroid collection largest area others_231121_163402(1).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(2).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(3).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(4).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(5).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(6).jpg>)
 
+```cpp
+vector<int> asteroidCollision(vector<int> &arr)
+{
+    stack<int> st;
+
+    int n = arr.size();
+    for (int ele : arr)
+    {
+        if (ele > 0)
+        {
+            st.push(ele);
+            continue;
+        }
+
+        while (st.size() != 0 && st.top() > 0 && st.top() < -ele)
+            st.pop();
+
+        if (st.size() != 0 && st.top() == -ele)
+            st.pop();
+        else if (st.size() == 0 || st.top() < 0)
+            st.push(ele);
+        else
+        {
+        }
+    }
+
+    vector<int> ans(st.size(), 0);
+    int idx = st.size() - 1;
+    while (st.size() != 0)
+    {
+        ans[idx--] = st.top();
+        st.pop();
+    }
+
+    return ans;
+}
+```
+
 ![alt text](<004asteroid collection largest area others_231121_163402(7).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(8).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(9).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(10).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(11).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(12).jpg>)
 
 
