@@ -144,7 +144,126 @@ public:
 tc-->O(n)
 
 
- ![alt text](<001 basics_231123_174231 (1)(7).jpg>) ![alt text](<001 basics_231123_174231 (1)(8).jpg>) ![alt text](<001 basics_231123_174231 (1)(9).jpg>) ![alt text](<001 basics_231123_174231 (1)(10).jpg>) ![alt text](<001 basics_231123_174231 (1)(11).jpg>) ![alt text](<001 basics_231123_174231 (1)(12).jpg>) ![alt text](<001 basics_231123_174231 (1)(13).jpg>) ![alt text](<001 basics_231123_174231 (1)(14).jpg>) ![alt text](<001 basics_231123_174231 (1)(15).jpg>)
+ ![alt text](<001 basics_231123_174231 (1)(7).jpg>)
+  ![alt text](<001 basics_231123_174231 (1)(8).jpg>) 
+```cpp
+ListNode *mergeTwoLists(ListNode *l1, ListNode *l2)
+{
+    if (l1 == nullptr || l2 == nullptr)
+        return l1 != nullptr ? l1 : l2;
+
+    ListNode *dummy = new ListNode(-1);
+    ListNode *prev = dummy;
+
+    ListNode *c1 = l1;
+    ListNode *c2 = l2;
+
+    while (c1 != nullptr && c2 != nullptr)
+    {
+        if (c1->val <= c2->val)
+        {
+            prev->next = c1;
+            c1 = c1->next;
+        }
+        else
+        {
+            prev->next = c2;
+            c2 = c2->next;
+        }
+
+        prev = prev->next;
+    }
+
+    prev->next = c1 != nullptr ? c1 : c2;
+
+    ListNode *h = dummy->next;
+    dummy->next = nullptr;
+    delete dummy;
+    return h;
+}
+```
+
+  ![alt text](<001 basics_231123_174231 (1)(9).jpg>) 
+  ![alt text](<001 basics_231123_174231 (1)(10).jpg>)
+  
+  ```cpp
+
+ListNode *midNode(ListNode *head)
+{
+    if (head == nullptr || head->next == nullptr)
+        return head;
+
+    ListNode *slow = head;
+    ListNode *fast = head;
+    while (fast->next != nullptr && fast->next->next != nullptr)
+    {
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+
+    return slow;
+}
+
+//206
+ListNode *reverseList(ListNode *head)
+{
+    if (head == nullptr || head->next == nullptr)
+        return head;
+
+    ListNode *prev = nullptr;
+    ListNode *curr = head;
+
+    while (curr != nullptr)
+    {
+        ListNode *forw = curr->next; // backup
+
+        curr->next = prev; // link
+
+        prev = curr; // move
+        curr = forw;
+    }
+
+    return prev;
+}
+
+//234
+bool isPalindrome(ListNode *head)
+{
+    if (head == nullptr || head->next == nullptr)
+        return true;
+
+    ListNode *mid = midNode(head);
+    ListNode *nhead = mid->next;
+    mid->next = nullptr;
+
+    nhead = reverseList(nhead);
+
+    ListNode *curr1 = head;
+    ListNode *curr2 = nhead;
+
+    bool res = true;
+    while (curr1 != nullptr && curr2 != nullptr)
+    {
+        if (curr1->val != curr2->val)
+        {
+            res = false;
+            break;
+        }
+
+        curr1 = curr1->next;
+        curr2 = curr2->next;
+    }
+
+    nhead = reverseList(nhead);
+    mid->next = nhead;
+
+    return res;
+}
+
+
+  ```
+  
+   ![alt text](<001 basics_231123_174231 (1)(11).jpg>) ![alt text](<001 basics_231123_174231 (1)(12).jpg>) ![alt text](<001 basics_231123_174231 (1)(13).jpg>) ![alt text](<001 basics_231123_174231 (1)(14).jpg>) ![alt text](<001 basics_231123_174231 (1)(15).jpg>)
 
 
 

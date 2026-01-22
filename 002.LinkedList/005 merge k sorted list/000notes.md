@@ -145,6 +145,84 @@ class Solution {
 
 ![alt text](<003 merge k sorted list and reverse nodes_240412_185705 (1)(2).jpg>) ![alt text](<003 merge k sorted list and reverse nodes_240412_185705 (1)(3).jpg>) ![alt text](<003 merge k sorted list and reverse nodes_240412_185705 (1)(4).jpg>) ![alt text](<003 merge k sorted list and reverse nodes_240412_185705 (1)(5).jpg>) 
 
+```cpp
+// temporary head, temporary tail
+ListNode *th = nullptr;
+ListNode *tt = nullptr;
+
+void addFirstNode(ListNode *node)
+{
+    if (th == nullptr)
+    {
+        th = node;
+        tt = node;
+    }
+    else
+    {
+        node->next = th;
+        th = node;
+    }
+}
+int lengthOfLL(ListNode *node)
+{
+    if (node == nullptr)
+        return 0;
+
+    int len = 0;
+    while (node != nullptr)
+    {
+        node = node->next;
+        len++;
+    }
+
+    return len;
+}
+
+ListNode *reverseKGroup(ListNode *head, int k)
+{
+    if (head == nullptr || head->next == nullptr || k == 1)
+        return head;
+
+    // original head, original tail
+    ListNode *oh = nullptr;
+    ListNode *ot = nullptr;
+
+    int len = lengthOfLL(head);
+    ListNode *curr = head;
+
+    while (len >= k)
+    {
+        int tempK = k;
+        while (tempK-- > 0)
+        {
+            ListNode *forw = curr->next;
+            curr->next = nullptr;
+            addFirstNode(curr);
+            curr = forw;
+        }
+
+        if (oh == nullptr)
+        {
+            oh = th;
+            ot = tt;
+        }
+        else
+        {
+            ot->next = th;
+            ot = tt;
+        }
+
+        th = nullptr;
+        tt = nullptr;
+        len -= k;
+    }
+
+    ot->next = curr;
+    return oh;
+}
+```
+
+
 ```java
 
 /**
