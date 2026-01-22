@@ -270,6 +270,34 @@ class Solution {
 
 ```
 
+##### Cpp
+
+```cpp
+
+class Solution{
+  int lps(string s,int i,int j,vector<vector<int>> &dp){
+        if(i>j||i==j){
+            return dp[i][j]=(i>j)?0:1;
+        }
+        if(dp[i][j]!=-1) return dp[i][j];
+        if(s[i]==s[j])
+            dp[i][j]=lps(s,i+1,j-1,dp)+2;
+        else
+            dp[i][j]=max(lps(s,i+1,j,dp),lps(s,i,j-1,dp));
+        
+        return dp[i][j];
+    }
+  public: 
+  int longestPalinSubseq(string s) {
+             int n = s.size();
+
+        vector<vector<int>> dp(n, vector<int>(n, -1));
+        //Return the result
+        return lps(s,0 , n-1, dp);      
+    }
+};
+
+```
 
 #### Tabulation
 
