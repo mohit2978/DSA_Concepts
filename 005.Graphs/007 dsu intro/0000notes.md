@@ -66,6 +66,66 @@ class Solution
 }
 
 ```
+## Is connected code only but have union by size too Cpp code
+
+```cpp
+class DisjointSet {
+    vector<int>par;
+    vector<int>rank;
+    vector<int> sz;
+public:
+    DisjointSet(int n) {
+     par.resize(n);
+     rank.resize(n,0);
+     sz.resize(n,1);
+     for(int i=0;i<n;i++) par[i]=i;
+    }
+    int findPar(int x){
+           if(x==par[x]) return x;
+           int parent= findPar(par[x]);
+           if(par[x]!=parent) par[x]=parent;//for compression
+           return parent;
+       }
+
+    bool isConnected(int u, int v) {
+        return (findPar(u) == findPar(v));
+    }
+
+    void unionByRank(int u, int v) {
+        int x=findPar(u);
+        int y=findPar(v);
+        if(x==y) return;
+        if(rank[x]==rank[y]){
+               par[x]=y;
+               rank[y]++;
+           }
+           else if(rank[x]<rank[y]){
+               par[x]=y;
+           }
+           else if(rank[x]>rank[y]){
+               par[y]=x;
+           }
+    }
+
+    void unionBySize(int u, int v) {
+       
+       int ulp_u = findPar(u);
+       int ulp_v = findPar(v);
+       if (ulp_u == ulp_v) return;
+    
+       if (sz[ulp_u] < sz[ulp_v]) {
+           par[ulp_u] = ulp_v;
+           sz[ulp_v] += sz[ulp_u];
+       }
+       else {
+           par[ulp_v] = ulp_u;
+           sz[ulp_u] += sz[ulp_v];
+           
+       }
+    }
+};
+
+```
 
 
 ![alt text](<006 dsu intro_240113_013159(22).jpg>) ![alt text](<006 dsu intro_240113_013159(23).jpg>) ![alt text](<006 dsu intro_240113_013159(24).jpg>) ![alt text](<006 dsu intro_240113_013159(25).jpg>) ![alt text](<006 dsu intro_240113_013159(26).jpg>) ![alt text](<006 dsu intro_240113_013159(27).jpg>) ![alt text](<006 dsu intro_240113_013159(28).jpg>) ![alt text](<006 dsu intro_240113_013159(29).jpg>) ![alt text](<006 dsu intro_240113_013159(30).jpg>) ![alt text](<006 dsu intro_240113_013159(31).jpg>) ![alt text](<006 dsu intro_240113_013159(32).jpg>) ![alt text](<006 dsu intro_240113_013159(33).jpg>) ![alt text](<006 dsu intro_240113_013159(34).jpg>) ![alt text](<006 dsu intro_240113_013159(35).jpg>) ![alt text](<006 dsu intro_240113_013159(36).jpg>) ![alt text](<006 dsu intro_240113_013159(37).jpg>) ![alt text](<006 dsu intro_240113_013159(38).jpg>) ![alt text](<006 dsu intro_240113_013159(39).jpg>) ![alt text](<006 dsu intro_240113_013159(40).jpg>) ![alt text](<006 dsu intro_240113_013159(41).jpg>)
