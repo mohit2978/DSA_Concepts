@@ -319,3 +319,137 @@ int main() {
 }
 
 ```
+
+## Q add 1 to ll
+
+```cpp
+/*
+Definition of singly linked list:
+struct ListNode
+{
+    int val;
+    ListNode *next;
+    ListNode()
+    {
+        val = 0;
+        next = NULL;
+    }
+    ListNode(int data1)
+    {
+        val = data1;
+        next = NULL;
+    }
+    ListNode(int data1, ListNode *next1)
+    {
+        val = data1;
+        next = next1;
+    }
+};
+*/
+
+class Solution {
+ListNode* reverse(ListNode* head){
+
+    ListNode * curr=head;
+    ListNode* prev=nullptr;
+
+    while(curr!=nullptr){
+        ListNode * storage=curr->next;
+        curr->next=prev;
+        prev=curr;
+        curr=storage;
+    }
+
+    return prev;
+
+   }
+    ListNode* reverseList(ListNode* head) {
+        if(head==nullptr || head->next==nullptr) return head;
+        return reverse(head);
+    }
+public:
+    ListNode *addOne(ListNode *head) {
+        if(head==nullptr) return new ListNode(1);
+        ListNode *h=reverseList(head);
+        ListNode *curr=h;
+        ListNode *prev=curr;
+        int carry=0;
+        while(curr!=nullptr){
+            int val=curr->val;
+            if(curr==h) val+=1;
+            val+=carry;
+            carry=val/10;
+            val=val%10;
+            curr->val=val;
+            prev=curr;
+            curr=curr->next;
+        }
+        if(carry!=0){
+            prev->next=new ListNode(carry);
+        } 
+        return reverseList(h);
+    }
+};
+```
+
+### Minor Refinement Suggestions
+While the logic is solid, there are two areas where the code can be slightly more "idiomatic" or robust:
+
+1. Logic Simplification in the Addition Loop
+Inside your while loop, you use if(curr==h) val+=1; to add the initial 1. A cleaner way is to initialize your carry to 1 instead of 0. This treats the "initial +1" exactly like a carry from a previous digit.
+
+2. The reverseList Wrapper
+In your reverseList function, the check if(head==nullptr || head->next==nullptr) is technically redundant because your reverse function handles those cases naturally. Removing it keeps the code lean.
+
+### Ai code
+
+```cpp
+class Solution {
+    ListNode* reverse(ListNode* head) {
+        ListNode *curr = head, *prev = nullptr;
+        while (curr != nullptr) {
+            ListNode *nextTemp = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = nextTemp;
+        }
+        return prev;
+    }
+
+public:
+    ListNode *addOne(ListNode *head) {
+        if (!head) return new ListNode(1);
+
+        // 1. Reverse the list
+        ListNode *h = reverse(head);
+        
+        // 2. Add one using a carry-first approach
+        ListNode *curr = h, *prev = nullptr;
+        int carry = 1; // Start with carry = 1 to represent the +1
+        
+        while (curr != nullptr && carry > 0) {
+            int sum = curr->val + carry;
+            curr->val = sum % 10;
+            carry = sum / 10;
+            prev = curr;
+            curr = curr->next;
+        }
+
+        // 3. Handle leftover carry (e.g., 999 -> 1000)
+        if (carry > 0) {
+            prev->next = new ListNode(carry);
+        }
+
+        // 4. Reverse back to original order
+        return reverse(h);
+    }
+};
+
+```
+
+### Complexity Analysis
+
+Time Complexity
+O(n) The reverseList function iterates through the linked list once to reverse it, taking O(n) time. The addOne function then calls reverseList twice, resulting in two O(n) operations. The while loop inside addOne iterates through the reversed list once, which is also O(n). Therefore, the dominant factor is O(n).
+Space Complexity
+O(1) The algorithm uses a constant amount of extra space for pointers (curr, prev, storage, h) and variables (carry, val). The space complexity does not depend on the size of the input linked list
