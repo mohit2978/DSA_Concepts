@@ -20,6 +20,7 @@ odd len cycle --> last vertex visted at even level
 
 so in old len cycle prev level will not be same as current level henec not be bipartite.
 
+### BFS solution
 
 ```java
 class Solution {
@@ -69,6 +70,44 @@ class Solution {
  ![alt text](image-4.png)
 
  ![alt text](image-5.png)
+ ### Cpp
+
+ ```cpp
+class Solution{
+    bool traverseDFS( vector<int>graph[],vector<int>&vis,int v,int color){
+        vis[v]=color;
+        for(auto nbr:graph[v]){
+            if(vis[nbr]==0){
+                bool isbip=traverseDFS(graph,vis,nbr,-1*color);
+                if(isbip==false) return false;
+            }
+            else {
+                int oldcolor=vis[nbr];
+                int newcolor=-1*color;
+                if(oldcolor!=newcolor) return false;
+            }
+        }
+        return true;
+
+    }
+ 
+public:
+    bool isBipartite(int V, vector<int> adj[])  {
+        vector<int>vis(V);
+        for(int v=0;v<V;v++){
+            if(vis[v]==0){
+                bool isbipartite=traverseDFS(adj,vis,v,1);
+                if(isbipartite==false)
+                    return false;
+  
+                    }
+            }
+        return true;
+    }
+};
+
+ ```
+ ### Java
 
 ```java
 class Solution {
