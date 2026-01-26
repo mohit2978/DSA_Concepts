@@ -23,7 +23,7 @@ vector<int> asteroidCollision(vector<int> &arr)
             st.pop();
         else if (st.size() == 0 || st.top() < 0)
             st.push(ele);
-        else
+        else//if you do not put this else then also it works perfect
         {
         }
     }
