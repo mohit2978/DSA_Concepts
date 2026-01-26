@@ -144,9 +144,14 @@ class Solution {
                     }
                 }
             }
-            return v;
-            
-            
+        int cnt1 = 0;
+        for (int i = 0; i < n; i++) {
+            if (nums[i] ==v) {
+                cnt1++;
+            }
+        }
+        
+        return (cnt1>(n/2))?v:-1;    
         }
     };
 ```
