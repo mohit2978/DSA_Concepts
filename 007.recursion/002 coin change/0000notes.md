@@ -65,6 +65,161 @@ Output:
 ![alt text](<002coin change_231126_233809(6).jpg>) ![alt text](<002coin change_231126_233809(7).jpg>) ![alt text](<002coin change_231126_233809(8).jpg>) ![alt text](<002coin change_231126_233809(9).jpg>) ![alt text](<002coin change_231126_233809(10).jpg>) ![alt text](<002coin change_231126_233809(11).jpg>)
 ![alt text](<002coin change_231126_233809(12).jpg>) ![alt text](<002coin change_231126_233809(13).jpg>) ![alt text](<002coin change_231126_233809(14).jpg>) ![alt text](<002coin change_231126_233809(15).jpg>) ![alt text](<002coin change_231126_233809(16).jpg>) ![alt text](<002coin change_231126_233809(17).jpg>) ![alt text](<002coin change_231126_233809(18).jpg>) ![alt text](<002coin change_231126_233809(19).jpg>) ![alt text](<002coin change_231126_233809(20).jpg>) ![alt text](<002coin change_231126_233809(21).jpg>) 
 
+### All 4
+
+#### Way-1
+
+```java
+
+    public static int coinChangePermutation_IN(int[] coins, int tar, String psf) {
+        if (tar == 0) {
+            System.out.println(psf);
+            return 1;
+        }
+
+        int count = 0;
+        for (int i = 0; i < coins.length; i++) {
+            if (tar - coins[i] >= 0) {
+                count += coinChangePermutation_IN(coins, tar - coins[i], psf + coins[i] + " ");
+            }
+        }
+
+        return count;
+
+    }
+
+    public static int coinChangeCombination_IN(int[] coins, int tar, int idx, String psf) {
+        if (tar == 0) {
+            System.out.println(psf);
+            return 1;
+        }
+
+        int count = 0;
+        for (int i = idx; i < coins.length; i++) {
+            if (tar - coins[i] >= 0) {
+                count += coinChangeCombination_IN(coins, tar - coins[i], i, psf + coins[i] + " ");
+            }
+        }
+        return count;
+    }
+
+    public static int coinChangePermutation_Sin(int[] coins, int tar, String psf) {
+        if (tar == 0) {
+            System.out.println(psf);
+            return 1;
+        }
+
+        int count = 0;
+        for (int i = 0; i < coins.length; i++) {
+            if (coins[i] > 0 && tar - coins[i] >= 0) {
+                int val = coins[i];
+                coins[i] = -coins[i];
+                count += coinChangePermutation_Sin(coins, tar - val, psf + val + " ");
+                coins[i] = -coins[i];
+            }
+        }
+
+        return count;
+    }
+
+    public static int coinChangeCombination_Sin(int[] coins, int tar, int idx, String psf) {
+        if (tar == 0) {
+            System.out.println(psf);
+            return 1;
+        }
+
+        int count = 0;
+        for (int i = idx; i < coins.length; i++) {
+            if (tar - coins[i] >= 0) {
+                count += coinChangeCombination_Sin(coins, tar - coins[i], i + 1, psf + coins[i] + " ");
+            }
+        }
+        return count;
+    }
+
+
+```
+#### way-2 Subset or select non select way
+
+
+```java
+
+    public static int coinChangePermutation_IN_Sub(int[] coins, int tar, int idx, String psf) {
+        if (tar == 0 || idx == coins.length) {
+            if (tar == 0) {
+                System.out.println(psf);
+                return 1;
+            }
+            return 0;
+        }
+
+        int count = 0;
+        if (tar - coins[idx] >= 0)
+            count += coinChangePermutation_IN_Sub(coins, tar - coins[idx], 0, psf + coins[idx] + " ");
+        count += coinChangePermutation_IN_Sub(coins, tar, idx + 1, psf);
+
+        return count;
+    }
+
+    public static int coinChangeCombination_IN_Sub(int[] coins, int tar, int idx, String psf) {
+        if (tar == 0 || idx == coins.length) {
+            if (tar == 0) {
+                System.out.println(psf);
+                return 1;
+            }
+            return 0;
+        }
+
+        int count = 0;
+        if (tar - coins[idx] >= 0)
+            count += coinChangeCombination_IN_Sub(coins, tar - coins[idx], idx, psf + coins[idx] + " ");
+        count += coinChangeCombination_IN_Sub(coins, tar, idx + 1, psf);
+
+        return count;
+    }
+
+    public static int coinChangeCombination_Sin_Sub(int[] coins, int tar, int idx, String psf) {
+        if (tar == 0 || idx == coins.length) {
+            if (tar == 0) {
+                System.out.println(psf);
+                return 1;
+            }
+            return 0;
+        }
+
+        int count = 0;
+
+        if (tar - coins[idx] >= 0) {
+            count += coinChangeCombination_Sin_Sub(coins, tar - coins[idx], idx + 1, psf + coins[idx] + " ");
+        }
+        count += coinChangeCombination_Sin_Sub(coins, tar, idx + 1, psf);
+
+        return count;
+    }
+
+    public static int coinChangePermutation_Sin_Sub(int[] coins, int tar, int idx, String psf) {
+        if (tar == 0 || idx == coins.length) {
+            if (tar == 0) {
+                System.out.println(psf);
+                return 1;
+            }
+            return 0;
+        }
+
+        int count = 0;
+        if (tar - coins[idx] >= 0) {
+            int val = coins[idx];
+            coins[idx] = -coins[idx];
+            count += coinChangePermutation_IN_Sub(coins, tar - val, 0, psf + val + " ");
+            coins[idx] = -coins[idx];
+        }
+        count += coinChangePermutation_IN_Sub(coins, tar, idx + 1, psf);
+
+        return count;
+    }
+
+
+```
 
 Provided with a goal integer target and an array of unique integer candidates, provide a list of all possible combinations of candidates in which the selected numbers add up to the target. The combinations can be returned in any order.
 
