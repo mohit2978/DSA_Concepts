@@ -617,5 +617,50 @@ class Main {
 }
 
 ```
+# Time Complexity: $O(V + E)$ Explained
 
+The complexity $O(V + E)$ is common for both **Breadth-First Search (BFS)** and **Depth-First Search (DFS)** when using an **Adjacency List**.
+
+### 1. The "V" (Vertices)
+Every single node in the graph must be visited at least once to determine if it has neighbors or to process its data. 
+* In **BFS**, each node is enqueued and dequeued exactly once.
+* In **DFS**, each node is visited via one recursive call or stack push.
+* **Work done:** $O(V)$.
+
+### 2. The "E" (Edges)
+Once you are "at" a node, you look at all its neighbors. In an adjacency list, this means iterating through the list of edges connected to that node.
+* For every node you visit, you iterate over its specific edges.
+* Over the entire course of the algorithm, **every edge is looked at exactly twice** (once from each end) in an undirected graph, or **exactly once** in a directed graph.
+* **Work done:** $O(E)$.
+
+---
+
+### 3. Putting it Together
+The total time is the sum of visiting all vertices and traversing all their edges:
+$$Total\ Time = O(V) + O(E) = O(V + E)$$
+
+---
+
+### 4. Comparison: Adjacency List vs. Adjacency Matrix
+The $O(V + E)$ complexity only holds if you use an **Adjacency List**. If you use an **Adjacency Matrix**, the complexity changes:
+
+| Structure | Time Complexity | Why? |
+| :--- | :--- | :--- |
+| **Adjacency List** | $O(V + E)$ | You only visit actual existing connections. |
+| **Adjacency Matrix** | $O(V^2)$ | For every node ($V$), you must scan an entire row of length $V$ to find neighbors, regardless of how many edges actually exist. |
+
+
+
+---
+
+### 5. Simple Analogy: The House Party
+Imagine a party where **Vertices ($V$)** are people and **Edges ($E$)** are the handshakes between them.
+1. To meet everyone (**BFS/DFS**), you must walk up to every person (**$V$**).
+2. To know who everyone knows, you must observe every handshake (**$E$**).
+3. If you do both, your "effort" is proportional to the number of people plus the number of handshakes.
+
+---
+
+### Summary for Interviews
+> "The complexity is $O(V + E)$ because we visit every vertex exactly once and, for each vertex, we iterate over all its outgoing edges. Summing these up across the entire graph gives us total work proportional to the number of vertices plus the number of edges."
 
