@@ -1,18 +1,9 @@
 # Notes
+
 ![alt text](<001 7 ques majority element_250225_163213_1.jpg>)
  ![alt text](<001 7 ques majority element_250225_163213_2.jpg>)
   ![alt text](<001 7 ques majority element_250225_163213_3.jpg>)
-   ![alt text](<001 7 ques majority element_250225_163213_4.jpg>)
-    ![alt text](<001 7 ques majority element_250225_163213_5.jpg>)
-     ![alt text](<001 7 ques majority element_250225_163213_6.jpg>) 
-     ![alt text](<001 7 ques majority element_250225_163213_7.jpg>) 
-     ![alt text](<001 7 ques majority element_250225_163213_8.jpg>)
-      ![alt text](<001 7 ques majority element_250225_163213_9.jpg>) 
-      ![alt text](<001 7 ques majority element_250225_163213_10.jpg>)
 
-![alt text](<001 7 ques majority element_250225_163213_11.jpg>) 
-
-## Code
 
 ### Q1
 
@@ -53,6 +44,11 @@ class Solution {
     }
 ```
 
+
+![alt text](<001 7 ques majority element_250225_163213_4.jpg>)
+
+   
+
 ### Q2
 
 ```cpp
@@ -89,48 +85,10 @@ class Solution {
  }   
  ```
 
- ### Q3
 
- ```cpp
- #include<bits/stdc++.h>
-using namespace std;
-int getSumInRange(vector<int>&vec, int n,vector<vector<int>>updates){
+![alt text](<001 7 ques majority element_250225_163213_5.jpg>)
 
-    for(vector<int> v: updates){
-        int s=v[0];
-        int e=v[1];
-        int val=v[2];
-        vec[s]=val;
-        vec[e+1]=-val;
-    }
-}
-
-void getPrefixSum(vector<int>&v){
-
-    for(int i=1;i<v.size();i++){
-        v[i]=v[i-1]+v[i];
-    }
-}
-
-void print(vector<int>& v){
-    for(int val :v){
-        cout<<val<<" ";
-    }
-    cout<<endl;
-}
-
-int main(){
-    vector<int>v(6,0); 
-    vector<vector<int>>updates ={{1,3,2},{2,4,3},{0,2,-2}};
-    getSumInRange(v,5,updates);
-    getPrefixSum(v);
-    print(v);
-    return 0;
-}
-
-```
-
-### Q4
+### Q3
 
 ```java
 class Solution {
@@ -158,7 +116,16 @@ class Solution {
 }
 ```
 
-### Q5 majority element
+![alt text](<001 7 ques majority element_250225_163213_6.jpg>) 
+![alt text](<001 7 ques majority element_250225_163213_7.jpg>) 
+![alt text](<001 7 ques majority element_250225_163213_8.jpg>)
+![alt text](<001 7 ques majority element_250225_163213_9.jpg>) 
+![alt text](<001 7 ques majority element_250225_163213_10.jpg>)
+
+![alt text](<001 7 ques majority element_250225_163213_11.jpg>) 
+
+
+### majority element
 
 ```cpp
 class Solution {
@@ -225,3 +192,48 @@ class Solution {
     };
 
 ```
+
+
+ ### Imp scaline algo
+
+ ```cpp
+ #include<bits/stdc++.h>
+using namespace std;
+int getSumInRange(vector<int>&vec, int n,vector<vector<int>>updates){
+
+    for(vector<int> v: updates){
+        int s=v[0];
+        int e=v[1];
+        int val=v[2];
+        vec[s]=val;
+        vec[e+1]=-val;
+    }
+}
+
+void getPrefixSum(vector<int>&v){
+
+    for(int i=1;i<v.size();i++){
+        v[i]=v[i-1]+v[i];
+    }
+}
+
+void print(vector<int>& v){
+    for(int val :v){
+        cout<<val<<" ";
+    }
+    cout<<endl;
+}
+
+int main(){
+    vector<int>v(6,0); 
+    vector<vector<int>>updates ={{1,3,2},{2,4,3},{0,2,-2}};
+    getSumInRange(v,5,updates);
+    getPrefixSum(v);
+    print(v);
+    return 0;
+}
+
+```
+
+
+
