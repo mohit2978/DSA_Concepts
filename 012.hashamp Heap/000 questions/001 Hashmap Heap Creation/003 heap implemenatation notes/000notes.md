@@ -457,7 +457,7 @@ int main() {
     return 0;
 }
 ```
-1st step build heap assume min heap 
+1st step build heap from array assume min heap 
 
 2ns step extraction phase
 
@@ -503,6 +503,14 @@ Imagine an array `[30, 20, 10]`:
 
 ### Summary for Interviews
 > "The extraction phase is necessary because a heap is only a **partial ordering**. To get a **total ordering** (a sorted array), we repeatedly swap the maximum element to the end of the array and rebuild the heap with the remaining elements. This takes $O(N \log N)$ time."
+
+for making heap from array we have two approaches 
+
+1. Bottom up --> for non leaf node we call downheapify .this has TC of O(n)
+2. top down--> for each array element insert in heap and apply upheapify.normal insertion of heap ,so for n insertions it takes o(n log n) time 
+
+we use 1st one to build heap from array as takes O(n) time and let us discuss this in detail now
+
 
 
 # Why $n/2$ to $0$ in Build Heap?
@@ -679,7 +687,7 @@ This proves that the work is bounded by a linear function of $N$, hence **$O(N)$
 > "We treat the summation as an infinite series because it provides a clean upper bound. Since the series converges to a constant (2), it proves that the total work done is proportional to $N$, regardless of how large $N$ becomes."
 
 ## 2. Top-Down Approach ($O(N \log N)$)
-This is the method where we treat the array as $N$ successive insertions using `up-heapify`.
+This is the method where we treat the array as $N$ successive insertions using `up-heapify`.we insert one by one and apply upHeapify() 
 
 ### The Logic
 In this case, work is based on the **depth** of the node from the root.
