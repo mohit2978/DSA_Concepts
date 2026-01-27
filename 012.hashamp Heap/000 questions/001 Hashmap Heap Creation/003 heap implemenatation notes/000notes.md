@@ -873,7 +873,39 @@ public:
 We have seen this in heap sort why we using downheapfy. and why using from n/2 -1 to 0
 
 
+## Convert min heap to  max heap
 
+
+```cpp
+
+class Solution {
+        void downheapify(int idx,vector<int>& heap ){
+        int n=heap.size();
+        int residx=idx;
+        int lidx=2*idx+1;
+        int ridx=2*idx+2;
+        if(lidx<n && heap[residx]<heap[lidx]){
+            residx=lidx;
+        }
+        if(ridx<n && heap[residx]<heap[ridx]){
+            residx=ridx;
+        }
+        if(residx!=idx){
+            swap(heap[residx],heap[idx]);
+            downheapify(residx,heap);
+        }
+
+    }
+public:
+    vector<int> minToMaxHeap(vector<int> nums) {
+        int n=nums.size();
+        for (int i = n / 2 - 1; i >= 0; i--) {
+        downheapify(i, nums);
+    }
+    return nums;
+    }
+};
+```
 
 
 
