@@ -59,90 +59,171 @@ Every time you move down one level in a heap (during `heapify`), you are essenti
 
 ![alt text](<004heap implementation _240517_174240(22).jpg>) ![alt text](<004heap implementation _240517_174240(23).jpg>) 
 
-## Basic Heap code 
+## Basic Min Heap code 
 
 ```cpp 
-
-#include <bits/stdc++.h>
-using namespace std;
-
-class Heap {
-        void upHeapify(int i){
-            if(i==0) return;
-           int parIdx=(i-1)/2;
-           if(v[parIdx]>v[i]){
-               swap(v[parIdx],v[i]);
-               upHeapify(parIdx);
-           }
-       }
-       
-       void downHeapify(int idx){
-           int resIdx=idx;
-           int lIdx=2*idx+1;
-           int rIdx=2*idx+2;
-           if(lIdx<v.size()&& v[lIdx]<v[resIdx]) resIdx=lIdx;
-           if(rIdx<v.size() && v[rIdx]<v[resIdx]) resIdx=rIdx;
-           if(resIdx!=idx){
-               swap(v[resIdx],v[idx]);
-               downHeapify(resIdx);
-           }
-           
-       }
-    public:
-   vector<int> v;
-    void insert(int val){
-        v.push_back(val);
-        if(v.size()==1) return;
-        upHeapify(v.size()-1);
+class Solution{
+    vector<int>heap;
+    void upheapify(int idx){
+        int pidx=(idx-1)/2;
+        if(pidx>=0 && heap[pidx]>heap[idx]){
+            swap(heap[pidx],heap[idx]);
+            upheapify(pidx);
+        }
     }
-    
-    void Heapify(int index) {
-        downHeapify(0);
+    void downheapify(int idx ){
+        int n=heap.size();
+        int residx=idx;
+        int lidx=2*idx+1;
+        int ridx=2*idx+2;
+        if(lidx<n && heap[residx]>heap[lidx]){
+            residx=lidx;
+        }
+        if(ridx<n && heap[residx]>heap[ridx]){
+            residx=ridx;
+        }
+        if(residx!=idx){
+            swap(heap[residx],heap[idx]);
+            downheapify(residx);
+        }
+
     }
-    
-    void delete_from_heap(){
-        int n=v.size();
-        if(n==1) {
-            v.pop_back();
+    void heapify( int ind, int val) {
+        int oldVal=heap[ind];
+        heap[ind]=val;
+        if(oldVal>heap[ind]) upheapify(ind);
+        else downheapify(ind);
+    }
+    void add(int val){
+        heap.push_back(val);
+        upheapify(heapSize()-1);
+    }
+    void remove(){
+        if(heapSize()==0) return;
+        if(heapSize()==1) {
+            heap.pop_back();
             return;
         }
-        swap(v[n-1],v[0]);
-        v.pop_back();
-        Heapify(0);
+        int idx=heapSize()-1;
+        swap(heap[0],heap[idx]);
+        heap.pop_back();
+        downheapify(0);
     }
-    
+    public:
+
+        void initializeHeap(){
+
+        }
+
+        void insert(int key){
+            add(key);
+        }
+
+        void changeKey(int index, int new_val){
+            heapify(index,new_val);
+        }
+
+        void extractMin(){
+            remove();
+        }
+
+        bool isEmpty(){
+            return heap.size()==0;
+        }
+
+        int getMin(){
+            if(isEmpty()==true) return -(1e5+1);
+            return heap[0];
+        }
+
+        int heapSize(){
+            return heap.size();
+        }
 };
 
+```
 
+## Basic max heap code
+```cpp
 
-int main() {
-    Heap* h1 = new Heap();
-    int n;
-    cin>>n;
-    for(int i=0; i<n; i++)
-    {
-        string command;
-        cin>>command;
-        if(command=="insert"){
-            int value;
-            cin>>value;
-            h1->insert(value);
-        }
-        else if(command=="delete")
-        {
-            h1->delete_from_heap();
-        }
-        else if(command=="print"){
-            for(auto j: h1->v)
-            {
-                cout<<j<<" ";
-            }
-            cout<<endl;
+class Solution{
+    vector<int>heap;
+    void upheapify(int idx){
+        int pidx=(idx-1)/2;
+        if(pidx>=0 && heap[pidx]<heap[idx]){
+            swap(heap[pidx],heap[idx]);
+            upheapify(pidx);
         }
     }
+    void downheapify(int idx ){
+        int n=heap.size();
+        int residx=idx;
+        int lidx=2*idx+1;
+        int ridx=2*idx+2;
+        if(lidx<n && heap[residx]<heap[lidx]){
+            residx=lidx;
+        }
+        if(ridx<n && heap[residx]<heap[ridx]){
+            residx=ridx;
+        }
+        if(residx!=idx){
+            swap(heap[residx],heap[idx]);
+            downheapify(residx);
+        }
 
-}
+    }
+    void heapify( int ind, int val) {
+        int oldVal=heap[ind];
+        heap[ind]=val;
+        if(oldVal<heap[ind]) upheapify(ind);
+        else downheapify(ind);
+    }
+    void add(int val){
+        heap.push_back(val);
+        upheapify(heapSize()-1);
+    }
+    void remove(){
+        if(heapSize()==0) return;
+        if(heapSize()==1) {
+            heap.pop_back();
+            return;
+        }
+        int idx=heapSize()-1;
+        swap(heap[0],heap[idx]);
+        heap.pop_back();
+        downheapify(0);
+    }
+    public:
 
+        void initializeHeap(){
+
+        }
+
+        void insert(int key){
+            add(key);
+        }
+
+        void changeKey(int index, int new_val){
+            heapify(index,new_val);
+        }
+
+        void extractMax(){
+            remove();
+        }
+
+        bool isEmpty(){
+            return heap.size()==0;
+        }
+
+        int getMax(){
+            if(isEmpty()==true) return -(1e5+1);
+            return heap[0];
+        }
+
+        int heapSize(){
+            return heap.size();
+        }
+};
 ```
 
 ![alt text](<004heap implementation _240517_174240(24).jpg>) ![alt text](<004heap implementation _240517_174240(25).jpg>) ![alt text](<004heap implementation _240517_174240(26).jpg>) ![alt text](<004heap implementation _240517_174240(27).jpg>) ![alt text](<004heap implementation _240517_174240(28).jpg>) ![alt text](<004heap implementation _240517_174240(29).jpg>) ![alt text](<004heap implementation _240517_174240(30).jpg>) ![alt text](<004heap implementation _240517_174240(31).jpg>) ![alt text](<004heap implementation _240517_174240(32).jpg>)
@@ -199,7 +280,7 @@ void pop() {
 }
 ```
 
-## Heap impl
+## Heap impl general
 ```java
 import java.util.ArrayList;
 
@@ -307,37 +388,6 @@ public class heap {
 
 ```
 
-### Client
-
-```java
-
-public class client{
-
-    public static void solve1(int[] arr){
-        heap pq = new heap();
-        
-        for(int ele : arr) pq.add(ele);
-
-        while(pq.size() != 0){
-            System.out.print(pq.remove() + " ");
-        }
-    }
-
-    public static void solve2(int[] arr){
-        heap pq = new heap(arr,false);
-
-        while(pq.size() != 0){
-            System.out.print(pq.remove() + " ");
-        }
-    }
-
-    public static void main(String[] args){
-        int[] arr = { 10, 20, 30, -2, -3, -4, 5, 6, 7, 8, 9, 22, 11, 13 };
-        solve2(arr);
-    }
-
-}
-```
 
 
 ## Heapsort
@@ -371,7 +421,7 @@ public:
 
         if (pi != targetIdx) {
             swap(arr[pi], arr[targetIdx]); 
-            heapify(targetIdx, arr, li, isMax);
+            downheapify(targetIdx, arr, li, isMax);
         }
     }
 
@@ -774,9 +824,45 @@ if old val was greater than and new value is less and it is min heap so offcurse
 
 if old value is less than new value  and it is min heap so offcourse larger value will move down so we use downheapify
 
+## Build heap from array 
 
+Min heap
+```cpp
+class Solution {
+       // Custom comparator logic based on isMax flag
+ bool compareTo(int a, int b, bool isMax) {
+        if (isMax)
+            return a > b;
+        else
+            return a < b;
+    }
 
+ void downheapify(int pi, vector<int>& arr, int li, bool isMax) {
+        int targetIdx = pi;
+        int lci = 2 * pi + 1;
+        int rci = 2 * pi + 2;
 
+        if (lci <= li && compareTo(arr[lci], arr[targetIdx], isMax))
+            targetIdx = lci;
+        if (rci <= li && compareTo(arr[rci], arr[targetIdx], isMax))
+            targetIdx = rci;
+
+        if (pi != targetIdx) {
+            swap(arr[pi], arr[targetIdx]); 
+            downheapify(targetIdx, arr, li, isMax);
+        }
+    }
+public:
+    void buildMinHeap(vector<int> &nums) {
+        int n=nums.size();
+         for (int i = n / 2 - 1; i >= 0; i--) {
+        downheapify(i, nums, n - 1,false);
+    }
+    }
+};
+```
+
+We have seen this in heap sort why we using downheapfy. and why using from n/2 -1 to 0
 
 
 
