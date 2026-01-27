@@ -1,6 +1,37 @@
 # Notes
 ![alt text](<003 Coin change continued _231126_234039.jpg>)
-![alt text](<003 Coin change continued _231126_234039(1).jpg>) ![alt text](<003 Coin change continued _231126_234039(2).jpg>) ![alt text](<003 Coin change continued _231126_234039(3).jpg>) ![alt text](<003 Coin change continued _231126_234039(4).jpg>) ![alt text](<003 Coin change continued _231126_234039(5).jpg>) ![alt text](<003 Coin change continued _231126_234039(6).jpg>) ![alt text](<003 Coin change continued _231126_234039(7).jpg>) ![alt text](<003 Coin change continued _231126_234039(8).jpg>) ![alt text](<003 Coin change continued _231126_234039(9).jpg>) ![alt text](<003 Coin change continued _231126_234039(10).jpg>) ![alt text](<003 Coin change continued _231126_234039(11).jpg>) ![alt text](<003 Coin change continued _231126_234039(12).jpg>) ![alt text](<003 Coin change continued _231126_234039(13).jpg>) ![alt text](<003 Coin change continued _231126_234039(14).jpg>) ![alt text](<003 Coin change continued _231126_234039(15).jpg>) ![alt text](<003 Coin change continued _231126_234039(16).jpg>) ![alt text](<003 Coin change continued _231126_234039(17).jpg>) ![alt text](<003 Coin change continued _231126_234039(18).jpg>) ![alt text](<003 Coin change continued _231126_234039(19).jpg>) ![alt text](<003 Coin change continued _231126_234039(20).jpg>) 
+![alt text](<003 Coin change continued _231126_234039(1).jpg>) ![alt text](<003 Coin change continued _231126_234039(2).jpg>) ![alt text](<003 Coin change continued _231126_234039(3).jpg>) ![alt text](<003 Coin change continued _231126_234039(4).jpg>) ![alt text](<003 Coin change continued _231126_234039(5).jpg>) ![alt text](<003 Coin change continued _231126_234039(6).jpg>) ![alt text](<003 Coin change continued _231126_234039(7).jpg>) ![alt text](<003 Coin change continued _231126_234039(8).jpg>) 
+
+```cpp
+
+class Solution {
+    string tres="";
+    vector<string>res;
+    void solve(string digits,vector<string>&keypad,int idx){
+        if(idx==digits.size()){
+            res.push_back(tres);
+            return;
+        }
+        int num=digits[idx]-'0';
+        string str=keypad[num];
+        for(char ch:str){
+            tres.push_back(ch);
+            solve(digits,keypad,idx+1);
+            tres.pop_back();
+        }
+    }
+public:
+    vector<string> letterCombinations(string digits) {
+        vector<string>keypad={"","","abc","def","ghi","jkl","mno","pqrs","tuv","wxyz"};
+        solve(digits,keypad,0);
+        return res;
+    }
+};
+```
+
+
+
+![alt text](<003 Coin change continued _231126_234039(9).jpg>) ![alt text](<003 Coin change continued _231126_234039(10).jpg>) ![alt text](<003 Coin change continued _231126_234039(11).jpg>) ![alt text](<003 Coin change continued _231126_234039(12).jpg>) ![alt text](<003 Coin change continued _231126_234039(13).jpg>) ![alt text](<003 Coin change continued _231126_234039(14).jpg>) ![alt text](<003 Coin change continued _231126_234039(15).jpg>) ![alt text](<003 Coin change continued _231126_234039(16).jpg>) ![alt text](<003 Coin change continued _231126_234039(17).jpg>) ![alt text](<003 Coin change continued _231126_234039(18).jpg>) ![alt text](<003 Coin change continued _231126_234039(19).jpg>) ![alt text](<003 Coin change continued _231126_234039(20).jpg>) 
 
 ## Another good solution
 
