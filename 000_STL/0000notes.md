@@ -54,3 +54,74 @@
 | **`std::function`** | `std::function<R(Args...)> f` | A type-safe wrapper for function pointers, lambda functions, or function objects. |
 | **`std::bind`** | `std::bind(func, arg1, _1, ...)` | Creates a new function object by binding arguments to an existing function. (Less common in modern C++ due to lambdas.) |
 | **`std::greater<T>`** | Used as a comparator: `priority_queue<int, vector<int>, greater<int>>` | Comparator that defines the "less than" relationship as the greater of the two values (useful for min-heaps/descending sort). |
+
+
+# std::list STL (Doubly Linked List)
+
+### 1. Core Properties
+- **Non-Contiguous**: Elements are scattered in memory.
+- **Bi-Directional**: Each node has `next` and `prev`.
+- **No Random Access**: You cannot use `l[i]`. You must use an **iterator** to walk the list.
+
+### 2. When to use List?
+- You need to frequently **insert or delete** from the **front** or the **middle**.
+- You don't know the size and want to avoid the $O(N)$ "reallocate and copy" cost of a vector.
+- You do **not** need to jump to specific indices (like "give me the 500th element").
+
+### 3. Important Special Member Functions
+Unlike Vector, List has built-in optimized functions:
+- `l.unique()`: Removes consecutive duplicate elements.
+- `l.reverse()`: Reverses the list in $O(N)$ by swapping pointers.
+- `l.sort()`: Uses a specialized Merge Sort ($O(N \log N)$) because `std::sort` doesn't work on lists.
+- `l.splice()`: Moves elements from one list to another in $O(1)$ without copying.
+
+### 4. The "Cache" Downside
+Even though List is $O(1)$ for insertion, it is often **slower** than Vector for small amounts of data. 
+- **Reason**: Vector's contiguous memory is "Cache Friendly." The CPU can predict the next element. 
+- **List** requires the CPU to jump all over the RAM, causing "Cache Misses."
+
+
+```cpp
+#include <iostream>
+#include <list>
+
+int main() {
+    std::list<int> l = {10, 20, 30};
+
+    // 1. Adding elements
+    l.push_back(40);    // [10, 20, 30, 40]
+    l.push_front(5);    // [5, 10, 20, 30, 40]
+
+    // 2. Accessing (No [] operator!)
+    // int x = l[2];    // ERROR!
+    int first = l.front();
+    int last = l.back();
+
+    // 3. Iterators (How we move through the chain)
+    auto it = l.begin();
+    std::advance(it, 2); // Move iterator to 3rd element
+    l.insert(it, 25);    // Inserts 25 BEFORE the iterator
+
+    // 4. Removal
+    l.pop_front();
+    l.remove(20);        // Removes ALL instances of 20 (Special List function)
+
+    return 0;
+}
+```
+
+### Comparison Table: Time Complexity
+
+| Operation | `std::list` (DLL) | `std::vector` (Array) |
+| :--- | :--- | :--- |
+| **Random Access** (e.g., `arr[5]`) | **$O(N)$** (Must walk the chain) | **$O(1)$** (Direct jump) |
+| **Insert/Delete at Front** | **$O(1)$** | **$O(N)$** (Must shift everyone) |
+| **Insert/Delete at Back** | **$O(1)$** | **$O(1)$** (Amortized) |
+| **Insert/Delete in Middle** | **$O(1)$*** | **$O(N)$** (Must shift everyone) |
+
+> ***Note on Middle Insertion**: While the act of re-linking pointers is $O(1)$, you must first spend $O(N)$ time to reach the middle position using an iterator.
+
+### Pro-Tip for Interviews
+If an interviewer asks: "Why does `std::sort(l.begin(), l.end())` fail for a list?"
+
+Answer: `std::sort` requires Random Access Iterators (the ability to jump around like it + 5). Since a list only allows you to step one-by-one (it++), you must use the list's own member function: l.sort().

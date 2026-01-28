@@ -5,6 +5,134 @@
 
 ![alt text](<006 hashmap youtube_231018_213422(22).jpg>) ![alt text](<006 hashmap youtube_231018_213422(23).jpg>) ![alt text](<006 hashmap youtube_231018_213422(24).jpg>) ![alt text](<006 hashmap youtube_231018_213422(25).jpg>) ![alt text](<006 hashmap youtube_231018_213422(26).jpg>) ![alt text](<006 hashmap youtube_231018_213422(27).jpg>)
 
+### Cpp code
+
+```cpp
+
+#include <iostream>
+#include <vector>
+#include <list>
+#include <string>
+#include <cmath>
+
+using namespace std;
+
+template <typename K, typename V>
+class MyHashMap {
+private:
+    struct Node {
+        K key;
+        V value;
+        Node(K k, V v) : key(k), value(v) {}
+    };
+
+    vector<list<Node>> buckets;
+    int noOfElements;
+    int bucketCount;
+    double loadFactorThreshold = 0.75;
+
+    // Helper to get bucket index
+    int getBucketIndex(K key) {
+        // C++ built-in hash function
+        size_t hc = hash<K>{}(key);
+        return hc % bucketCount;
+    }
+
+    void rehash() {
+        vector<list<Node>> oldBuckets = buckets;
+        
+        // Double the capacity
+        bucketCount *= 2;
+        buckets.assign(bucketCount, list<Node>());
+        noOfElements = 0;
+
+        for (auto& group : oldBuckets) {
+            for (auto& node : group) {
+                put(node.key, node.value);
+            }
+        }
+    }
+
+public:
+    MyHashMap(int initialCapacity = 10) {
+        this->bucketCount = initialCapacity;
+        this->noOfElements = 0;
+        buckets.assign(bucketCount, list<Node>());
+    }
+
+    void put(K key, V value) {
+        int bi = getBucketIndex(key);
+        
+        // Search if key exists
+        for (auto& node : buckets[bi]) {
+            if (node.key == key) {
+                node.value = value;
+                return;
+            }
+        }
+
+        // If not found, add new
+        buckets[bi].push_back(Node(key, value));
+        noOfElements++;
+
+        // Check Global Load Factor
+        if ((1.0 * noOfElements) / bucketCount > loadFactorThreshold) {
+            rehash();
+        }
+    }
+
+    V* get(K key) {
+        int bi = getBucketIndex(key);
+        for (auto& node : buckets[bi]) {
+            if (node.key == key) {
+                return &(node.value);
+            }
+        }
+        return nullptr; // Return pointer so we can return null if not found
+    }
+
+    bool containsKey(K key) {
+        int bi = getBucketIndex(key);
+        for (auto& node : buckets[bi]) {
+            if (node.key == key) return true;
+        }
+        return false;
+    }
+
+    bool remove(K key) {
+        int bi = getBucketIndex(key);
+        auto& group = buckets[bi];
+        for (auto it = group.begin(); it != group.end(); ++it) {
+            if (it->key == key) {
+                group.erase(it);
+                noOfElements--;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    int size() { return noOfElements; }
+};
+
+int main() {
+    MyHashMap<string, int> map;
+    map.put("Apple", 100);
+    map.put("Banana", 200);
+    
+    if (map.containsKey("Apple")) {
+        cout << "Apple price: " << *map.get("Apple") << endl;
+    }
+
+    map.remove("Apple");
+    cout << "Size after removal: " << map.size() << endl;
+
+    return 0;
+}
+```
+
+### Java code
+
 ```java
 import java.util.ArrayList;
 import java.util.LinkedList;
