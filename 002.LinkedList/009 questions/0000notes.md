@@ -1,7 +1,7 @@
 # Notes
-![alt text](<007extras_240212_010313 (1).jpg>)
 
-![alt text](<007extras_240212_010313 (1)(1).jpg>) ![alt text](<007extras_240212_010313 (1)(2).jpg>) ![alt text](<007extras_240212_010313 (1)(3).jpg>) ![alt text](<007extras_240212_010313 (1)(4).jpg>) ![alt text](<007extras_240212_010313 (1)(5).jpg>)
+
+![alt text](<007extras_240212_010313 (1)(1).jpg>) ![alt text](<007extras_240212_010313 (1)(2).jpg>) ![alt text](<007extras_240212_010313 (1)(3).jpg>) ![alt text](<007extras_240212_010313 (1)(4).jpg>) 
 
 
 ## Ques sort 0-1-2
@@ -450,6 +450,9 @@ public:
 ### Complexity Analysis
 
 Time Complexity
+
 O(n) The reverseList function iterates through the linked list once to reverse it, taking O(n) time. The addOne function then calls reverseList twice, resulting in two O(n) operations. The while loop inside addOne iterates through the reversed list once, which is also O(n). Therefore, the dominant factor is O(n).
+
 Space Complexity
+
 O(1) The algorithm uses a constant amount of extra space for pointers (curr, prev, storage, h) and variables (carry, val). The space complexity does not depend on the size of the input linked list
