@@ -950,3 +950,246 @@ This is where the Segmented Sieve wins.
 
 **The "Senior" Conclusion**: 
 The Segmented Sieve doesn't reduce the *number of operations* (Time); it reduces the *memory footprint* (Space) and optimizes how the CPU accesses that memory.
+
+# Q Prime Factorisation of a Number
+
+**Problem Statement:**
+Given an array of integers `queries`, your task is to find the prime factorisation for each number in the array. 
+
+For each query $n$, return a list of its prime factors in non-descending order. If a prime factor divides $n$ multiple times, it should appear in the list that many times.
+
+---
+
+### Examples
+
+**Example 1:**
+* **Input:** `queries = [12, 31, 48]`
+* **Output:** `[[2, 2, 3], [31], [2, 2, 2, 2, 3]]`
+* **Explanation:**
+    * $12 = 2 \times 2 \times 3$
+    * $31$ is a prime number, so its only factor is $31$.
+    * $48 = 2 \times 2 \times 2 \times 2 \times 3$
+
+**Example 2:**
+* **Input:** `queries = [100, 35]`
+* **Output:** `[[2, 2, 5, 5], [5, 7]]`
+* **Explanation:**
+    * $100 = 2 \times 2 \times 5 \times 5$
+    * $35 = 5 \times 7$
+
+---
+
+### Constraints
+* $1 \le \text{queries.length} \le 10^5$
+* $2 \le \text{queries[i]} \le 10^5$
+
+---
+
+### Optimal Strategy Summary
+
+1.  **Sieve Precomputation**: Since there are up to $10^5$ queries, calculating prime factors for each number from scratch ($O(\sqrt{N})$) would be too slow ($10^5 \times 316 \approx 3 \times 10^7$ operations). 
+2.  **Smallest Prime Factor (SPF)**: Instead, use a modified Sieve of Eratosthenes to store the smallest prime factor for every number up to $10^5$ in an array.
+3.  **Fast Queries**: For each query, "hop" through the SPF array to find all factors in $O(\log N)$ time. Total complexity becomes $O(N \log \log N)$ for the sieve + $O(Q \log N)$ for queries, which easily passes within the time limit.
+
+
+
+```cpp
+class Solution{
+    vector<int> firstPrime;
+    void seive() { 
+        for(int i = 0; i <= 100000; i++) firstPrime[i] = i;
+        for(long long i=2; i < 100001; i++) {
+            if(firstPrime[i]==i) {
+                for(long long val = i*i; val < 100001; val += i) {
+                    if(firstPrime[val]==val){//as need to update only first prime
+                        firstPrime[val]=i;
+                    }
+                }
+            }
+        }  
+       
+    }
+
+    public:
+        vector<vector<int>> primeFactors(vector<int>& queries){
+            vector<vector<int>>res;
+            firstPrime.assign(100001, 1);
+            seive();
+            for(int q:queries){
+                vector<int>tres;
+                int val=q;
+                while(firstPrime[val]!=1){
+                    tres.push_back(firstPrime[val]);
+                    val=val/firstPrime[val];
+                }
+                res.push_back(tres);
+            }
+            return res;
+        }
+};
+```
+
+doing this `vector<int> firstPrime(100001, 1);` at global is wrong do not do this
+
+### Complexity Analysis
+#### Time Complexity
+O(N*log(logN) + Q*logN) explanation: The seive function has a time complexity of O(N*log(logN)) where N is 100001, due to the harmonic series of primes. The primeFactors function iterates through the queries, and for each query 'q', it performs prime factorization by repeatedly dividing 'q' by its smallest prime factor. In the worst case, a number 'q' can have up to O(log q) prime factors. Since 'q' is at most 100001, this is O(logN). If there are 'Q' queries, the total time for this part is O(Q*logN). Therefore, the overall time complexity is O(N*log(logN) + Q*logN).
+#### Space Complexity
+O(N) explanation: The firstPrime vector is initialized with a size of 100001, which takes O(N) space where N is 100001. The result vector 'res' can store prime factors for each query. In the worst case, a query 'q' can have O(log q) prime factors. If there are 'Q' queries, the space complexity for storing results can be up to O(Q*logN). However, if we consider the auxiliary space used by the algorithm (excluding the output storage), it's dominated by the 'firstPrime' vector. Thus, the space complexity is O(N).
+
+To make this "interview-perfect" and ensure it passes the tight time limits (usually 1-2 seconds for $10^5$ queries), we need to address three things: Precomputation, I/O Speed, and Memory Efficiency.
+
+```cpp
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+// Using a constant for the maximum limit as per constraints
+const int MAXN = 100001;
+
+class Solution {
+    // Declaring SPF array and a flag to ensure sieve runs only once
+    // We use a static vector or a global array to persist across test cases
+    static int spf[MAXN];
+    static bool isComputed;
+
+    void sieve() {
+        if (isComputed) return;
+
+        // Step 1: Initialize every number as its own smallest prime factor
+        for (int i = 1; i < MAXN; i++) {
+            spf[i] = i;
+        }
+
+        // Step 2: Standard Sieve logic to fill SPF
+        // We only need to go up to sqrt(MAXN) for the outer loop
+        for (long long i = 2; i * i < MAXN; i++) {
+            if (spf[i] == i) { // i is prime
+                for (long long j = i * i; j < MAXN; j += i) {
+                    // Update only if it's still pointing to itself
+                    // This ensures we store the SMALLEST prime factor
+                    if (spf[j] == j) {
+                        spf[j] = (int)i;
+                    }
+                }
+            }
+        }
+        isComputed = true;
+    }
+
+public:
+    vector<vector<int>> primeFactors(vector<int>& queries) {
+        // Precompute the DNA map once
+        sieve();
+
+        vector<vector<int>> result;
+        result.reserve(queries.size()); // Optimization: Pre-allocate memory
+
+        for (int n : queries) {
+            vector<int> factors;
+            
+            // Step 3: Fast Factorization using SPF hops
+            // Complexity: O(log N) per query
+            while (n > 1) {
+                factors.push_back(spf[n]);
+                n /= spf[n];
+            }
+            
+            result.push_back(factors);
+        }
+
+        return result;
+    }
+};
+
+// Initialize static members
+int Solution::spf[MAXN];
+bool Solution::isComputed = false;
+```
+
+
+# Why This Code is "Optimal"
+
+The Smallest Prime Factor (SPF) approach is considered the gold standard for handling multiple prime factorization queries. Here is the technical breakdown of why this specific implementation is optimal:
+
+---
+
+### 1. The `static` Sieve (Global Precomputation)
+Platforms like **TUF+, LeetCode, or Codeforces** often run multiple test cases against the same class instance or create new instances for each test case.
+* **The Logic**: By making `spf` and `isComputed` **static**, the $O(N \log \log N)$ work happens **exactly once** for the entire duration of the program.
+* **The Impact**: Every subsequent query across different test cases starts with a fully populated "DNA Map," reducing the cost of all future factorizations to nearly zero.
+
+### 2. Memory Pre-allocation with `reserve()`
+When dealing with $10^5$ queries, the `vector<vector<int>>` would normally reallocate memory multiple times as it grows, which is a slow process involving copying existing data to new memory locations.
+* **The Logic**: `result.reserve(queries.size())` tells the computer exactly how much space is needed upfront.
+* **The Impact**: This prevents unnecessary memory reallocations and copies, significantly speeding up the execution time for large input sizes.
+
+### 3. The `spf[j] == j` Check (Smallest Factor Guarantee)
+This is known as the **"First Visit Rule."** * **The Logic**: In the sieve, we only update `spf[j]` if it is still pointing to itself. 
+* **Example**: For the number $30$, the prime $2$ will hit it first and set `spf[30] = 2`. Later, when primes $3$ or $5$ visit $30$, the check `if (spf[j] == j)` will fail.
+* **The Impact**: This ensures that we **always** store the smallest prime factor, which is required to extract factors in non-descending order efficiently.
+
+### 4. $O(\log N)$ Query Time
+Because the SPF array tells you exactly which prime to divide by next, you don't have to "search" for factors.
+* **The Logic**: You "hop" from one factor to the next. Since any number $N$ can have at most $\log_2 N$ prime factors, the factorization is incredibly fast.
+* **The Impact**: For $N = 10^5$, you find all factors in roughly **16 or 17 steps**, compared to **316 steps** in the $O(\sqrt{N})$ approach.
+
+---
+
+### Complexity Breakdown
+
+| Complexity | Notation | Explanation |
+| :--- | :--- | :--- |
+| **Time (Precomputation)** | $O(MAXN \log \log MAXN)$ | Spent once to build the SPF map using the Sieve. |
+| **Time (Queries)** | $O(Q \log N)$ | Each of the $Q$ queries is answered in logarithmic time. |
+| **Space** | $O(MAXN)$ | Used to store the SPF array for all numbers up to the limit. |
+
+---
+
+# Finding the Total Number of Divisors (NOD)
+
+Using the **Smallest Prime Factor (SPF)** array, we can calculate the total number of divisors for any number $N$ in $O(\log N)$ time.
+
+### The Formula
+If the prime factorization is $p_1^{a} \cdot p_2^{b} \cdot p_3^{c}$, then:
+**$\text{Number of Divisors} = (a+1)(b+1)(c+1)$**
+
+### The Logic
+1.  **Identify the Prime**: Use `spf[n]` to find the smallest prime factor $p$.
+2.  **Find the Power**: Count how many times $p$ divides $N$ consecutively. This gives you the exponent (power).
+3.  **Update the Product**: Multiply your running total by `(power + 1)`.
+4.  **Repeat**: Continue until $N = 1$.
+
+### Example: $N = 12$
+* `spf[12] = 2`.
+* Divide 12 by 2 twice $\to$ **Power = 2**. ($N$ becomes 3).
+* `spf[3] = 3`.
+* Divide 3 by 3 once $\to$ **Power = 1**. ($N$ becomes 1).
+* **Result**: $(2+1) \times (1+1) = 3 \times 2 = \mathbf{6}$.
+* *(Verification: Divisors of 12 are 1, 2, 3, 4, 6, 12. Total = 6).*
+
+### Why this is "Interview Gold"
+This demonstrates you can combine **Number Theory** (Sieve/Factorization) with **Combinatorics** (Counting principles) to solve complex math queries instantly.
+
+```cpp
+int countTotalDivisors(int n) {
+    int totalDivisors = 1;
+
+    while (n > 1) {
+        int p = spf[n]; // Get smallest prime factor
+        int count = 0;
+
+        // "Exhaust" this prime to find its power
+        while (n % p == 0) {
+            count++;
+            n /= p;
+        }
+
+        // Apply the (power + 1) formula
+        totalDivisors *= (count + 1);
+    }
+
+    return totalDivisors;
+}
+```
