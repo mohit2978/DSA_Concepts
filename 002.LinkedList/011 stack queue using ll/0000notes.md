@@ -391,6 +391,40 @@ Atlast can also add a destructor
         size = 0;
     }
 ```    
+ removeLast() is never used in either of stack and queue!!
 
+# The "Remove Last" Bottleneck in Linked Lists
 
+A common interview trick question is whether having a `tail` pointer makes `removeLast` an $O(1)$ operation. The answer depends entirely on the **direction** of the links.
 
+---
+
+### 1. Singly Linked List (SLL) with Tail: $O(N)$
+Even with a `tail` pointer, removing the last node in a Singly Linked List remains **$O(N)$**.
+
+**The "Physics" of the Problem:**
+To successfully remove the last node, the computer must:
+1.  **Delete** the current `tail`.
+2.  **Update** the node *before* the tail (the second-to-last node) so its `next` pointer becomes `NULL`.
+3.  **Update** the `tail` pointer to point to this second-to-last node.
+
+In an SLL, links only go forward ($\rightarrow$). The `tail` pointer knows exactly where the last node is, but it has **no way to look backward** to find the second-to-last node. You are forced to start from the `head` and traverse the entire list to find the predecessor.
+
+---
+
+### 2. Doubly Linked List (DLL) with Tail: $O(1)$
+In a Doubly Linked List, `removeLast` becomes a true **$O(1)$** operation.
+
+**The Solution:**
+Because each node has a `prev` pointer, the `tail` can "look back" and identify its predecessor instantly without a full traversal.
+
+`"In a Singly Linked List, a tail pointer is only half of the solution. While it gives us $O(1)$ access for insertion, we still need $O(N)$ for removal because we cannot access the predecessor node without a full traversal. To achieve $O(1)$ for both, we must use a Doubly Linked List."`
+
+### Comparison Table: Time Complexity
+
+| Operation | Singly LL (+ Tail) | Doubly LL (+ Tail) |
+| :--- | :--- | :--- |
+| **Insert at Front** | $O(1)$ | $O(1)$ |
+| **Insert at Last** | $O(1)$ | $O(1)$ |
+| **Remove from Front** | $O(1)$ | $O(1)$ |
+| **Remove from Last** | **$O(N)$** | **$O(1)$** |
