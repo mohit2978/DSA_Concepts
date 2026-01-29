@@ -1,5 +1,25 @@
 # Notes
+# HashMap Physics: Load Factors & Collisions
 
+### 1. The Workflow
+`Key` -> `Hash Function` -> `Index` -> `Storage`
+
+### 2. Load Factor ($\alpha$)
+- **Formula:** $n / m$ (Elements / Capacity).
+- **Threshold (0.75):** When reached, the map doubles in size (Rehash).
+- **Physics:** High load factor = High collisions = Slow performance.
+
+### 3. Collision Resolution
+1. **Chaining:** Use Linked Lists at each index. 
+   - *Pro Tip:* Java 8+ converts long lists (8+ items) into **Red-Black Trees** to keep search $O(\log N)$.
+2. **Open Addressing:** Find the next empty slot.
+   - Linear Probing: $i+1$
+   - Quadratic Probing: $i+k^2$
+   - Double Hashing: $i + k \cdot hash_2(key)$
+
+### 4. Complexity
+- **Average:** $O(1)$ for Search, Insert, and Delete.
+- **Worst Case:** $O(n)$ (When all keys collide into one slot).
 
  ![alt text](<006 hashmap youtube_231018_213422.jpg>) ![alt text](<006 hashmap youtube_231018_213422(1).jpg>) ![alt text](<006 hashmap youtube_231018_213422(2).jpg>) ![alt text](<006 hashmap youtube_231018_213422(3).jpg>) ![alt text](<006 hashmap youtube_231018_213422(4).jpg>) ![alt text](<006 hashmap youtube_231018_213422(5).jpg>) ![alt text](<006 hashmap youtube_231018_213422(6).jpg>) ![alt text](<006 hashmap youtube_231018_213422(7).jpg>) ![alt text](<006 hashmap youtube_231018_213422(8).jpg>) ![alt text](<006 hashmap youtube_231018_213422(9).jpg>) ![alt text](<006 hashmap youtube_231018_213422(10).jpg>) ![alt text](<006 hashmap youtube_231018_213422(11).jpg>) ![alt text](<006 hashmap youtube_231018_213422(12).jpg>) ![alt text](<006 hashmap youtube_231018_213422(13).jpg>) ![alt text](<006 hashmap youtube_231018_213422(14).jpg>) ![alt text](<006 hashmap youtube_231018_213422(15).jpg>) ![alt text](<006 hashmap youtube_231018_213422(16).jpg>) ![alt text](<006 hashmap youtube_231018_213422(17).jpg>) ![alt text](<006 hashmap youtube_231018_213422(18).jpg>) ![alt text](<006 hashmap youtube_231018_213422(19).jpg>) ![alt text](<006 hashmap youtube_231018_213422(20).jpg>) ![alt text](<006 hashmap youtube_231018_213422(21).jpg>)
 
@@ -333,5 +353,17 @@ public class client {
     }
 }
 ```
+# Why Top-Tier Companies Care About HashMap Internals
 
+### 1. Security (Hash Flooding)
+- **Concept:** Attackers use keys with the same hash to force $O(N)$ complexity.
+- **Solution:** Use randomized hash seeds or switch to balanced trees (Red-Black Trees) for collisions.
+
+### 2. Hardware Optimization (Cache Locality)
+- **Concept:** Linear Probing is faster than Chaining on modern CPUs.
+- **Why:** The CPU loads chunks of memory (Cache Lines). If the next item is right next to the current one, the CPU doesn't have to go back to RAM.
+
+### 3. Real-Time Reliability (Incremental Rehashing)
+- **Concept:** Moving 1 million items during a resize causes "Stop the World" pauses.
+- **Solution:** Move a few items at a time during normal `put` and `get` operations to smooth out latency.
 
