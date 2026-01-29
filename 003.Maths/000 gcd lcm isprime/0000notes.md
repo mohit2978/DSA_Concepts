@@ -82,6 +82,74 @@ int gcd(int a,int b){
     return divisor;
 }
 ```
+# The Physics of GCD: The Linear Combination Rule
+
+### 1. The Mathematical Foundation
+If a number $d$ divides $a$ and $b$, it means $a$ and $b$ are simply multiples of $d$.
+* $a = n \cdot d$ (where $n$ is an integer)
+* $b = m \cdot d$ (where $m$ is an integer)
+
+### 2. The Linear Combination Proof
+A **Linear Combination** is any expression created by multiplying $a$ and $b$ by integers ($x$ and $y$) and adding them: $ax + by$.
+
+**The Step-by-Step Substitution:**
+1. Start with: $ax + by$
+2. Substitute $a$ and $b$: $(n \cdot d)x + (m \cdot d)y$
+3. **Factor out $d$ (The common DNA):** $d \cdot (nx + my)$
+4. Since $(nx + my)$ is just another integer ($K$), we get: $d \cdot K$
+
+> **The Core Law:** Because $ax + by$ can be written as $d \cdot K$, the divisor $d$ **must** divide any combination of $a$ and $b$.
+
+---
+
+### 3. Application: Why $a \% b$ works
+The remainder $r$ (from $a \% b$) is defined as:
+$$r = a - (q \cdot b)$$
+*(where $q$ is the quotient)*
+
+**The Logic:**
+* This expression is a linear combination where $x = 1$ and $y = -q$.
+* Because $d$ divides $a$ and $b$, it **must** divide the remainder $r$.
+* This proves that $GCD(a, b)$ and $GCD(b, a \% b)$ share the **exact same set of divisors.**
+
+---
+
+### 4. The Lego Analogy (Mental Model)
+* **The Unit:** Imagine $d$ is a Lego brick of **size 2**.
+* **Object A:** A stick of 10cm (made of 5 Lego bricks).
+* **Object B:** A stick of 6cm (made of 3 Lego bricks).
+
+**The Physics:**
+If you combine, subtract, or cut these sticks, you are still only working with size-2 bricks.
+* If you take 6cm away from 10cm, the remaining **4cm** is still made of two size-2 bricks.
+* You can never produce a piece that is **not** a multiple of 2. 
+* $d$ is the "DNA" that survives every operation.
+
+---
+
+### 5. Algorithmic Summary
+
+| Step | Operation | Result |
+| :--- | :--- | :--- |
+| **Identity** | $GCD(a, b) = GCD(b, a \% b)$ | Mathematically identical divisors. |
+| **Reduction** | $a \rightarrow (a \% b)$ | Numbers shrink rapidly toward zero. |
+| **Convergence** | $GCD(b, \text{smaller})$ | The algorithm "crushes" the problem to find the GCD. |
+
+---
+
+
+Now question comes GCD(a,b)=GCD(b,a%b) but why not GCD(a,a%b)?
+
+# Why b is the "Star" of the GCD Algorithm
+
+Mathematically:
+- CommonDivisors(a, b) == CommonDivisors(b, a % b)
+- CommonDivisors(a, b) == CommonDivisors(a, a % b)
+
+BUT, in the Algorithm:
+1. **Convergence**: GCD(b, a % b) makes both terms smaller, leading to the base case faster.
+2. **Correctness**: The base case `if (b == 0) return a` expects the divisor to be in the `a` position. If you never swap `b` into the `a` position, you'll eventually return the original large `a` instead of the divisor `b`.
+3. **Constraint**: The GCD is limited by the smaller number. Keeping the smaller number ($b$) as the new "target" is more logical than keeping the large "source" ($a$).
 
 # Subtraction vs. Modulo in the Euclidean Algorithm
 
