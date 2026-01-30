@@ -265,6 +265,33 @@ Now, your `node` pointer is standing exactly in **`Node_T`**. This is why `node-
 ### 4. Why this matters
 Because you check `child[idx]` **before** moving, you ensure that you never "fall off" the tree. If a signpost points to a `nullptr`, you know immediately that the road was never built (the word doesn't exist) without having to travel there.
 
+
+## The "Hidden" Trie Complexity
+ here is one more "Trie Secret" regarding your code:
+
+The Memory Leak: In your struct Node, you are using new Node(). In C++, every new needs a delete. If your Trie object is destroyed, all those nodes you created stay "alive" in the computer's memory because you don't have a Destructor.
+
+The Teacher's way vs. The Senior way:
+Teacher: "Don't worry about it for now, it's just a LeetCode problem."
+
+Senior: "If this were a real app (like a keyboard autocomplete), your phone would run out of RAM in an hour."
+
+How to "Clean Up the Cities" (The Destructor)
+To fix this, you need a recursive function to "demolish" the cities when you're done
+
+```cpp
+~Trie() {
+    clear(root);
+}
+
+void clear(Node* node) {
+    for (Node* next : node->child) {
+        if (next) clear(next); // If a road exists, go there and demolish it first
+    }
+    delete node; // Once all roads ahead are gone, delete this city
+}
+```
+
 Below implementation is a solid static-array-based Trie, which is often faster in competitive programming due to better cache locality compared to object-oriented implementations.
 ```java
 
