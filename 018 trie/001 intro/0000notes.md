@@ -1,4 +1,18 @@
-# Notes
+# The Trie: The "Digital Dictionary"
+
+### 1. The Core Idea
+- A Trie is a prefix tree where every node represents a single character.
+- **Paths = Words.**
+- **Common Prefixes** are shared (e.g., "APPLE" and "APPLY" share the same "APPL" path).
+
+### 2. Time Complexity
+- **Insert:** $O(L)$ where $L$ is the length of the word.
+- **Search:** $O(L)$.
+- **Space:** $O(AlphabetSize \cdot TotalCharacters)$. (Memory can be high, but it's very fast).
+
+### 3. The "Physics" Rule
+The time to find a word depends **only** on the length of the word, not on how many other words are in the Trie. This is why it's faster than a Hash Map for prefix-based searches.
+
 ![alt text](<001_231121_163402 (1)(1).jpg>) ![alt text](<001_231121_163402 (1)(2).jpg>) ![alt text](<001_231121_163402 (1)(3).jpg>) ![alt text](<001_231121_163402 (1)(4).jpg>) ![alt text](<001_231121_163402 (1)(5).jpg>) ![alt text](<001_231121_163402 (1)(6).jpg>) ![alt text](<001_231121_163402 (1)(7).jpg>) ![alt text](<001_231121_163402 (1)(8).jpg>) 
 
 This version of the Trie is the Standard Object-Oriented Implementation. It is much more flexible and memory-efficient for "sparse" data (where many nodes don't have children) compared to the static array version(see it later).
@@ -205,7 +219,51 @@ class Trie{
  */
 
 ```
+# Trie Navigation: The "Signpost" Physics
 
+In your Trie implementation, the pointer logic follows a very specific sequence. A common point of confusion is whether the `node` pointer represents the letter you are currently looking at, or the junction you just arrived at.
+
+---
+
+### 1. The "Road Sign" Analogy
+Think of the Trie as a series of **Cities** connected by **Highways**:
+
+* **The Node is the City:** Each city is a destination representing a prefix.
+* **The `child[idx]` array is the Signpost:** At the edge of the city, there are 26 signs pointing to potential next destinations.
+
+When your code executes `if (node->child[idx] == nullptr)`:
+1.  **The Check:** You are currently **inside a City** (Node). You are looking at the signpost to see if there is a road built to the next city (the next character).
+2.  **The Move:** If the road exists, you **travel** to that city: `node = node->child[idx]`.
+3.  **The Arrival:** Now, you are standing in the **new city**, ready to look for the next signpost.
+
+---
+
+### 2. The "Physics" of the Final Node
+This explains why your `search` and `insert` functions correctly mark the end of a word. Let’s trace the word **"CAT"**:
+
+* **Initial State:** Your `node` pointer is at `root` (The "Entry Gates" to the entire dictionary).
+* **Loop for 'C':** You were at `root`, found the sign for 'C', and moved to `Node_C`.
+* **Loop for 'A':** You were at `Node_C`, found the sign for 'A', and moved to `Node_A`.
+* **Loop for 'T':** You were at `Node_A`, found the sign for 'T', and moved to **`Node_T`**.
+* **Loop Ends.**
+
+Now, your `node` pointer is standing exactly in **`Node_T`**. This is why `node->eow = true` correctly marks "CAT" as a word—you are standing in the city that represents the completed path.
+
+---
+
+### 3. The Golden Rule of Trie Pointers
+
+> **The Rule:** The `node` pointer always represents the **state after** the current character has been processed.
+
+| Character Processed | Pointer Location | Represents Prefix |
+| :--- | :--- | :--- |
+| (None) | `root` | `""` (Empty) |
+| 'C' | `node` | `"C"` |
+| 'A' | `node` | `"CA"` |
+| 'T' | `node` | `"CAT"` |
+
+### 4. Why this matters
+Because you check `child[idx]` **before** moving, you ensure that you never "fall off" the tree. If a signpost points to a `nullptr`, you know immediately that the road was never built (the word doesn't exist) without having to travel there.
 
 Below implementation is a solid static-array-based Trie, which is often faster in competitive programming due to better cache locality compared to object-oriented implementations.
 ```java
