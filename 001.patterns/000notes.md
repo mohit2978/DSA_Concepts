@@ -113,4 +113,40 @@ public:
 
 ```
 
+## Pattern 3 
 
+```text
+5 5 5 5 5 5 5 5 5 
+5 4 4 4 4 4 4 4 5 
+5 4 3 3 3 3 3 4 5 
+5 4 3 2 2 2 3 4 5 
+5 4 3 2 1 2 3 4 5 
+5 4 3 2 2 2 3 4 5 
+5 4 3 3 3 3 3 4 5 
+5 4 4 4 4 4 4 4 5 
+5 5 5 5 5 5 5 5 5
+```
+```cpp
+class Solution {
+public:
+    //Function to print pattern22
+    void pattern22(int n) {
+ 
+        for(int i = 0; i < 2*n-1; i++){
+         
+            for(int j = 0; j < 2*n-1; j++){
+             
+                int top = i;
+                int left = j;
+                int right = (2*n - 2) - j;
+                int bottom = (2*n - 2) - i;
+             
+                cout<<(n- min({top,bottom,left,right}))<<" ";
+            }
+         
+            //Move to the next row
+            cout<<endl;
+        }
+    }
+};
+```
