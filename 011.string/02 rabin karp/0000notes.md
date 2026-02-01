@@ -208,3 +208,6 @@ Notice how we transformed "abc" (1026) to "bcd" (2019) using only math, without 
 
 This $O(1)$ update is why Rabin-Karp is fast.
 
+Rabin Karp and z are good !! Rabin karp use kro !!
+
+Rabin karp and then z algo and avoid KMP!!as it is very complex!!
