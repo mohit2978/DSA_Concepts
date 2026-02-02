@@ -41,6 +41,15 @@ class Solution {
     }
 }
  ```
+
+ Complexity Analysis:
+
+Time Complexity: O(V*E)
+All the E edges are relaxed for a total of V-1 times. And an extra iteration is performed to detect negative cycle, making the algorithm take O(V*E) time.
+
+Space Complexity: O(V)
+The distance array takes O(V) time.
+
  ![alt text](<014bellman ford floyd warshall network flow_240423_222140(4).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(5).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(6).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(7).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(8).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(9).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(10).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(11).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(12).jpg>) 
  
  
@@ -71,6 +80,13 @@ class Solution
 }
  ```
  
+
+Complexity Analysis:
+
+Time Complexity: O($N^3$) (where N repesents the number of nodes in graph) Because of three nested loops.
+
+Space Complexity: O($N^2$) The algorithm uses a space of O($N^2$) to store shortest distance between every pair of nodes possible.
+
  ![alt text](<014bellman ford floyd warshall network flow_240423_222140(14).jpg>)
  
  
