@@ -34,15 +34,17 @@ class Solution
            return parent;
        }
        
-       public void union(int x,int y){
+       public void union(int u,int v){
+            int x=findPar(u);
+            int y=findPar(v);
            if(rank[x]==rank[y]){
                par[x]=y;
                rank[y]++;
            }
-           else if(rank[x]<rank[y]){
+           else if(rank[x]<rank[y]){// to remember ,remember less than pe same order
                par[x]=y;
            }
-           else if(rank[x]>rank[y]){
+           else if(rank[x]>rank[y]){//greater than pe last vala phle
                par[y]=x;
            }
        }
