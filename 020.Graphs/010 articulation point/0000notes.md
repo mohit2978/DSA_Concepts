@@ -11,7 +11,150 @@
 
 
 
-![alt text](<009 articulation pt_240113_014029(1).jpg>) ![alt text](<009 articulation pt_240113_014029(2).jpg>) ![alt text](<009 articulation pt_240113_014029(3).jpg>) ![alt text](<009 articulation pt_240113_014029(4).jpg>) ![alt text](<009 articulation pt_240113_014029(5).jpg>) ![alt text](<009 articulation pt_240113_014029(6).jpg>) ![alt text](<009 articulation pt_240113_014029(7).jpg>) ![alt text](<009 articulation pt_240113_014029(8).jpg>) ![alt text](<009 articulation pt_240113_014029(9).jpg>) ![alt text](<009 articulation pt_240113_014029(10).jpg>) ![alt text](<009 articulation pt_240113_014029(11).jpg>) ![alt text](<009 articulation pt_240113_014029(12).jpg>) ![alt text](<009 articulation pt_240113_014029(13).jpg>) ![alt text](<009 articulation pt_240113_014029(14).jpg>) ![alt text](<009 articulation pt_240113_014029(15).jpg>) ![alt text](<009 articulation pt_240113_014029(16).jpg>) ![alt text](<009 articulation pt_240113_014029(17).jpg>) ![alt text](<009 articulation pt_240113_014029(18).jpg>) ![alt text](<009 articulation pt_240113_014029(19).jpg>) ![alt text](<009 articulation pt_240113_014029(20).jpg>) ![alt text](<009 articulation pt_240113_014029(21).jpg>) ![alt text](<009 articulation pt_240113_014029(22).jpg>) ![alt text](<009 articulation pt_240113_014029(23).jpg>) ![alt text](<009 articulation pt_240113_014029(24).jpg>) ![alt text](<009 articulation pt_240113_014029(25).jpg>) ![alt text](<009 articulation pt_240113_014029(26).jpg>) ![alt text](<009 articulation pt_240113_014029(27).jpg>) ![alt text](<009 articulation pt_240113_014029(28).jpg>) ![alt text](<009 articulation pt_240113_014029(29).jpg>) ![alt text](<009 articulation pt_240113_014029(30).jpg>) ![alt text](<009 articulation pt_240113_014029(31).jpg>) ![alt text](<009 articulation pt_240113_014029(32).jpg>) ![alt text](<009 articulation pt_240113_014029(33).jpg>) ![alt text](<009 articulation pt_240113_014029(34).jpg>) ![alt text](<009 articulation pt_240113_014029(35).jpg>) ![alt text](<009 articulation pt_240113_014029(36).jpg>) ![alt text](<009 articulation pt_240113_014029(37).jpg>) ![alt text](<009 articulation pt_240113_014029(38).jpg>) ![alt text](<009 articulation pt_240113_014029(39).jpg>) ![alt text](<009 articulation pt_240113_014029(40).jpg>) ![alt text](<009 articulation pt_240113_014029(41).jpg>) ![alt text](<009 articulation pt_240113_014029(42).jpg>) ![alt text](<009 articulation pt_240113_014029(43).jpg>) ![alt text](<009 articulation pt_240113_014029(44).jpg>) ![alt text](<009 articulation pt_240113_014029(45).jpg>) ![alt text](<009 articulation pt_240113_014029(46).jpg>) ![alt text](<009 articulation pt_240113_014029(47).jpg>) ![alt text](<009 articulation pt_240113_014029(48).jpg>)
+![alt text](<009 articulation pt_240113_014029(1).jpg>) ![alt text](<009 articulation pt_240113_014029(2).jpg>) ![alt text](<009 articulation pt_240113_014029(3).jpg>) ![alt text](<009 articulation pt_240113_014029(4).jpg>) ![alt text](<009 articulation pt_240113_014029(5).jpg>) ![alt text](<009 articulation pt_240113_014029(6).jpg>) ![alt text](<009 articulation pt_240113_014029(7).jpg>) ![alt text](<009 articulation pt_240113_014029(8).jpg>) ![alt text](<009 articulation pt_240113_014029(9).jpg>) ![alt text](<009 articulation pt_240113_014029(10).jpg>) ![alt text](<009 articulation pt_240113_014029(11).jpg>) ![alt text](<009 articulation pt_240113_014029(12).jpg>) ![alt text](<009 articulation pt_240113_014029(13).jpg>) ![alt text](<009 articulation pt_240113_014029(14).jpg>) ![alt text](<009 articulation pt_240113_014029(15).jpg>) ![alt text](<009 articulation pt_240113_014029(16).jpg>) ![alt text](<009 articulation pt_240113_014029(17).jpg>) ![alt text](<009 articulation pt_240113_014029(18).jpg>) ![alt text](<009 articulation pt_240113_014029(19).jpg>) ![alt text](<009 articulation pt_240113_014029(20).jpg>)
+
+### Tarjan's Algorithm for Articulation Points
+
+An **Articulation Point** (or Cut Vertex) is a node in an undirected graph which, when removed, increases the number of connected components. Tarjan's algorithm finds all such points in $O(V + E)$ time using a single **DFS**.
+
+---
+
+### 1. Key Concepts: Discovery Time and Low Link
+
+During DFS, we maintain two arrays:
+* **`disc[u]` (Discovery Time):** The time at which node `u` was first visited.
+* **`low[u]` (Low Link Value):** The lowest `disc` time reachable from `u` (including itself) using back-edges in the DFS tree.
+
+---
+
+### 2. The Logic (The Conditions)
+
+A node `u` is an Articulation Point if it meets one of these two conditions:
+
+#### Condition A: The Root Case
+If `u` is the **root** of the DFS tree and has **more than one child** in the DFS tree.
+* *Why?* If the root has two independent subtrees, removing the root will disconnect them.
+
+#### Condition B: Non-Root Case
+If `u` is **not the root** and has a child `v` such that no node in the subtree of `v` can reach `u` or any of `u`'s ancestors via a back-edge.
+* **Formal Rule:** `low[v] >= disc[u]`
+
+---
+
+### 3. Step-by-Step Algorithm
+
+1.  Initialize `disc` and `low` arrays with $-1$.
+2.  Start DFS from an unvisited node.
+3.  For every neighbor `v` of `u`:
+    * **If `v` is the parent:** Skip it.
+    * **If `v` is already visited:** This is a **back-edge**. Update `low[u] = min(low[u], disc[v])`.
+    * **If `v` is not visited:**
+        * Increment child count for `u`.
+        * Recursively call `DFS(v, u)`.
+        * On return, update `low[u] = min(low[u], low[v])`.
+        * Check **Condition B:** If `low[v] >= disc[u]` and `u` is not root, `u` is an Articulation Point.
+4.  After DFS finishes for root, check **Condition A:** If `u` is root and `children > 1`, `u` is an Articulation Point.
+
+---
+
+### 4. Complexity Summary
+
+| Metric | Complexity | Explanation |
+| :--- | :--- | :--- |
+| **Time Complexity** | $O(V + E)$ | Based on a standard Depth First Search. |
+| **Space Complexity** | $O(V)$ | To store `disc`, `low`, `parent`, and the adjacency list. |
+
+---
+
+### 5. Why `low[v] >= disc[u]`?
+
+* If `low[v] < disc[u]`, it means there is a "back-door" (back-edge) from the subtree of `v` to an ancestor of `u`.
+* If `low[v] == disc[u]`, the highest point `v` can reach is `u` itself. Removing `u` still disconnects `v`.
+* If `low[v] > disc[u]`, `v` is stuck in its own subtree and can't even reach `u` without the tree edge.
+
+ ![alt text](<009 articulation pt_240113_014029(21).jpg>) ![alt text](<009 articulation pt_240113_014029(22).jpg>) ![alt text](<009 articulation pt_240113_014029(23).jpg>) ![alt text](<009 articulation pt_240113_014029(24).jpg>) ![alt text](<009 articulation pt_240113_014029(25).jpg>) ![alt text](<009 articulation pt_240113_014029(26).jpg>) ![alt text](<009 articulation pt_240113_014029(27).jpg>)
+ 
+ ```cpp
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+/**
+ * Tarjan's Algorithm for finding Articulation Points
+ * Time Complexity: O(V + E)
+ * Space Complexity: O(V)
+ */
+
+void findAPs(int u, int p, int& timer, vector<int> adj[], 
+             vector<int>& disc, vector<int>& low, vector<bool>& isAP) {
+    
+    disc[u] = low[u] = ++timer;
+    int children = 0;
+
+    for (int v : adj[u]) {
+        if (v == p) continue; // Skip parent
+
+        if (disc[v] != -1) {
+            // Back-edge found: update low-link using discovery time of v
+            low[u] = min(low[u], disc[v]);
+        } else {
+            // Tree-edge: recurse
+            children++;
+            findAPs(v, u, timer, adj, disc, low, isAP);
+            
+            // Check if subtree rooted at v has a back-link to u or its ancestors
+            low[u] = min(low[u], low[v]);
+
+            // Condition for non-root nodes
+            if (p != -1 && low[v] >= disc[u]) {
+                isAP[u] = true;
+            }
+        }
+    }
+
+    // Condition for root node
+    if (p == -1 && children > 1) {
+        isAP[u] = true;
+    }
+}
+
+int main() {
+    int n, m; // n = nodes, m = edges
+    cin >> n >> m;
+
+    vector<int> adj[n];
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+    vector<int> disc(n, -1), low(n, -1);
+    vector<bool> isAP(n, false);
+    int timer = 0;
+
+    // Run DFS for all components
+    for (int i = 0; i < n; i++) {
+        if (disc[i] == -1) {
+            findAPs(i, -1, timer, adj, disc, low, isAP);
+        }
+    }
+
+    // Output all Articulation Points
+    cout << "Articulation Points: ";
+    for (int i = 0; i < n; i++) {
+        if (isAP[i]) cout << i << " ";
+    }
+
+    return 0;
+}
+```
+ 
+ 
+  ![alt text](<009 articulation pt_240113_014029(28).jpg>) ![alt text](<009 articulation pt_240113_014029(29).jpg>) ![alt text](<009 articulation pt_240113_014029(30).jpg>) ![alt text](<009 articulation pt_240113_014029(31).jpg>) ![alt text](<009 articulation pt_240113_014029(32).jpg>) ![alt text](<009 articulation pt_240113_014029(33).jpg>) ![alt text](<009 articulation pt_240113_014029(34).jpg>) ![alt text](<009 articulation pt_240113_014029(35).jpg>) ![alt text](<009 articulation pt_240113_014029(36).jpg>) ![alt text](<009 articulation pt_240113_014029(37).jpg>) ![alt text](<009 articulation pt_240113_014029(38).jpg>) ![alt text](<009 articulation pt_240113_014029(39).jpg>) ![alt text](<009 articulation pt_240113_014029(40).jpg>) ![alt text](<009 articulation pt_240113_014029(41).jpg>) ![alt text](<009 articulation pt_240113_014029(42).jpg>) ![alt text](<009 articulation pt_240113_014029(43).jpg>) ![alt text](<009 articulation pt_240113_014029(44).jpg>) ![alt text](<009 articulation pt_240113_014029(45).jpg>) ![alt text](<009 articulation pt_240113_014029(46).jpg>) ![alt text](<009 articulation pt_240113_014029(47).jpg>) ![alt text](<009 articulation pt_240113_014029(48).jpg>)
 
 
 
