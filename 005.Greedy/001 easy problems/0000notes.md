@@ -1,5 +1,43 @@
 # Notes
 
+### Sorting is the "Backbone" of 90% of Greedy Problems.
+
+Greedy algorithms work by making the **best local choice** at every step. Sorting is the tool that lines up these "best choices" right in front of you.
+
+However, it's not *always* just `std::sort`. Here are the three main flavors of Greedy:
+
+#### 1. Static Sorting (The Classic)
+You sort the entire input **once** at the beginning, then iterate linearly to pick the best items.
+* **Activity Selection / Non-overlapping Intervals:** Sort by **End Time** (Ascending).
+* **Job Sequencing:** Sort by **Profit** (Descending).
+* **Fractional Knapsack:** Sort by **Value/Weight Ratio** (Descending).
+* **Kruskal’s MST:** Sort edges by **Weight** (Ascending).
+
+#### 2. Dynamic Sorting (Priority Queue / Heap)
+Sometimes, picking an item **changes** the "goodness" of the remaining items, or you only need the "best" one repeatedly without sorting everything fully.
+* **Huffman Coding:** You combine the two smallest frequencies, create a new node, and push it back. You need a **Min-Heap**.
+* **Prim’s MST:** You constantly look for the cheapest edge connected to your *current* tree.
+* **Dijkstra’s Algorithm:** You always expand the node with the shortest current distance.
+
+#### 3. Linear Scan (No Explicit Sort)
+Sometimes the "Greedy Choice" is based on position or a simple max/min tracking.
+* **Jump Game:** You don't sort. You just iterate `i` from 0 to N and track `maxReach = max(maxReach, i + nums[i])`.
+* **Buy and Sell Stock II:** You just sum up every positive difference (`price[i] - price[i-1]`).
+
+### The "Sorting Trap" (When Greedy Fails)
+Just because you *can* sort doesn't mean Greedy works.
+* **0/1 Knapsack:** If you sort by value/weight, it fails because you can't break items. You might leave a tiny empty space that could have been filled by a "less efficient" but "perfectly fitting" item. **(Requires DP)**.
+* **Coin Change (General):** If coins are `{1, 3, 4}` and you want `6`.
+    * **Greedy (Sort Descending):** Pick 4, then 1, then 1 $\rightarrow$ **3 coins**.
+    * **Actual Optimal:** Pick 3, then 3 $\rightarrow$ **2 coins**.
+    * **(Requires DP)**.
+
+### Summary Rule of Thumb
+1.  **Can I define a strict criteria** (like "earliest finish time" or "highest profit") that *always* makes sense regardless of future choices?
+    * **Yes:** Sort it $\rightarrow$ Greedy.
+2.  **Does picking item A potentially "ruin" the fit for item B in a complex way?**
+    * **Yes:** Do not Sort $\rightarrow$ DP.
+
 ## Q1 Assign cookies
 
 Input : Student = [1, 2, 3] , Cookie = [1, 1]
