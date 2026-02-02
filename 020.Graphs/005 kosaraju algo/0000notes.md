@@ -1,15 +1,10 @@
 # Notes
 
 
+Do not see code on left just start with Kosaraju!!
 
 
-
-![alt text](004kosaraju_240112_103625.jpg)
-
-
-
-
-![alt text](004kosaraju_240112_103625(1).jpg) ![alt text](004kosaraju_240112_103625(2).jpg) ![alt text](004kosaraju_240112_103625(3).jpg) ![alt text](004kosaraju_240112_103625(4).jpg) ![alt text](004kosaraju_240112_103625(5).jpg) ![alt text](004kosaraju_240112_103625(6).jpg) ![alt text](004kosaraju_240112_103625(7).jpg) ![alt text](004kosaraju_240112_103625(8).jpg) ![alt text](004kosaraju_240112_103625(9).jpg) ![alt text](004kosaraju_240112_103625(10).jpg) ![alt text](004kosaraju_240112_103625(11).jpg) ![alt text](004kosaraju_240112_103625(12).jpg) ![alt text](004kosaraju_240112_103625(13).jpg)
+ ![alt text](004kosaraju_240112_103625(2).jpg) ![alt text](004kosaraju_240112_103625(3).jpg) ![alt text](004kosaraju_240112_103625(4).jpg) ![alt text](004kosaraju_240112_103625(5).jpg) ![alt text](004kosaraju_240112_103625(6).jpg) ![alt text](004kosaraju_240112_103625(7).jpg) ![alt text](004kosaraju_240112_103625(8).jpg) ![alt text](004kosaraju_240112_103625(9).jpg) ![alt text](004kosaraju_240112_103625(10).jpg) ![alt text](004kosaraju_240112_103625(11).jpg) ![alt text](004kosaraju_240112_103625(12).jpg) ![alt text](004kosaraju_240112_103625(13).jpg)
 
 
 ```java
