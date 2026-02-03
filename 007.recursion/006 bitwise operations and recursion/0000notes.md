@@ -183,49 +183,127 @@ Now let us seee sudoku solver!!see its previous code first!!
 
 ![alt text](<006bitwise operation and recursion_231229_130956(20).jpg>) 
 ![alt text](<006bitwise operation and recursion_231229_130956(21).jpg>) 
+
+## Initial sudoku solver
+
+
+```java
+    private boolean isPossibleToPlaceNumber(char[][] board, int r, int c, int num) {
+
+        // row
+        for (int i = 0; i < 9; i++) {
+            if (board[i][c] - '0' == num)
+                return false;
+        }
+
+        // col
+        for (int i = 0; i < 9; i++) {
+            if (board[r][i] - '0' == num)
+                return false;
+        }
+
+        // 3 X 3
+        r = (r / 3) * 3;
+        c = (c / 3) * 3;
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 3; j++)
+                if (board[r + i][c + j] - '0' == num)
+                    return false;
+
+        return true;
+
+    }
+
+    public boolean sudokuSolver(char[][] board, ArrayList<Integer> list, int idx) {
+        if (idx == list.size())
+            return true;
+
+        int r = list.get(idx) / 9;
+        int c = list.get(idx) % 9;
+
+        for (int num = 1; num <= 9; num++) {
+            if (isPossibleToPlaceNumber(board, r, c, num)) {
+                board[r][c] = (char) ('0' + num);
+
+                if (sudokuSolver(board, list, idx + 1))
+                    return true;
+
+                board[r][c] = '.';
+            }
+        }
+
+        return false;
+    }
+
+    public void solveSudoku(char[][] board) {
+        ArrayList<Integer> list = new ArrayList<>(); // blank places
+        int n = 9;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == '.') {
+                    list.add(i * n + j);
+                }
+            }
+        }
+    }
+
+
+
+```
+
+
 ![alt text](<006bitwise operation and recursion_231229_130956(22).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(23).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(24).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(25).jpg>) 
 
-This is a **Pro-Level Optimization**. By applying the bitwise logic from your notes, we can remove the `isitsafe` loop entirely. 
+## 2nd code sudoku solver
 
-Instead of scanning the row/column every time (which takes time), we maintain 3 integer arrays that act as "memory" for what numbers are already used.
+```java
+    boolean[][] rows = new boolean[10][10];
+    boolean[][] cols = new boolean[10][10];
+    boolean[][][] mats = new boolean[3][3][10];
 
-### The Mapping Strategy
-We replace the boolean checks with bitwise integers as shown in your notes:
+    public boolean sudokuSolver_02(char[][] board, ArrayList<Integer> list, int idx) {
+        if (idx == list.size())
+            return true;
 
-* **`rows[9]`**: `rows[r]` stores which numbers are currently present in row $r$.
-* **`cols[9]`**: `cols[c]` stores which numbers are currently present in column $c$.
-* **`grids[3][3]`**: `grids[r/3][c/3]` stores which numbers are in that $3 \times 3$ block.
+        int r = list.get(idx) / 9;
+        int c = list.get(idx) % 9;
 
----
+        for (int num = 1; num <= 9; num++) {
+            if (!rows[r][num] && !cols[c][num] && !mats[r / 3][c / 3][num]) {
+                board[r][c] = (char) ('0' + num);
+                rows[r][num] = cols[c][num] = mats[r / 3][c / 3][num] = true;
 
-### The Bitwise Logic (From your table)
+                if (sudokuSolver_02(board, list, idx + 1))
+                    return true;
 
-1.  **Target Number `val` (1-9):** We convert this to a bit mask:
-    > `int mask = 1 << (val - 1);`  
-    *(Using 0-8th bits for numbers 1-9).*
+                board[r][c] = '.';
+                rows[r][num] = cols[c][num] = mats[r / 3][c / 3][num] = false;
+            }
+        }
 
-2.  **Check if Safe:** Instead of a loop, we check if the bit is **NOT** set in any of our 3 masks:
-    > `if ((rows[r] & mask) == 0 && (cols[c] & mask) == 0 && (grids[r/3][c/3] & mask) == 0)`
+        return false;
+    }
 
-3.  **Place Number (Set Bit):**
-    > `rows[r] |= mask;`
+    public void solveSudoku_02(char[][] board) {
+        ArrayList<Integer> list = new ArrayList<>(); // blank places
+        int n = 9;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == '.') {
+                    list.add(i * n + j);
+                } else {
+                    int num = board[i][j] - '0';
+                    rows[i][num] = cols[j][num] = mats[i / 3][j / 3][num] = true;
+                }
+            }
+        }
 
-4.  **Backtrack (Unset Bit):**
-    > `rows[r] &= ~mask;`
+        sudokuSolver_02(board, list, 0);
+    }
 
----
+```
 
-### Why this is a "Game Changer"
-
-| Feature | Standard `isitsafe` | Bitmasking `isitsafe` |
-| :--- | :--- | :--- |
-| **Complexity** | $O(9)$ (Iterates row, col, and grid) | **$O(1)$** (Direct bitwise check) |
-| **Operations** | ~27 comparisons per call | 3 bitwise `&` operations |
-| **Memory** | Uses no extra memory | Uses only 27 integers total |
-
-Because the `solve` function is called recursively thousands of times, reducing $O(9)$ to $O(1)$ provides a massive performance boost.
-
-## Code `
+## Code  final
 
 ```java
 
@@ -297,6 +375,46 @@ class Solution {
     }
 }
 ```
+
+This is a **Pro-Level Optimization**. By applying the bitwise logic from your notes, we can remove the `isitsafe` loop entirely. 
+
+Instead of scanning the row/column every time (which takes time), we maintain 3 integer arrays that act as "memory" for what numbers are already used.
+
+### The Mapping Strategy
+We replace the boolean checks with bitwise integers as shown in your notes:
+
+* **`rows[9]`**: `rows[r]` stores which numbers are currently present in row $r$.
+* **`cols[9]`**: `cols[c]` stores which numbers are currently present in column $c$.
+* **`grids[3][3]`**: `grids[r/3][c/3]` stores which numbers are in that $3 \times 3$ block.
+
+---
+
+### The Bitwise Logic (From your table)
+
+1.  **Target Number `val` (1-9):** We convert this to a bit mask:
+    > `int mask = 1 << (val - 1);`  
+    *(Using 0-8th bits for numbers 1-9).*
+
+2.  **Check if Safe:** Instead of a loop, we check if the bit is **NOT** set in any of our 3 masks:
+    > `if ((rows[r] & mask) == 0 && (cols[c] & mask) == 0 && (grids[r/3][c/3] & mask) == 0)`
+
+3.  **Place Number (Set Bit):**
+    > `rows[r] |= mask;`
+
+4.  **Backtrack (Unset Bit):**
+    > `rows[r] &= ~mask;`
+
+---
+
+### Why this is a "Game Changer"
+
+| Feature | Standard `isitsafe` | Bitmasking `isitsafe` |
+| :--- | :--- | :--- |
+| **Complexity** | $O(9)$ (Iterates row, col, and grid) | **$O(1)$** (Direct bitwise check) |
+| **Operations** | ~27 comparisons per call | 3 bitwise `&` operations |
+| **Memory** | Uses no extra memory | Uses only 27 integers total |
+
+Because the `solve` function is called recursively thousands of times, reducing $O(9)$ to $O(1)$ provides a massive performance boost.
 
 
 ![alt text](<006bitwise operation and recursion_231229_130956(26).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(27).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(28).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(29).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(30).jpg>)
