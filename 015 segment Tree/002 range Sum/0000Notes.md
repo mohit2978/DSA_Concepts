@@ -141,6 +141,8 @@ Here are the visual diagrams for the three cases (qs, qe vs s, e) in a Segment T
 1. Total Overlap
 Condition: qs <= s && e <= qe The node's range (s to e) is completely inside the query range (qs to qe). Action: Return the node's value immediately. We take the whole "puzzle piece."
 
+[qs,qe] chahie uska ek chota part mil gya [s,e] se so voh return kr dia!!!
+
 ```text
 
 Query Range [qs, qe]:      qs |-----------------------------------| qe

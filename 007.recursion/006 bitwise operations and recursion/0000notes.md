@@ -10,7 +10,7 @@
 ![alt text](<006bitwise operation and recursion_231229_130956(15).jpg>) 
 ![alt text](<006bitwise operation and recursion_231229_130956(16).jpg>)
 ![alt text](<006bitwise operation and recursion_231229_130956(17).jpg>) 
-![alt text](<006bitwise operation and recursion_231229_130956(18).jpg>) 
+
 
 
 ```java
@@ -152,10 +152,268 @@ public class l005_bits {
 }
 
 ```
-![alt text](<006bitwise operation and recursion_231229_130956(19).jpg>) 
+
+
+### Comparison Table: Arrays vs. Bitwise Operations
+
+Here is the comparison table based on your notes, illustrating how bitwise operations can replace boolean arrays for memory and performance efficiency.
+
+| Feature | Array Operation | Bitwise Operation |
+| :--- | :--- | :--- |
+| **1. Initialize** | `boolean[] arr = new boolean[32];` | `int arr = 0;` |
+| **Description** | Creates an array to store 32 boolean values. | Uses a single integer (32 bits) to store the same data. |
+| **2. Target Index** | `int idx = k;` | `int mask = 1 << k;` |
+| **Description** | Selects the index `k`. | Creates a "mask" by shifting `1` to the `k`-th position. |
+| **3. Set to True** | `arr[idx] = true;` | `arr = arr \| mask;` |
+| **Description** | Sets the value at index `k` to true. | Sets the `k`-th bit to `1` using the **OR** (`\|`) operator. |
+| **4. Set to False** | `arr[idx] = false;` | `arr = arr & ~mask;` |
+| **Description** | Sets the value at index `k` to false. | Sets the `k`-th bit to `0` using **AND** with the negated mask (`~`). |
+| **5. Check Condition**| `if (arr[idx] == true) { ... }` | `if ((arr & mask) != 0) { ... }` |
+| **Description** | Checks if the value at index `k` is true. | Checks if the `k`-th bit is `1` (non-zero result means true). |
+
+---
+
+### Why use Bitwise over Arrays?
+
+* **Memory Efficiency:** An array of 32 booleans can take up 32 bytes (or more due to object overhead), while an `int` takes exactly 4 bytes.
+* **Performance:** Bitwise operations are executed directly by the CPU in a single clock cycle, making them significantly faster than array lookups.
+* **Copying/State Management:** You can copy the entire "state" of 32 flags by simply copying one integer, whereas copying an array requires a loop or `System.arraycopy()`.
+
+Now let us seee sudoku solver!!see its previous code first!!
+
 ![alt text](<006bitwise operation and recursion_231229_130956(20).jpg>) 
 ![alt text](<006bitwise operation and recursion_231229_130956(21).jpg>) 
-![alt text](<006bitwise operation and recursion_231229_130956(22).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(23).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(24).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(25).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(26).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(27).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(28).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(29).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(30).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(31).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(32).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(33).jpg>)
+![alt text](<006bitwise operation and recursion_231229_130956(22).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(23).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(24).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(25).jpg>) 
+
+This is a **Pro-Level Optimization**. By applying the bitwise logic from your notes, we can remove the `isitsafe` loop entirely. 
+
+Instead of scanning the row/column every time (which takes time), we maintain 3 integer arrays that act as "memory" for what numbers are already used.
+
+### The Mapping Strategy
+We replace the boolean checks with bitwise integers as shown in your notes:
+
+* **`rows[9]`**: `rows[r]` stores which numbers are currently present in row $r$.
+* **`cols[9]`**: `cols[c]` stores which numbers are currently present in column $c$.
+* **`grids[3][3]`**: `grids[r/3][c/3]` stores which numbers are in that $3 \times 3$ block.
+
+---
+
+### The Bitwise Logic (From your table)
+
+1.  **Target Number `val` (1-9):** We convert this to a bit mask:
+    > `int mask = 1 << (val - 1);`  
+    *(Using 0-8th bits for numbers 1-9).*
+
+2.  **Check if Safe:** Instead of a loop, we check if the bit is **NOT** set in any of our 3 masks:
+    > `if ((rows[r] & mask) == 0 && (cols[c] & mask) == 0 && (grids[r/3][c/3] & mask) == 0)`
+
+3.  **Place Number (Set Bit):**
+    > `rows[r] |= mask;`
+
+4.  **Backtrack (Unset Bit):**
+    > `rows[r] &= ~mask;`
+
+---
+
+### Why this is a "Game Changer"
+
+| Feature | Standard `isitsafe` | Bitmasking `isitsafe` |
+| :--- | :--- | :--- |
+| **Complexity** | $O(9)$ (Iterates row, col, and grid) | **$O(1)$** (Direct bitwise check) |
+| **Operations** | ~27 comparisons per call | 3 bitwise `&` operations |
+| **Memory** | Uses no extra memory | Uses only 27 integers total |
+
+Because the `solve` function is called recursively thousands of times, reducing $O(9)$ to $O(1)$ provides a massive performance boost.
+
+## Code `
+
+```java
+
+import java.util.ArrayList;
+
+class Solution {
+    // 1. Initialize our bitmasks (Integers instead of boolean arrays)
+    int[] rows = new int[9];
+    int[] cols = new int[9];
+    int[][] boxes = new int[3][3];
+
+    public void solveSudoku(char[][] board) {
+        ArrayList<Integer> emptyCells = new ArrayList<>();
+        
+        // 2. Pre-process: Fill masks with initial board state & find empty cells
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] == '.') {
+                    emptyCells.add(i * 9 + j);
+                } else {
+                    int val = board[i][j] - '0';
+                    int mask = 1 << (val - 1);
+                    
+                    // Set bits for existing numbers
+                    rows[i] |= mask;
+                    cols[j] |= mask;
+                    boxes[i / 3][j / 3] |= mask;
+                }
+            }
+        }
+        
+        solve(board, emptyCells, 0);
+    }
+
+    private boolean solve(char[][] board, ArrayList<Integer> emptyCells, int idx) {
+        if (idx == emptyCells.size()) return true;
+
+        int r = emptyCells.get(idx) / 9;
+        int c = emptyCells.get(idx) % 9;
+        
+        for (int val = 1; val <= 9; val++) {
+            int mask = 1 << (val - 1); // Create mask for number val
+
+            // 3. O(1) Safety Check using Bitwise AND
+            // "If bit is NOT set in row AND col AND box"
+            if ((rows[r] & mask) == 0 && 
+                (cols[c] & mask) == 0 && 
+                (boxes[r / 3][c / 3] & mask) == 0) {
+                
+                // Place
+                board[r][c] = (char)(val + '0');
+                
+                // 4. Update Masks (Set Bit)
+                rows[r] |= mask;
+                cols[c] |= mask;
+                boxes[r / 3][c / 3] |= mask;
+
+                if (solve(board, emptyCells, idx + 1)) return true;
+
+                // 5. Backtrack (Clear Bit using AND NOT)
+                rows[r] &= ~mask;
+                cols[c] &= ~mask;
+                boxes[r / 3][c / 3] &= ~mask;
+                
+                board[r][c] = '.';
+            }
+        }
+        return false;
+    }
+}
+```
+
+
+![alt text](<006bitwise operation and recursion_231229_130956(26).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(27).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(28).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(29).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(30).jpg>)
+
+```java
+
+
+    int[] row = new int[10];
+    int[] col = new int[10];
+    int[][] mat = new int[3][3];
+
+    public boolean sudokuSolver_03_bits(char[][] board, ArrayList<Integer> list, int idx) {
+        if (idx == list.size())
+            return true;
+
+        int r = list.get(idx) / 9;
+        int c = list.get(idx) % 9;
+
+        for (int num = 1; num <= 9; num++) {
+            int mask = 1 << num;
+            if ((row[r] & mask) == 0 && (col[c] & mask) == 0 && (mat[r / 3][c / 3] & mask) == 0) {
+                board[r][c] = (char) ('0' + num);
+                row[r] ^= mask;
+                col[c] ^= mask;
+                mat[r / 3][c / 3] ^= mask;
+
+                if (sudokuSolver_03_bits(board, list, idx + 1))
+                    return true;
+
+                board[r][c] = '.';
+
+                row[r] ^= mask;
+                col[c] ^= mask;
+                mat[r / 3][c / 3] ^= mask;
+
+            }
+        }
+
+        return false;
+    }
+
+    public void solveSudoku_03_bits(char[][] board) {
+        ArrayList<Integer> list = new ArrayList<>(); // blank places
+        int n = 9;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (board[i][j] == '.') {
+                    list.add(i * n + j);
+                } else {
+                    int num = board[i][j] - '0';
+                    int mask = 1 << num;
+                    row[i] ^= mask;
+                    col[j] ^= mask;
+                    mat[i / 3][j / 3] ^= mask;
+                }
+            }
+        }
+
+        sudokuSolver_03_bits(board, list, 0);
+    }
+```
+This code uses the **XOR Toggle Trick** (`^=`), which is a clever variation of the bitwise operations we just discussed. Here is the breakdown of why this specific version is efficient and how it differs from the standard approach:
+
+---
+
+### 1. The XOR Toggle Trick (`^=`)
+In your previous notes, you saw two distinct steps:
+1.  **Set:** `arr |= mask` (Turn ON)
+2.  **Unset:** `arr &= ~mask` (Turn OFF)
+
+This code replaces both with a single operator: **XOR (`^`)**.
+
+* **Logic:**
+    * $0 \oplus 1 = 1$ (If bit is empty, XOR sets it).
+    * $1 \oplus 1 = 0$ (If bit is set, XOR clears it).
+* **Why it works here:**
+    * You have a safety check `if ((row[r] & mask) == 0)` right before the first toggle. This guarantees the bit is currently `0`.
+    * **Place (Forward):** `row[r] ^= mask` flips `0` to `1`.
+    * **Backtrack (Return):** `row[r] ^= mask` flips `1` back to `0`.
+* **Benefit:** It allows you to write the exact same line of code for both "doing" and "undoing" the move.
+
+---
+
+### 2. Mask Shift (`1 << num`)
+* **Code:** `int mask = 1 << num;`
+* **Difference:** Unlike the previous `1 << (num - 1)` which used bits 0-8, this uses bits **1-9**.
+    * Number 1 uses bit index 1.
+    * Number 9 uses bit index 9.
+* **Effect:** This effectively "wastes" the 0-th bit, but it makes the code slightly cleaner because you don't need to subtract 1 from `num` every time you calculate the mask.
+
+---
+
+### 3. Pre-Processing Logic
+The driver function correctly initializes the state:
+1.  **Scan Grid:** It loops through `i` and `j`.
+2.  **Empty Cells:** Adds `.` coordinates to the list.
+3.  **Filled Cells:** Immediately updates the `row`, `col`, and `mat` bitmasks using `^=`.
+4.  **Crucial:** If you didn't do this, the solver would try to place numbers that conflict with the pre-filled clues.
+
+---
+
+### Code Walkthrough Example
+Imagine placing number **5** at **(0,0)**:
+1.  **Mask:** `1 << 5` (Binary `...100000`).
+2.  **Check:** `if ((row[0] & mask) == 0)` $\to$ Checks if the 5th bit is OFF.
+3.  **Toggle ON:** `row[0] ^= mask`. Now `row[0]` remembers "5 is used".
+4.  **Recurse:** Try to solve the rest of the board.
+5.  **Toggle OFF:** `row[0] ^= mask`. `row[0]` forgets "5 is used" (Backtracking).
+
+---
+
+### Verdict
+This is a **highly optimized competitive programming implementation**. It is faster to type and slightly cleaner than using separate `|` and `& ~` operations, provided you strictly check for safety before toggling.
+
+Would you like me to analyze the time complexity of this specific bitmask version compared to your original version?
+
+ ![alt text](<006bitwise operation and recursion_231229_130956(31).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(32).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(33).jpg>)
 
 ![alt text](<006bitwise operation and recursion_231229_130956(34).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(35).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(36).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(37).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(38).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(39).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(40).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(41).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(42).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(43).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(44).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(45).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(46).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(47).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(48).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(49).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(50).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(51).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(52).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(53).jpg>) ![alt text](<006bitwise operation and recursion_231229_130956(54).jpg>) 
 
@@ -270,3 +528,75 @@ public class l006_Nqueen {
 }
 
 ```
+
+nqueens3()
+
+This code is an implementation of the **N-Queens problem using Bitmasking** for optimization. This is widely considered the most efficient way to solve N-Queens (often referred to as the "bitwise solution").
+
+Here is a breakdown of the logic, specifically focusing on the math used to track diagonals.
+
+---
+
+### 1. The Variables
+* **`floor` (Row $r$):** Represents the current row we are trying to place a Queen in. The recursion moves `floor + 1`, ensuring we place exactly one Queen per row.
+* **`room` (Column $c$):** The loop iterates through columns $0$ to $n-1$.
+
+---
+
+### 2. The 4 Safety Checks (Bitmasks)
+Instead of checking the board with loops ($O(N)$), we check 4 integers ($O(1)$) to see if a spot is safe.
+
+#### A. Column Check (`col`)
+* **Formula:** `1 << c`
+* **Logic:** Tracks which columns are occupied. If we place a queen at $(0, 2)$, the 2nd bit of `col` becomes $1$.
+
+#### B. Normal Diagonal (`diag`)
+* **Formula:** `r - c + (n - 1)`
+* **Logic:** For any cell $(r, c)$ on a main diagonal (top-left to bottom-right), the value $r - c$ is constant.
+    * *Example:* $(1, 0), (2, 1), (3, 2) \to 1-0=1, 2-1=1, 3-2=1$.
+* **Why `+ (n - 1)`?** $r - c$ can be negative (e.g., $0 - 3 = -3$). Bit shifts cannot be negative. Adding $n - 1$ shifts the range to be strictly positive (from $0$ to $2n - 2$).
+
+#### C. Anti-Diagonal (`adiag`)
+* **Formula:** `r + c`
+* **Logic:** For any cell on an anti-diagonal (top-right to bottom-left), the value $r + c$ is constant.
+    * *Example:* $(0, 2), (1, 1), (2, 0) \to 0+2=2, 1+1=2, 2+0=2$.
+* **Range:** $0$ to $2n - 2$.
+
+#### D. Row Check (`row`) — Technically Redundant
+* **Formula:** `1 << r`
+* **Note:** Since your recursion moves `floor` to `floor + 1`, you naturally never visit the same row twice. This check doesn't break anything, but you could delete the row logic entirely and the code would still work perfectly.
+
+---
+
+### 3. The XOR Toggle (`^=`)
+This code uses the **XOR trick** for Backtracking that we discussed earlier. 
+
+* **Place:** `col ^= (1 << room)` flips the bit from $0$ to $1$.
+* **Backtrack:** `col ^= (1 << room)` flips the bit from $1$ back to $0$.
+
+Because the code checks if the bit is $0$ before entering the recursion, XOR acts as a perfect "on/off" switch.
+
+---
+
+
+```java
+
+// 1. PLACE QUEEN
+// XOR (^) toggles the bit from 0 to 1 (Mark as unsafe)
+col ^= (1 << c); 
+
+// Recurse to next row
+nqueen_03(n, floor + 1, ...);
+
+// 2. REMOVE QUEEN (Backtrack)
+// XOR (^) toggles the bit from 1 back to 0 (Mark as safe again)
+col ^= (1 << c);
+```
+
+### Summary of Efficiency
+
+* **Space Complexity:** Uses **$O(1)$** extra space via integers (`col`, `diag`, `adiag`) instead of an $O(N^2)$ board or multiple $O(N)$ boolean arrays. (Note: The recursion stack remains $O(N)$).
+* **Time Complexity:** The safety check is an **instant bitwise AND (`&`)** operation rather than iterating through the board, significantly reducing the constant factor of the $O(N!)$ backtracking search.
+
+---
+
