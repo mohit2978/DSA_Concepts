@@ -1,8 +1,62 @@
-# Notes
+# Range Sum Query - Mutable
 
-![alt text](image.png)
+Link--> https://leetcode.com/problems/range-sum-query-mutable/
 
-![alt text](image-1.png)
+
+Given an integer array `nums`, handle multiple queries of the following types:
+
+1.  **Update** the value of an element in `nums`.
+2.  Calculate the **sum** of the elements of `nums` between indices `left` and `right` **inclusive** where `left <= right`.
+
+Implement the `NumArray` class:
+
+* `NumArray(int[] nums)` Initializes the object with the integer array `nums`.
+* `void update(int index, int val)` Updates the value of `nums[index]` to be `val`.
+* `int sumRange(int left, int right)` Returns the sum of the elements of `nums` between indices `left` and `right` inclusive (i.e., `nums[left] + nums[left + 1] + ... + nums[right]`).
+
+---
+
+### Example 1:
+
+**Input:**
+`["NumArray", "sumRange", "update", "sumRange"]`
+`[[[1, 3, 5]], [0, 2], [1, 2], [0, 2]]`
+
+**Output:**
+`[null, 9, null, 8]`
+
+**Explanation:**
+```cpp
+NumArray numArray = new NumArray([1, 3, 5]);
+numArray.sumRange(0, 2); // return 1 + 3 + 5 = 9
+numArray.update(1, 2);   // nums = [1, 2, 5]
+numArray.sumRange(0, 2); // return 1 + 2 + 5 = 8
+```
+### Constraints Summary
+
+| Parameter | Constraint |
+| :--- | :--- |
+| **Array Length (`nums.length`)** | $1 \le n \le 3 \times 10^4$ |
+| **Element Value (`nums[i]`)** | $-100 \le \text{val} \le 100$ |
+| **Update Index** | $0 \le \text{index} < n$ |
+| **Range Indices** | $0 \le \text{left} \le \text{right} < n$ |
+| **Total API Calls** | Up to $3 \times 10^4$ calls |
+
+---
+
+### Complexity Requirements
+
+Given that both $N$ and the number of queries $Q$ are up to $3 \times 10^4$, a naive $O(N)$ approach for `sumRange` would result in $O(N \times Q) \approx 9 \times 10^8$ operations, which will likely **TLE** (Time Limit Exceeded).
+
+To pass within the time limits, you need an approach where both **Update** and **Query** are efficient:
+
+| Data Structure | Query Time | Update Time | Space Complexity |
+| :--- | :--- | :--- | :--- |
+| **Prefix Sum** | $O(1)$ | $O(N)$ | $O(N)$ |
+| **Segment Tree** | $O(\log N)$ | $O(\log N)$ | $O(4N)$ |
+| **Fenwick Tree (BIT)**| $O(\log N)$ | $O(\log N)$ | $O(N)$ |
+
+**Recommendation:** Since we need point updates and range sums, a **Fenwick Tree** is the most code-efficient solution, while a **Segment Tree** is more versatile for other types of range queries (like range max/min).
 
 ```cpp
 class NumArray {
@@ -31,12 +85,12 @@ class NumArray {
         segtree[i] = segtree[2 * i + 1] + segtree[2 * i + 2];
     }
 
-    int getSum(int l, int r, int s, int e, int i) {
-        if (r < s || e < l) return 0; // No overlap
-        if (l <= s && e <= r) return segtree[i]; // Total overlap
+    int getSum(int qs, int qe, int s, int e, int i) {
+        if (qe < s || e < qs) return 0; // No overlap
+        if (qs <= s && e <= qe) return segtree[i]; // Total overlap
 
         int mid = s + (e - s) / 2;
-        return getSum(l, r, s, mid, 2 * i + 1) + getSum(l, r, mid + 1, e, 2 * i + 2);
+        return getSum(qs, qe, s, mid, 2 * i + 1) + getSum(qs, qe, mid + 1, e, 2 * i + 2);
     }
 
 public:
@@ -65,7 +119,7 @@ public:
  * int param_2 = obj->sumRange(left,right);
  */
  ```
-
+![alt text](Scanned_20250807-1558-03.jpg)
  ## Segment Tree Query: The "Search and Combine" Mission
 
 The `sumRange` query works by decomposing your target range $[L, R]$ into a few precomputed "blocks" (nodes) that already exist in the tree. Instead of summing every single index, you are just summing the values of a few strategic nodes.
@@ -82,8 +136,68 @@ When the algorithm visits a node covering range $[S, E]$, it makes a decision ba
 * **Partial Overlap (The "Split"):** * *Condition:* Neither of the above.
     * *Action:* **Split the search.** Query the left child and the right child, then return their sum.
 
+Here are the visual diagrams for the three cases (qs, qe vs s, e) in a Segment Tree query.
+
+1. Total Overlap
+Condition: qs <= s && e <= qe The node's range (s to e) is completely inside the query range (qs to qe). Action: Return the node's value immediately. We take the whole "puzzle piece."
+
+```text
+
+Query Range [qs, qe]:      qs |-----------------------------------| qe
+                              (I need the sum of all this)
+
+Node Range [s, e]:                   s |----------| e
+                              (I fit completely inside! Take me.)
+```
+2. No Overlap
+Condition: qe < s || e < qs The node's range is completely outside the query range. They do not touch. Action: Return 0. This node contributes nothing.
+
+Case A: Node is too far right
+
+```text
+Query Range [qs, qe]:    qs |-------| qe
+
+Node Range [s, e]:                          s |-------| e
+                                       (Way out here, useless)
+
+```
+Case B: Node is too far left
+```text
+Query Range [qs, qe]:                          qs |-------| qe
+
+Node Range [s, e]:       s |-------| e
+                      (Way out here, useless)
+```
+3. Partial Overlap
+Condition: Everything else (Recursive Step) The node's range partially overlaps with the query range. Action: We cannot simply take the whole node. We must split (mid) and ask the children to check which specific parts are valid.
+
+Case A: Overlap on the right side
+```text
+Query Range [qs, qe]:             qs |----------------------| qe
+
+Node Range [s, e]:       s |----------------| e
+                           (Only this part overlaps)
 
 
+```
+Case B: Overlap on the left side
+```text
+Query Range [qs, qe]:    qs |-----------------------| qe
+
+Node Range [s, e]:                      s |-----------------| e
+                                          (Only this part overlaps)
+
+
+```
+Case C: Query is inside the Node
+```text
+
+Query Range [qs, qe]:             qs |-----| qe
+
+Node Range [s, e]:       s |--------------------------| e
+                           (The query is smaller than me. I must look deeper.)
+
+```
 ---
 
 ### 2. Walkthrough: Querying Range [2, 6]
