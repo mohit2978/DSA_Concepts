@@ -152,7 +152,56 @@ int main() {
     return 0;
 }
 ```
- 
+ The `low` array (often called **Low-Link Value**) is the most critical part of Tarjan's algorithm. 
+
+In simple terms: `low[u]` tells you the "highest" ancestor (earliest visited node) that node `u` can reach. It answers the question: *"If I start at node `u` and go down the DFS tree, can I find a back-path (back-edge) that lets me jump up to an ancestor of `u`?"*
+
+---
+
+### 1. The Formal Definition
+`low[u]` is the lowest `disc` (discovery time) value reachable from `u` (including itself) in the DFS tree, possibly using a **back-edge** (but not the direct parent-child edge in reverse).
+
+---
+
+### 2. How `low[u]` is Calculated
+Think of `low[u]` as a "best escape route" value. We want it to be as small as possible (smaller time = older ancestor = higher up in the tree).
+
+* **Initialization:** When you first visit `u`, you can definitely reach yourself.
+    > `low[u] = disc[u]`
+* **Back-Edge Found (Cycle detected):** If `u` has a neighbor `v` that is already visited (and isn't `u`'s parent), it means `u` found a "secret tunnel" back up the tree.
+    > `low[u] = min(low[u], disc[v])`
+    * *Translation:* "I can reach node `v`, so I can reach `v`'s discovery time."
+* **Tree-Edge Return (Recursive update):** After DFS returns from a child `v`, `u` checks if the child found a path to an ancestor.
+    > `low[u] = min(low[u], low[v])`
+    * *Translation:* "If my child `v` can reach an ancestor way up there, then I can reach it too (via `v`)."
+
+---
+
+### 3. Why `low` Determines Articulation Points
+The logic for finding an Articulation Point relies entirely on comparing `low` and `disc`.
+
+**The Critical Condition:**
+If `u` is the parent and `v` is the child, and we see:
+$$low[v] \ge disc[u]$$
+
+* **What this means:** The "lowest" node `v` can reach is `u` itself (or something below `u`).
+* **Implication:** There is **NO** back-edge from `v` (or `v`'s subtree) that goes above `u`.
+* **Result:** `u` is a bottleneck. If you remove `u`, `v` will be completely cut off from the rest of the ancestors. Therefore, `u` is an Articulation Point.
+
+---
+
+### Visual Example
+Imagine a graph: **1 — 2 — 3** (Linear) vs **1 — 2 — 3 — 1** (Cycle).
+
+* **Case A: Linear (1-2-3)**
+    * Node 3: `disc=3`, `low=3` (Can't go anywhere).
+    * Node 2: Child (3) returns `low=3`. Node 2 compares its `disc(2)` vs child's `low(3)`.
+    * Since `low[3] (3) >= disc[2] (2)`, removing 2 disconnects 3. **2 is an AP.**
+
+* **Case B: Cycle (1-2-3-1)**
+    * Node 3: Has edge to 1. `low[3]` updates to `disc[1]` (which is 1).
+    * Node 2: Child (3) returns `low=1`.
+    * Since `low[3] (1) < disc[2] (2)`, removing 2 does **NOT** disconnect 3 (because 3 can still reach 1 directly). **2 is NOT an AP.**
  
   ![alt text](<009 articulation pt_240113_014029(28).jpg>) ![alt text](<009 articulation pt_240113_014029(29).jpg>) ![alt text](<009 articulation pt_240113_014029(30).jpg>) ![alt text](<009 articulation pt_240113_014029(31).jpg>) ![alt text](<009 articulation pt_240113_014029(32).jpg>) ![alt text](<009 articulation pt_240113_014029(33).jpg>) ![alt text](<009 articulation pt_240113_014029(34).jpg>) ![alt text](<009 articulation pt_240113_014029(35).jpg>) ![alt text](<009 articulation pt_240113_014029(36).jpg>) ![alt text](<009 articulation pt_240113_014029(37).jpg>) ![alt text](<009 articulation pt_240113_014029(38).jpg>) ![alt text](<009 articulation pt_240113_014029(39).jpg>) ![alt text](<009 articulation pt_240113_014029(40).jpg>) ![alt text](<009 articulation pt_240113_014029(41).jpg>) ![alt text](<009 articulation pt_240113_014029(42).jpg>) ![alt text](<009 articulation pt_240113_014029(43).jpg>) ![alt text](<009 articulation pt_240113_014029(44).jpg>) ![alt text](<009 articulation pt_240113_014029(45).jpg>) ![alt text](<009 articulation pt_240113_014029(46).jpg>) ![alt text](<009 articulation pt_240113_014029(47).jpg>) ![alt text](<009 articulation pt_240113_014029(48).jpg>)
 
