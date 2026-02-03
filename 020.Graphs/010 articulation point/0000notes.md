@@ -13,6 +13,69 @@
 
 ![alt text](<009 articulation pt_240113_014029(1).jpg>) ![alt text](<009 articulation pt_240113_014029(2).jpg>) ![alt text](<009 articulation pt_240113_014029(3).jpg>) ![alt text](<009 articulation pt_240113_014029(4).jpg>) ![alt text](<009 articulation pt_240113_014029(5).jpg>) ![alt text](<009 articulation pt_240113_014029(6).jpg>) ![alt text](<009 articulation pt_240113_014029(7).jpg>) ![alt text](<009 articulation pt_240113_014029(8).jpg>) ![alt text](<009 articulation pt_240113_014029(9).jpg>) ![alt text](<009 articulation pt_240113_014029(10).jpg>) ![alt text](<009 articulation pt_240113_014029(11).jpg>) ![alt text](<009 articulation pt_240113_014029(12).jpg>) ![alt text](<009 articulation pt_240113_014029(13).jpg>) ![alt text](<009 articulation pt_240113_014029(14).jpg>) ![alt text](<009 articulation pt_240113_014029(15).jpg>) ![alt text](<009 articulation pt_240113_014029(16).jpg>) ![alt text](<009 articulation pt_240113_014029(17).jpg>) ![alt text](<009 articulation pt_240113_014029(18).jpg>) ![alt text](<009 articulation pt_240113_014029(19).jpg>) ![alt text](<009 articulation pt_240113_014029(20).jpg>)
 
+## Mycode
+
+```cpp
+
+class Solution {
+    void findAPs(int u, int p, int& timer, vector<int> adj[], vector<int>& disc,
+                 vector<int>& low, vector<bool>& isAP) {
+        disc[u] = low[u] = ++timer;
+        int children = 0;
+
+        for (int v : adj[u]) {
+            if (v == p) continue;  // Skip parent
+
+            if (disc[v] != -1) {
+                // Back-edge found: update low-link using discovery time of v
+                low[u] = min(low[u], disc[v]);
+            } else {
+                // Tree-edge: recurse
+                children++;
+                findAPs(v, u, timer, adj, disc, low, isAP);
+
+                // Check if subtree rooted at v has a back-link to u or its
+                // ancestors
+                low[u] = min(low[u], low[v]);
+
+                // Condition for non-root nodes
+                if (p != -1 && low[v] >= disc[u]) {
+                    isAP[u] = true;
+                }
+            }
+        }
+
+        // Condition for root node
+        if (p == -1 && children > 1) {
+            isAP[u] = true;
+        }
+    }
+
+   public:
+    vector<int> articulationPoints(int n, vector<int> adj[]) {
+        vector<int> disc(n, -1), low(n, -1);
+        vector<bool> isAP(n,false);
+        int timer = 0;
+
+        // Run DFS for all components
+        for (int i = 0; i < n; i++) {
+            if (disc[i] == -1) {
+                findAPs(i, -1, timer, adj, disc, low, isAP);
+            }
+        }
+        vector<int> res;
+        for (int i = 0; i < n; i++) {
+            if (isAP[i] == true) res.push_back(i);
+        }
+        if (res.size() > 0)
+            return res;
+        else
+            return {-1};
+    }
+};
+```
+
+
 ### Tarjan's Algorithm for Articulation Points
 
 An **Articulation Point** (or Cut Vertex) is a node in an undirected graph which, when removed, increases the number of connected components. Tarjan's algorithm finds all such points in $O(V + E)$ time using a single **DFS**.
