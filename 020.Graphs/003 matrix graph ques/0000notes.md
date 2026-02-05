@@ -710,11 +710,219 @@ public:
 };
 ```
 
+Also we can use index compression
+
+```java
+import java.util.PriorityQueue;
+
+class Solution {
+    class trip {
+        int index;
+        int cost;
+        trip(int index, int cost) {
+            this.index = index;
+            this.cost = cost;
+        }
+    }
+
+    public int swimInWater(int[][] mat) {
+        int n = mat.length;
+        boolean[][] vis = new boolean[n][n];
+        int[][] dir = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+        PriorityQueue<trip> pq = new PriorityQueue<>((a, b) -> a.cost - b.cost);
+        pq.add(new trip(0, mat[0][0]));
+        int res = 0;
+
+        while (pq.size() > 0) {
+            trip rem = pq.remove();
+            int r = rem.index / n;
+            int c = rem.index % n;
+
+            if (vis[r][c]) continue;
+            vis[r][c] = true;
+
+            res = Math.max(res, rem.cost);
+
+            if (r == n - 1 && c == n - 1) {
+                return res;
+            }
+
+            for (int i = 0; i < 4; i++) {
+                int dr = r + dir[i][0];
+                int dc = c + dir[i][1];
+
+                if (dr >= 0 && dr < n && dc >= 0 && dc < n && !vis[dr][dc]) {
+                    pq.add(new trip(dr * n + dc, mat[dr][dc]));
+                }
+            }
+        }
+        return res;
+    }
+}
+```
+## Cpp
+
+```cpp
+#include <vector>
+#include <queue>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+    struct Trip {
+        int index;
+        int cost;
+        
+        bool operator>(const Trip& other) const {
+            return cost > other.cost;
+        }
+    };
+
+public:
+    int swimInWater(vector<vector<int>>& grid) {
+        int n = grid.size();
+        vector<vector<bool>> vis(n, vector<bool>(n, false));
+        int dir[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        
+        priority_queue<Trip, vector<Trip>, greater<Trip>> pq;
+        pq.push({0, grid[0][0]});
+        
+        int res = 0;
+        
+        while (!pq.empty()) {
+            Trip rem = pq.top();
+            pq.pop();
+            
+            int r = rem.index / n;
+            int c = rem.index % n;
+            
+            if (vis[r][c]) continue;
+            vis[r][c] = true;
+            
+            res = max(res, rem.cost);
+            
+            if (r == n - 1 && c == n - 1) return res;
+            
+            for (int i = 0; i < 4; i++) {
+                int dr = r + dir[i][0];
+                int dc = c + dir[i][1];
+                
+                if (dr >= 0 && dr < n && dc >= 0 && dc < n && !vis[dr][dc]) {
+                    pq.push({dr * n + dc, grid[dr][dc]});
+                }
+            }
+        }
+        return res;
+    }
+};
+```
+
+
+Q-- suppose for leetcode 778 we have matric [[1,5,10,3],[6,2,11,9],[12,19,20,7],[30,4,8,12]] we start with 1 see adjacent 5,6 pu that in pq now min is 5 so it comes out now we put children of 5 i.e. 10,2 now pq has 6,10,2 now we take min so 2 comes out now children of 2 i sput 11,19 so pq is 6,10,11,19 now 6 goes out chilren of 6 is psuhed i.e 12 so 10,11,19 ,12 so min is 11 so now from 6 i will move to 11?
+
+answer-->
+
+
+You are doing the trace correctly, but you made a small arithmetic error at the very last step.
+
+Your Priority Queue (PQ) contains: **10, 11, 19, 12**. You asked: "so min is 11?"
+**No, the minimum is 10.**
+
+---
+
+### 1. The Correction
+The algorithm always picks the absolute smallest number currently in the PQ to ensure the "water level" rises as slowly as possible.
+* **Comparing the values:** 10 vs 11 vs 12 vs 19.
+* **10 is the smallest.**
+* **The Result:** We do not move from 6 to 11. We "jump" back to **10** (at row 0, col 2).
+
+---
+
+### 2. Concept: "The Expanding Lake"
+Don't think of it as a single person walking a path (who must step to an adjacent cell). **Think of it as a flooding lake.**
+
+The water is currently contained by the "walls" of 10, 11, 12, and 19. To expand, the water spills over the **lowest wall**, which is 10. It doesn't matter that 10 is far away from 6; it is part of the same connected "lake" we have already explored.
+
+---
+
+### 3. The Corrected Trace
+Let's continue from where you stopped:
+
+**Current PQ:** `{10, 11, 12, 19}`  
+**Visited:** 1, 5, 2, 6.
+
+1.  **Pop 10 (0, 2):**
+    * **Neighbors:** Left: 5 (Visited), Down: 11 (In PQ), Right: **3 (0, 3)** $\to$ New!
+    * **Action:** Push 3 into PQ.
+    * **New PQ:** `{3, 11, 12, 19}`
+2.  **Pop 3 (0, 3):** (Now 3 is the new minimum!)
+    * **Neighbors:** Left: 10 (Visited), Down: **9 (1, 3)** $\to$ New!
+    * **Action:** Push 9 into PQ.
+    * **New PQ:** `{9, 11, 12, 19}`
+3.  **Pop 9 (1, 3):**
+    * **Neighbors:** Up: 3 (Visited), Left: 11 (In PQ), Down: **7 (2, 3)** $\to$ New!
+    * **Action:** Push 7 into PQ.
+    * **New PQ:** `{7, 11, 12, 19}`
+
+---
+
+### Why this is the "Magic" of Dijkstra
+By always picking the smallest available height across the *entire boundary*, the algorithm ensures that we never take a "steep climb" if a "gentler path" exists somewhere else on the map.
+
+**Would you like me to finish the trace to see what the final "Maximum Height on Path" (the answer) would be for this grid?**
+
  ![alt text](<002matrix graph ques_240423_191737(46).jpg>) ![alt text](<002matrix graph ques_240423_191737(47).jpg>)
 
 
 
+This approach works by treating the 2D grid as a single long 1D line (like flattening a list of lists). For a matrix with **$N$ Rows** and **$M$ Columns**:
 
+---
+
+### 1. The Formulas
+
+**To Compress (2D $\to$ 1D):**
+$$Index = (r \times M) + c$$
+*(The multiplier is always the number of Columns)*
+
+**To Extract (1D $\to$ 2D):**
+$$r = Index / M$$
+$$c = Index \% M$$
+
+---
+
+### 2. Why it uses M (Columns), not N
+Think of the matrix row by row:
+* **Row 0** takes up indices $0$ to $M-1$.
+* **Row 1** starts only after all $M$ items of Row 0 are finished.
+* Therefore, to get to **Row $r$**, you must skip $r$ full rows, and each row has $M$ items.
+
+**Total items skipped = $r \times M$.**
+
+---
+
+### 3. Visual Example (2 Rows, 3 Columns)
+Matrix Dimensions: $N=2, M=3$.
+
+| (r, c) | (0, 0) | (0, 1) | (0, 2) |
+| :--- | :--- | :--- | :--- |
+| **1D Index** | 0 | 1 | 2 |
+
+| (r, c) | (1, 0) | (1, 1) | (1, 2) |
+| :--- | :--- | :--- | :--- |
+| **1D Index** | 3 | 4 | 5 |
+
+**Test: Cell (1, 2)**
+* **Compress:** $1 \times 3 + 2 = 5$. (Correct)
+* **Extract:** $5 / 3 = 1$ (Row), $5 \% 3 = 2$ (Col). (Correct)
+
+---
+
+### Summary Rule
+* **Divide (`/`) by Columns** $\to$ Gives the **Row**.
+* **Modulo (`%`) by Columns** $\to$ Gives the **Column**.
 
 
 
