@@ -270,7 +270,16 @@ If you take `low[grandpa]`, you are claiming: **"I can reach 1900 directly from 
 ### Final Rule
 Information (`low` values) only flows **UP** from children to parents. It never flows down from ancestors (Back Edges) or down from parents.
 
+Q---> 
 
+```text
+ if (p != -1 && low[v] >= disc[u]) {
+                    isAP[u] = true;
+                } why we decide on only 1 child we should let whole loop run till every child explore maybe some other child has way to parent
+
+ ```
+
+ ans--> if we have multiple child and we on first child only we see first child cant reach to u's parent  i.e. `low[v]>=disc[u]` so we can say that u is AP ,if we remove u parent of u and child of u be separate!!              
 
 ---
 
