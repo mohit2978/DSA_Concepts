@@ -112,4 +112,7 @@ class Solution {
 
 ![alt text](<007populating right validate bst closest element_240401_000753(19).jpg>) ![alt text](<007populating right validate bst closest element_240401_000753(20).jpg>) ![alt text](<007populating right validate bst closest element_240401_000753(21).jpg>)
 
+---
+
+![alt text](<008bt cameras hard_240401_000825(20).jpg>) ![alt text](<008bt cameras hard_240401_000825(21).jpg>) ![alt text](<008bt cameras hard_240401_000825(22).jpg>) ![alt text](<008bt cameras hard_240401_000825(23).jpg>) ![alt text](<008bt cameras hard_240401_000825(24).jpg>)
 
