@@ -373,7 +373,243 @@ class MapSum {
 
 ```
 
- ![alt text](<001_231121_163402 (1)(18).jpg>) ![alt text](<001_231121_163402 (1)(19).jpg>) ![alt text](<001_231121_163402 (1)(20).jpg>) ![alt text](<001_231121_163402 (1)(21).jpg>) ![alt text](<001_231121_163402 (1)(22).jpg>) ![alt text](<001_231121_163402 (1)(23).jpg>) ![alt text](<001_231121_163402 (1)(24).jpg>) ![alt text](<001_231121_163402 (1)(25).jpg>) ![alt text](<001_231121_163402 (1)(26).jpg>) ![alt text](<001_231121_163402 (1)(27).jpg>) ![alt text](<001_231121_163402 (1)(28).jpg>) ![alt text](<001_231121_163402 (1)(29).jpg>) ![alt text](<001_231121_163402 (1)(30).jpg>) ![alt text](<001_231121_163402 (1)(31).jpg>) ![alt text](<001_231121_163402 (1)(32).jpg>) ![alt text](<001_231121_163402 (1)(33).jpg>) ![alt text](<001_231121_163402 (1)(34).jpg>) ![alt text](<001_231121_163402 (1)(35).jpg>) ![alt text](<001_231121_163402 (1)(36).jpg>) ![alt text](<001_231121_163402 (1)(37).jpg>) ![alt text](<001_231121_163402 (1)(38).jpg>) ![alt text](<001_231121_163402 (1)(39).jpg>) ![alt text](<001_231121_163402 (1)(40).jpg>) ![alt text](<001_231121_163402 (1)(41).jpg>) ![alt text](<001_231121_163402 (1)(42).jpg>)
+ ![alt text](<001_231121_163402 (1)(18).jpg>) ![alt text](<001_231121_163402 (1)(19).jpg>) ![alt text](<001_231121_163402 (1)(20).jpg>) ![alt text](<001_231121_163402 (1)(21).jpg>) ![alt text](<001_231121_163402 (1)(22).jpg>) ![alt text](<001_231121_163402 (1)(23).jpg>) ![alt text](<001_231121_163402 (1)(24).jpg>) ![alt text](<001_231121_163402 (1)(25).jpg>) ![alt text](<001_231121_163402 (1)(26).jpg>) 
+ 
+ ## way-1
+ 
+ ```java
+
+class Solution {
+   class Trie {
+    Node root;
+     class Node{
+        boolean eow;
+        Node[] child;
+  
+        public Node(){
+            this.eow=false;
+            this.child=new Node[26];
+
+        }
+    }
+     
+    public Trie() {
+         root=new Node();
+       
+    }
+    
+    public void insert(String word) {
+        Node node=root;
+        for(char ch:word.toCharArray()){
+            if(node.child[ch-'a']==null){
+                
+                node.child[ch-'a']=new Node();
+            }
+            node=node.child[ch-'a'];
+        }
+        node.eow=true;
+    }
+    private StringBuilder res=new StringBuilder();
+    private void traverse(StringBuilder wsf,Node node) {
+        if(wsf.length()>res.length()){
+            res=new StringBuilder(wsf);
+        }
+        //StringBuilder sb=new StringBuilder(wsf);
+        Node tmp=node;
+        for(int i=0;i<26;i++){
+            if(node.child[i]!=null && node.child[i].eow==true){
+                char ch=(char)(i+'a');
+                traverse(wsf.append(ch),node.child[i]);
+                wsf.deleteCharAt(wsf.length()-1);
+            }
+        }
+       
+    }
+    public String traverse(){
+        StringBuilder wsf=new StringBuilder();
+        traverse(wsf,root);
+        return res.toString();
+    }
+    
+
+}
+    public String longestWord(String[] words) {
+        Trie t=new Trie();
+        for(int i=0;i<words.length;i++){
+            t.insert(words[i]);
+        }
+        return t.traverse();
+    }
+}
+
+ ```
+ 
+ ## way-2
+
+ ```cpp
+ 
+class Trie {
+private:
+    // Dynamic 2D vector: trie[nodeID][char 0-25] = nextNodeID
+    vector<vector<int>> trie;
+    
+    // Counts how many words PASS through this node (Prefix Count)
+    vector<int> passCnt;
+    
+    // Counts how many words END exactly at this node
+    vector<int> endCnt;
+    string res;
+public:
+    Trie() {
+        res="";
+        createNode();
+    }
+
+    // Helper to add a new empty node and return its ID
+    void createNode() {
+        trie.push_back(vector<int>(26, -1)); // -1 means null
+        passCnt.push_back(0);
+        endCnt.push_back(0);
+    }
+    void insert(string word) {
+        int node = 0;
+        for (char c : word) {
+            int idx = c - 'a';
+            
+            // If path doesn't exist, create it
+            if (trie[node][idx] == -1) {
+                trie[node][idx] = trie.size(); // Next ID is current size
+                createNode();
+            }
+            
+            node = trie[node][idx]; // Move to child
+            passCnt[node]++;        // Increment prefix count
+        }
+        endCnt[node]++; // Mark word end
+    }
+    void traverse(string wsf,int row){
+            if(wsf.size()>res.size()){
+                res=wsf;
+            }
+            for(int i=0;i<26;i++){
+                if(trie[row][i]!=-1 && endCnt[trie[row][i]]>0){
+                    wsf.push_back(i+'a');
+                    traverse(wsf,trie[row][i]);
+                    wsf.pop_back();
+                }
+            }
+    }
+    
+
+    string tr(){
+        traverse("",0);
+        return res;
+    }
+
+ 
+};
+
+class Solution {
+public:
+    string completeString(vector<string>& nums) {
+        Trie t;
+        for(string s:nums){
+            t.insert(s);
+        }
+        return t.tr();
+    }
+};
+```
+
+AI way
+
+```cpp
+class Solution {
+    class Trie {
+    private:
+        vector<vector<int>> trie;
+        vector<int> endCnt; // Tracks valid words
+        string res;
+
+    public:
+        Trie() {
+            res = "";
+            createNode();
+        }
+
+        void createNode() {
+            trie.push_back(vector<int>(26, -1));
+            endCnt.push_back(0);
+        }
+
+        void insert(string word) {
+            int node = 0;
+            for (char c : word) {
+                int idx = c - 'a';
+                if (trie[node][idx] == -1) {
+                    trie[node][idx] = trie.size();
+                    createNode();
+                }
+                node = trie[node][idx];
+            }
+            endCnt[node]++;
+        }
+
+        void traverse(string &wsf, int row) {
+            // Check for longest length
+            if (wsf.size() > res.size()) {
+                res = wsf;
+            }
+
+            for (int i = 0; i < 26; i++) {
+                int nextNode = trie[row][i];
+                // CRITICAL: Next node must exist AND be a word itself
+                if (nextNode != -1 && endCnt[nextNode] > 0) {
+                    wsf.push_back(i + 'a');
+                    traverse(wsf, nextNode);
+                    wsf.pop_back();
+                }
+            }
+        }
+
+        string getLongestPrefixString() {
+            string temp = "";
+            traverse(temp, 0);
+            return res;
+        }
+    };
+
+public:
+    string completeString(vector<string>& nums) {
+        Trie t;
+        for (string s : nums) {
+            t.insert(s);
+        }
+        
+        string ans = t.getLongestPrefixString();
+        
+        // Some problems ask to return "None" if empty. 
+        // Logic checks usually require returning "" if nothing found.
+        if (ans == "") return "None"; 
+        return ans;
+    }
+};
+```
+In this approach we insert a word suppose at row[3] now endCnt[4] will be updated!!
+
+ ### Why your logic works for "Lexicographically Smallest"
+
+You might wonder: "If there is a tie (e.g., 'apple' and 'apply' are both length 5), how does the algorithm ensure it picks the smallest one?"
+
+* **The Alpha-Order Loop:** Your loop runs from `i = 0` to `25` (mapping from 'a' to 'z').
+* **Depth-First Exploration:** Because it is a DFS, the algorithm will fully explore every possible valid path starting with 'a', then 'b', and so on.
+* **The Tie-Breaker:** * If the DFS finds "apple" first, `res` becomes "apple".
+    * Later, when it finds "apply", your condition `wsf.size() > res.size()` checks the lengths.
+    * Since 5 is **not** greater than 5, `res` is **not** updated.
+    
+**Result:** The lexicographically smaller word found earlier is preserved. This logic is perfect and avoids the need for a secondary string comparison like `wsf < res`.
+ 
+ ![alt text](<001_231121_163402 (1)(27).jpg>) ![alt text](<001_231121_163402 (1)(28).jpg>) ![alt text](<001_231121_163402 (1)(29).jpg>) ![alt text](<001_231121_163402 (1)(30).jpg>) ![alt text](<001_231121_163402 (1)(31).jpg>) ![alt text](<001_231121_163402 (1)(32).jpg>) ![alt text](<001_231121_163402 (1)(33).jpg>) ![alt text](<001_231121_163402 (1)(34).jpg>) ![alt text](<001_231121_163402 (1)(35).jpg>) ![alt text](<001_231121_163402 (1)(36).jpg>) ![alt text](<001_231121_163402 (1)(37).jpg>) ![alt text](<001_231121_163402 (1)(38).jpg>) ![alt text](<001_231121_163402 (1)(39).jpg>) ![alt text](<001_231121_163402 (1)(40).jpg>) ![alt text](<001_231121_163402 (1)(41).jpg>) ![alt text](<001_231121_163402 (1)(42).jpg>)
 
 ![alt text](<001_231121_163402 (1)(43).jpg>) ![alt text](<001_231121_163402 (1)(44).jpg>) ![alt text](<001_231121_163402 (1)(45).jpg>) ![alt text](<001_231121_163402 (1)(46).jpg>) ![alt text](<001_231121_163402 (1)(47).jpg>) ![alt text](<001_231121_163402 (1)(48).jpg>) ![alt text](<001_231121_163402 (1)(49).jpg>) ![alt text](<001_231121_163402 (1)(50).jpg>) 
 

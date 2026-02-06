@@ -779,4 +779,107 @@ If you use this in an interview, you should explain the trade-off:
 
 ---
 
-**Would you like me to show you how to reset this Static Trie efficiently so you can reuse the same memory for multiple test cases without re-allocating the entire array?**
+# Number of Distinct Substrings in a String
+
+
+
+---
+
+### **Problem Statement**
+Given a string `s`, determine the number of **distinct substrings** (including the empty substring) of the given string.
+
+A string `B` is a substring of a string `A` if `B` can be obtained by deleting several characters (possibly none) from the start of `A` and several characters (possibly none) from the end of `A`.
+
+Two strings `X` and `Y` are considered different if there is at least one index `i` such that the character of `X` at index `i` is different from the character of `Y` at index `i` ($X[i] \neq Y[i]$).
+
+---
+
+### **Example 1**
+**Input:** `s = "aba"`  
+**Output:** `6`  
+**Explanation:** The distinct substrings are: `""`, `"a"`, `"b"`, `"ab"`, `"ba"`, `"aba"`.
+
+### **Example 2**
+**Input:** `s = "abc"`  
+**Output:** `7`  
+**Explanation:** The distinct substrings are: `""`, `"a"`, `"b"`, `"c"`, `"ab"`, `"bc"`, `"abc"`.
+
+---
+
+### **Constraints**
+- $1 \le s.length \le 10^3$
+- `s` consists of only lowercase English letters.
+
+---
+Brute --> every substring put in set tc-->O($n^2 *log m$) where m is avg length of substring
+ we can also use rolling hash for string uniqueness but for now let us see trie 
+ 
+### **Intuition (Trie Approach)**
+To count distinct substrings, we can leverage the property of a **Trie**. 
+Every substring of a string `S` is a **prefix of some suffix** of `S`. 
+
+If we insert every possible suffix of the string into a Trie, every unique path from the root down to any node represents a unique substring. By counting the total number of nodes created in the Trie (excluding the root), we effectively count every unique substring.
+
+**Algorithm:**
+1. Initialize a `root` node for the Trie.
+2. Maintain a counter `count = 0`.
+3. Iterate through the string from `i = 0` to `n-1` (representing the start of each suffix).
+4. For each starting position `i`, iterate through the string from `j = i` to `n-1`.
+5. For each character `s[j]`, check if it exists as a child of the current Trie node:
+   - If **no**, create a new node and increment `count`.
+   - If **yes**, simply move to that child node.
+6. The final answer is `count + 1` (to include the empty substring `""`).
+
+---
+
+```cpp
+class Solution {
+    class Trie {
+       private:
+        // Dynamic 2D vector: trie[nodeID][char 0-25] = nextNodeID
+        vector<vector<int>> trie;
+
+        int res;
+
+       public:
+        Trie() {
+            res =0;
+            createNode();
+        }
+
+        // Helper to add a new empty node and return its ID
+        void createNode() {
+            trie.push_back(vector<int>(26, -1));  // -1 means null
+        }
+        int insert(string word) {
+            for (int i = 0; i < word.size(); i++) {
+                int node = 0;
+                for (int j = i; j < word.size(); j++) {
+                    char c = word[j];
+                    int idx = c - 'a';
+
+                    // If path doesn't exist, create it
+                    if (trie[node][idx] == -1) {
+                        trie[node][idx] = trie.size();
+                        res++;
+                        createNode();
+                    }
+
+                    node = trie[node][idx];  // Move to child
+                }
+            }
+            return res+1;
+        }
+    };
+
+   public:
+    int countDistinctSubstring(string s) {
+        Trie t;
+        return t.insert(s);
+    }
+};
+```
+
+### **Complexity Analysis**
+- **Time Complexity:** $O(N^2)$, where $N$ is the length of the string. We iterate through $N$ suffixes, and for each suffix, we traverse up to $N$ characters.
+- **Space Complexity:** $O(N^2)$ in the worst case (e.g., all characters are different like "abcd"), as we might store every possible substring character in the Trie.
