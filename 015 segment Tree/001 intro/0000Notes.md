@@ -1,5 +1,9 @@
 # Notes
 
+![alt text](<001 segment tree_260207_162617_38.png>) ![alt text](<001 segment tree_260207_162617_39.png>) ![alt text](<001 segment tree_260207_162617_40.png>) ![alt text](<001 segment tree_260207_162617_41.png>) ![alt text](<001 segment tree_260207_162617_42.png>) ![alt text](<001 segment tree_260207_162617_43.png>) ![alt text](<001 segment tree_260207_162617_44.png>) ![alt text](<001 segment tree_260207_162617_45.png>) ![alt text](<001 segment tree_260207_162617_46.png>) ![alt text](<001 segment tree_260207_162617_47.png>) ![alt text](<001 segment tree_260207_162617_48.png>) ![alt text](<001 segment tree_260207_162617_49.png>) ![alt text](<001 segment tree_260207_162617_50.png>) ![alt text](<001 segment tree_260207_162617_51.png>)
+
+
+
 ![alt text](Scanned_20250807-0455.jpg)
 
 
