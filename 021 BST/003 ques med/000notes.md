@@ -1,9 +1,5 @@
 # Check if a tree is a BST or not
 
-### **Problem Link**
-[Check if a tree is a BST or not - TUF+](https://takeuforward.org/plus/dsa/problems/check-if-a-tree-is-a-bst-or-not)
-
----
 
 ### **Problem Statement**
 Given the root node of a binary tree, return `true` if the given binary tree is a **binary search tree (BST)**, otherwise return `false`.
