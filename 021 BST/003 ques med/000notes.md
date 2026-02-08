@@ -116,3 +116,6 @@ class Solution {
 
 ![alt text](<008bt cameras hard_240401_000825(20).jpg>) ![alt text](<008bt cameras hard_240401_000825(21).jpg>) ![alt text](<008bt cameras hard_240401_000825(22).jpg>) ![alt text](<008bt cameras hard_240401_000825(23).jpg>) ![alt text](<008bt cameras hard_240401_000825(24).jpg>)
 
+---
+
+ ![alt text](<011serialise and kth smallest _240401_001010(8).jpg>) ![alt text](<011serialise and kth smallest _240401_001010(9).jpg>)
