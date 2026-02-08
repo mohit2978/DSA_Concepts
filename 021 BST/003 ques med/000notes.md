@@ -1,4 +1,4 @@
-# Check if a tree is a BST or not
+# Q Check if a tree is a BST or not
 
 
 ### **Problem Statement**
@@ -98,7 +98,44 @@ class Solution {
 - **Space Complexity:** $O(H)$, where $H$ is the height of the tree, representing the maximum depth of the recursion stack. In the worst case (skewed tree), this is $O(N)$.
 
 
-![alt text](<006path sum and construction of bt_240401_000658(11).jpg>) ![alt text](<006path sum and construction of bt_240401_000658(12).jpg>) ![alt text](<006path sum and construction of bt_240401_000658(13).jpg>) ![alt text](<006path sum and construction of bt_240401_000658(14).jpg>) ![alt text](<006path sum and construction of bt_240401_000658(15).jpg>)
+![alt text](<006path sum and construction of bt_240401_000658(11).jpg>) ![alt text](<006path sum and construction of bt_240401_000658(12).jpg>) ![alt text](<006path sum and construction of bt_240401_000658(13).jpg>) 
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    int i=0;
+    private TreeNode construct(int[] pre,int lLimit,int rLimit){
+         if(i>pre.length-1) return null;
+         TreeNode node=null;
+         if(pre[i]>lLimit && pre[i]<rLimit) {
+             node=new TreeNode(pre[i]);
+             i++;
+             node.left=construct(pre,lLimit,node.val);
+             node.right=construct(pre,node.val,rLimit);
+            }
+         return node;   
+    }
+    public TreeNode bstFromPreorder(int[] preorder) {
+        return construct(preorder,Integer.MIN_VALUE,Integer.MAX_VALUE);
+    }
+}
+```
+
+![alt text](<006path sum and construction of bt_240401_000658(14).jpg>) ![alt text](<006path sum and construction of bt_240401_000658(15).jpg>)
 
 
 
