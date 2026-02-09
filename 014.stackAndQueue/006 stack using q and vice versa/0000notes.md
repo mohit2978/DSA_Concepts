@@ -120,3 +120,44 @@ In technical interviews, understanding the structural properties of linear data 
 When implementing a **Stack using 1 Queue**, you can choose between:
 * **Push-Optimized**: $O(N)$ Push (rotate during push), $O(1)$ Pop/Top.
 * **Pop-Optimized**: $O(1)$ Push, $O(N)$ Pop/Top (rotate during access).
+
+# Queue using stack
+![alt text](Scanned_20260209-1709-01.jpg) ![alt text](Scanned_20260209-1709-02.jpg) ![alt text](Scanned_20260209-1709-03.jpg)
+
+## O(n) push approach
+```cpp
+class StackQueue {
+    stack<int> s1;
+    stack<int> s2;
+
+   public:
+    StackQueue() {}
+
+    void push(int x) {
+        int s = s1.size();
+        for (int i = 0; i < s; i++) {
+            s2.push(s1.top());
+            s1.pop();
+        }
+        s1.push(x);
+        for (int i = 0; i < s; i++) {
+            s1.push(s2.top());
+            s2.pop();
+        }
+    }
+
+    int pop() {
+        if (s1.size() == 0) return -1;
+        int val = s1.top();
+        s1.pop();
+        return val;
+    }
+
+    int peek() {
+        if (s1.size() == 0) return -1;
+        return s1.top();
+    }
+
+    bool isEmpty() { return s1.size() == 0; }
+};
+```
