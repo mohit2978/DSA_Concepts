@@ -345,7 +345,167 @@ public:
     }
 };
 ```
-      
+# Stock Span Problem
+
+
+### **Problem Statement**
+The **stock span** of a stock's price on a given day is defined as the maximum number of consecutive days (including the current day) just before that day, for which the price of the stock on the current day is **greater than or equal** to its price on the previous days.
+
+Design an algorithm that collects daily price quotes for a stock and returns the **span** of that stock's price for the current day.
+
+---
+
+### **Example 1**
+**Input:** `prices = [100, 80, 60, 70, 60, 75, 85]`  
+**Output:** `[1, 1, 1, 2, 1, 4, 6]`  
+**Explanation:** - Day 1 (100): Span is 1.
+- Day 2 (80): 80 < 100, Span is 1.
+- Day 3 (60): 60 < 80, Span is 1.
+- Day 4 (70): 70 > 60, Span is 2 (70, 60).
+- Day 5 (60): 60 < 70, Span is 1.
+- Day 6 (75): 75 > 60, 70, 60, Span is 4 (75, 60, 70, 60).
+- Day 7 (85): 85 > 80, 60, 70, 60, 75, Span is 6.
+
+---
+
+### **Constraints**
+- $1 \le prices.length \le 10^5$
+- $1 \le prices[i] \le 10^5$
+- Calls to the `next` function will be at most $10^5$.
+
+---
+
+### **Intuition (Monotonic Stack)**
+The problem asks us to find how many consecutive days ending at the current day have a price less than or equal to the current day's price. This is equivalent to finding the **Nearest Greater Element to the Left (NGL)**.
+
+If we know the index of the nearest element to the left that is strictly greater than the current price, the span is simply:
+`Span = (Current Index) - (Index of NGL)`
+
+## Mycode
+
+```cpp
+class Solution {
+    vector<int> pgol;
+    void prevGreaterOnLeft(vector<int> arr, int n) {
+        pgol.resize(n, -1);
+        stack<int> stk;
+
+        for (int i = n - 1; i >= 0; i--) {
+            while (stk.size() > 0 && arr[stk.top()] < arr[i]) {
+                pgol[stk.top()] = i;
+                stk.pop();
+            }
+            stk.push(i);
+        }
+    }
+
+   public:
+    vector<int> stockSpan(vector<int> arr, int n) {
+         prevGreaterOnLeft(arr, n);
+         for(int i=n-1;i>=0;i--){
+            pgol[i]=i-pgol[i];
+         }
+         return pgol;
+     }
+};
+
+```
+
+### Why this fails
+In C++, `std::vector::resize` **does not** reset or overwrite existing elements if the new size is the same as (or smaller than) the current size. It only fills the "newly added" slots with the default value (`-1`).
+
+---
+
+### The "Dirty Data" Scenario
+* **Test Case 1:** You run the algorithm for an array of size 5. `pgol` is filled with specific indices.
+* **Test Case 2:** You run it again for another array of size 5. `resize(5, -1)` sees the size is already 5, so it **does nothing**.
+* **Result:** The slots that should have been reset to -1 (representing "no greater element found") still contain the indices from **Test Case 1**. Your logic will then use those old, "dirty" indices, leading to wrong answers.
+
+---
+
+### The Fix
+To ensure every test case starts with a fresh slate, you have two options:
+
+* **Option A (Recommended):** Declare `pgol` locally within the function. This ensures the memory is fresh and avoids global state issues.
+* **Option B (Explicit Reset):** If you must keep it as a member variable, use `assign` instead of `resize`:
+    ```cpp
+    pgol.assign(n, -1);
+    ```
+
+---
+
+## Ai code
+
+```cpp
+
+class Solution {
+    // Helper function: Finds index of Previous Greater Element
+    // Pass by reference (vector<int>&) to save memory/time
+    void prevGreaterOnLeft(vector<int>& arr, int n, vector<int>& pgol) {
+        stack<int> stk;
+
+        // Iterating Right-to-Left to find "Next Greater on Left" for items in stack
+        for (int i = n - 1; i >= 0; i--) {
+            // While current element is strictly greater than stack top
+            while (!stk.empty() && arr[i] > arr[stk.top()]) {
+                pgol[stk.top()] = i;
+                stk.pop();
+            }
+            stk.push(i);
+        }
+    }
+
+public:
+    vector<int> stockSpan(vector<int> arr, int n) {
+        // 1. Initialize pgol locally to ensure it's clean every time
+        vector<int> pgol(n, -1); 
+        
+        // 2. Fill the PGOL indices
+        prevGreaterOnLeft(arr, n, pgol);
+        
+        // 3. Calculate Span: i - index_of_prev_greater
+        for (int i = 0; i < n; i++) {
+            pgol[i] = i - pgol[i];
+        }
+        
+        return pgol;
+    }
+};
+```
+### Pro-Tip: 
+
+Passing by ReferenceIf you are passing your results between functions, always pass the vector by reference (&). If you pass it by value, C++ will create a complete copy of the array, turning an $O(N)$ algorithm into $O(N^2)$ for large test cases.
+
+---
+
+### **Complexity Analysis**
+- **Time Complexity:** $O(N)$ total for $N$ calls. Although there is a `while` loop, each element is pushed onto the stack exactly once and popped at most once across all calls to `next`. This is known as **amortized analysis**.
+- **Space Complexity:** $O(N)$ in the worst case to store the stack if the prices are in decreasing order.
+
+## Single pass solution
+
+For interviews, it is often preferred to write this in a single pass from left to right without a helper function:
+```cpp
+vector<int> stockSpan(vector<int>& arr, int n) {
+    stack<int> s;
+    vector<int> span(n);
+    
+    for (int i = 0; i < n; i++) {
+        // Pop elements that are less than or equal to current
+        while (!s.empty() && arr[s.top()] <= arr[i]) {
+            s.pop();
+        }
+        
+        // If stack empty, span is i+1 (entire range)
+        // Else, span is distance to top of stack
+        span[i] = s.empty() ? (i + 1) : (i - s.top());
+        
+        s.push(i);
+    }
+    return span;
+}
+```
+
 ![alt text](<002Nger l Nser l range count_231121_163402(8).jpg>)
       
 
