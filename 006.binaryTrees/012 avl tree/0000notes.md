@@ -1,3 +1,40 @@
+Q--> do avl tree asked in interviews to code?
+
+### No.
+
+You will almost never be asked to write the code for an AVL Tree (or Red-Black Tree) from scratch in a 45-minute coding interview.
+
+Here is why, and what you actually need to know instead.
+
+---
+
+### 1. Why it is not asked
+* **Time Constraints:** Writing a fully functional AVL Tree with **Left-Left**, **Left-Right**, **Right-Right**, and **Right-Left** rotation logic takes 100+ lines of bug-free code. It is physically impossible to do this cleanly while explaining your thought process in 20-30 minutes.
+* **Too Much Memorization:** It tests your ability to memorize textbook code, not your problem-solving skills. Interviewers prefer problems that require logic (like "Lowest Common Ancestor" or "Burn Tree").
+* **Standard Libraries Exist:** In the real world, you use `std::set` (C++) or `TreeMap` (Java), which are already implemented as Self-Balancing BSTs (usually Red-Black Trees).
+
+---
+
+### 2. What you DO need to know (The "Concept Check")
+While you won't code it, you must be able to answer conceptual questions about it during a System Design or C++ deep-dive interview:
+
+* **What is it?** A BST where the difference in height between left and right subtrees is at most **1** for every node.
+* **Time Complexity:**
+    * **Search:** $O(\log N)$ (Guaranteed, unlike normal BST which can be $O(N)$).
+    * **Insert/Delete:** $O(\log N)$.
+* **Rotations:** You might be asked to draw a rotation on a whiteboard or explain "Left Rotation" conceptually.
+    * *Example:* "If the tree becomes right-heavy, we rotate left to pull the parent down and the right child up."
+* **AVL vs. Red-Black:**
+    * **AVL:** Strictly balanced (better for lookup-heavy tasks).
+    * **Red-Black:** Loosely balanced (better for insertion-heavy tasks, less rotations needed).
+
+---
+
+### 3. The Only Exception
+If you are interviewing for a very specific **Low-Level Systems / Database Kernel** role (e.g., at NVIDIA, database teams at Oracle/Google), they might ask you to implement a simple **Left Rotation** function.
+
+
+
 # AVL Tree
 
 ```java
