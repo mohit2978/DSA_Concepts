@@ -380,6 +380,8 @@ public:
 };
 ```
 
+`maximum path sum` and `maximum univalvalue path` which we have done are also dp on trees
+
 ### Complexity Analysis
 * **Time Complexity:** $O(N)$, where $N$ is the number of nodes. We visit each node once and perform constant-time math at each step.
 * **Space Complexity:** $O(H)$, where $H$ is the height of the tree, due to the recursion stack.

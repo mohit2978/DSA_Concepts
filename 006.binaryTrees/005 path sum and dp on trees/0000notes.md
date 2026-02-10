@@ -1,3 +1,44 @@
+# Notes
+
+![alt text](<005path sum _240401_000608.jpg>)
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int data;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *      TreeNode(int val) : data(val) , left(nullptr) , right(nullptr) {}
+ * };
+ **/
+
+class Solution {
+public:
+    int countNodes(TreeNode* root) { 
+        if(root==nullptr) return 0;
+
+        TreeNode* curr=root->left;
+        int lh=0;
+        while(curr!=nullptr){
+            curr=curr->left;
+            lh++;
+        }
+
+        curr=root->right;
+        int rh=0;
+        while(curr!=nullptr){
+            curr=curr->right;
+            rh++;
+        }
+        if(lh==rh) return (1<<(lh+1))-1;
+        return countNodes(root->left)+countNodes(root->right)+1;
+    }
+};
+```
+
+![alt text](<005path sum _240401_000608(1).jpg>) ![alt text](<005path sum _240401_000608(2).jpg>) ![alt text](<005path sum _240401_000608(3).jpg>) ![alt text](<005path sum _240401_000608(4).jpg>)
+
 ### Dynamic Programming (DP) on Trees
 
 Dynamic Programming (DP) on Trees is a technique to solve problems where the answer for a node depends on the answers of its children. 
@@ -190,9 +231,100 @@ If you master **Post-order Traversal**, you have effectively mastered 90% of **D
 
 ---
 
-**Would you like me to show you a "Complex DP" return struct for a problem like "Maximum Independent Set" to see how little the code actually changes?**
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ![alt text](<005path sum _240401_000608(5).jpg>) ![alt text](<005path sum _240401_000608(6).jpg>) ![alt text](<005path sum _240401_000608(7).jpg>) ![alt text](<005path sum _240401_000608(8).jpg>) ![alt text](<005path sum _240401_000608(9).jpg>) ![alt text](<005path sum _240401_000608(10).jpg>) ![alt text](<005path sum _240401_000608(11).jpg>) ![alt text](<005path sum _240401_000608(12).jpg>) 
+
+```java
+
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    private int solve(TreeNode root,int[] mxsum){
+        if(root==null) return 0;
+        int lsum=Math.max(solve(root.left,mxsum),0);
+        int rsum=Math.max(solve(root.right,mxsum),0);
+        int val=Math.max(lsum,rsum)+root.val;
+        mxsum[0]=Math.max(lsum+rsum+root.val,mxsum[0]);
+        return val;
+    }
+    public int maxPathSum(TreeNode root) {
+        int[] mxsum=new int[1];
+        mxsum[0]=Integer.MIN_VALUE;
+        solve(root,mxsum);
+        return mxsum[0];
+    }
+}
+```
+Q--> Is it dp on treees
+
+### Yes, This is Textbook "DP on Trees"
+
+You have correctly identified that **Post-order Traversal + State Calculation = DP on Trees**. Here is why your code fits the definition perfectly:
+
+---
+
+### 1. You have a "DP State"
+In Dynamic Programming, a function returns the answer to a specific subproblem.
+* **Your Subproblem (Return Value):** The `solve` function returns the *"Maximum path sum starting at the current node and going down exactly one side (left or right)."*
+* This return value is the **State** that you pass up to the parent.
+
+### 2. You have a "Transition Equation"
+You calculate the current node's value based strictly on the optimal values of its children.
+* **Math:** $State(node) = node.val + \max(State(left), State(right))$
+* This is the classic DP recurrence relation: 
+$$F(n) = Val(n) + \max(F(left), F(right))$$
+
+### 3. "Answer" vs. "State"
+In many DP problems, the "answer" isn't necessarily the final state—it's the maximum value found during the transition process.
+* **State (passed up):** `max(lsum, rsum) + root.val` (This path can be extended further up to the parent).
+* **Answer (Global Max):** `lsum + rsum + root.val` (The path "bends" here; it is a complete path that cannot be extended to the parent).
+
+---
+
+### Summary
+* **Post-order Traversal = Bottom-Up DP.**
+* Since you calculate the children first (`left`, `right`) and use their results to compute the current node's data, you are performing Dynamic Programming.
+* You are essentially **"memoizing"** the result of the children (implicitly via the recursion stack) to solve the parent's subproblem.
+
+---
+
+**Next Challenge:**
+If you want to test this "DP on Trees" theory further, try **House Robber III (LeetCode 337)**. It uses the exact same logic but returns a pair `{rob_root, skip_root}` instead of a single integer. 
+
+**Would you like me to provide the "DP State" breakdown for that problem to get you started?**
+
+
+![alt text](<005path sum _240401_000608(13).jpg>) ![alt text](<005path sum _240401_000608(14).jpg>) ![alt text](<005path sum _240401_000608(15).jpg>) ![alt text](<005path sum _240401_000608(16).jpg>) ![alt text](<005path sum _240401_000608(17).jpg>) ![alt text](<005path sum _240401_000608(18).jpg>) ![alt text](<005path sum _240401_000608(19).jpg>) 
 
 
 
