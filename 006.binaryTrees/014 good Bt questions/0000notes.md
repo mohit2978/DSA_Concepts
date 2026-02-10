@@ -406,7 +406,7 @@ This resets the indexing to start from `0` at every level, keeping numbers small
 
 # Q Longest even sum path 
 
-![alt text](image.png)
+We need to tell the longest path from any node to any node such that the path weight should be even!!
 
 
 ### Longest Path with Even Sum (Tree DP)
@@ -659,3 +659,644 @@ We usually associate DP with a `dp[][]` table or array. In Tree DP, the **Recurs
 Even though we don't explicitly write `vector<int> dp`, the logic is **pure Dynamic Programming**.
 
 ---
+
+# Print all nodes at a distance of K in BT
+
+
+
+### **Problem Statement**
+Given the `root` of a binary tree, the value of a target node `target`, and an integer `k`.
+
+Return an array of the values of all nodes that have a **distance `k`** from the target node.
+
+The answer can be returned in **any order**.
+
+---
+
+### **Example 1**
+**Input:** `root = [3, 5, 1, 6, 2, 0, 8, null, null, 7, 4], target = 5, k = 2`  
+**Output:** `[7, 4, 1]`  
+**Explanation:** The nodes that are a distance 2 from the target node (with value 5) have values 7, 4, and 1.
+
+### **Example 2**
+**Input:** `root = [1], target = 1, k = 3`  
+**Output:** `[]`  
+**Explanation:** There are no nodes at distance 3 from the target node.
+
+---
+
+### **Constraints**
+- The number of nodes in the tree is in the range `[1, 500]`.
+- `0 <= Node.val <= 500`
+- All the values `Node.val` are **unique**.
+- `target` is the value of one of the nodes in the tree.
+- `0 <= k <= 1000`
+
+---
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int data;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *      TreeNode(int val) : data(val) , left(nullptr) , right(nullptr) {}
+ * };
+ **/
+
+class Solution {
+    unordered_map<TreeNode*, vector<TreeNode*>> mp;
+    void makegraph(TreeNode* node) {
+        if (node == nullptr) return;
+        makegraph(node->left);
+        makegraph(node->right);
+        if (node->left != nullptr) {
+            mp[node].push_back(node->left);
+            mp[node->left].push_back(node);
+        }
+        if (node->right != nullptr) {
+            mp[node].push_back(node->right);
+            mp[node->right].push_back(node);
+        }
+    }
+
+    void bfs(TreeNode* src, int k, vector<int>& res) {
+        unordered_map<TreeNode*, bool> vis;
+        queue<pair<TreeNode*,int>> q;
+        q.push({src,0});
+        while (q.size() > 0) {
+            pair<TreeNode*,int> rem = q.front();
+            q.pop();
+            vis[rem.first]=true;
+            if(rem.second==k) res.push_back(rem.first->data);
+            for (auto nbr : mp[rem.first]) {
+                if (vis[nbr] == false) {
+                    q.push({nbr,rem.second+1});
+                }
+            }
+        }
+    }
+
+   public:
+    vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+        makegraph(root);
+        vector<int> res;
+        bfs(target, k, res);
+        return res;
+    }
+};
+```
+But if nodes =10^3 then this will create stack overflow !!
+
+# When NOT to use DFS (Depth First Search) in Tree Problems
+
+In interviews, choosing the wrong traversal is a major **"Red Flag"** because it shows you don't understand the underlying mechanics of how algorithms interact with memory and logic.
+
+Here is the definitive guide on when **NOT** to use DFS.
+
+---
+
+### 1. The "Shortest Path" Rule
+* **Scenario:** You need to find the shortest distance, minimum steps, or the "closest" node.
+* **Problem Examples:** "Minimum Depth of Binary Tree", "Shortest Distance between Two Nodes", "Closest Leaf Node".
+* **Why DFS Fails:** DFS dives to the bottom first. It might find *a* path to the target, but to ensure it is the *shortest* path, DFS must explore **all other paths** to compare them.
+* **Better Alternative:** **BFS (Breadth First Search)**. BFS guarantees that the first time you touch the target, it is via the shortest path.
+
+### 2. The "Skewed Tree" Constraint (Stack Overflow)
+* **Scenario:** The constraints state $N \ge 10^4$ or $10^5$, and the tree is not guaranteed to be balanced (e.g., it could look like a Linked List).
+* **Why DFS Fails:** Recursive DFS uses the system **Call Stack**.
+    * Standard Stack Size: ~1MB to 8MB.
+    * Each recursive call consumes memory.
+    * If the tree is a straight line of 20,000 nodes, your code will crash with `StackOverflowError` (Java) or `Segmentation Fault` (C++).
+* **Better Alternative:** **BFS** (uses Heap memory for the Queue, which is much larger) or **Iterative DFS** (using an explicit `stack<TreeNode*>`).
+
+### 3. The "Level-Based" Logic
+* **Scenario:** The problem asks you to process nodes "Level by Level" or connect nodes at the same level.
+* **Problem Examples:** "Populating Next Right Pointers", "Binary Tree Level Order Traversal", "Average of Levels".
+* **Why DFS Fails:** DFS moves vertically. To connect horizontal nodes (siblings/cousins), you have to pass messy `level` variables and maintain HashMaps to remember *"where was I at this level previously?"*
+* **Better Alternative:** **BFS**. It naturally processes nodes row-by-row.
+
+### 4. The "Simultaneous Spread" Problems
+* **Scenario:** Something is spreading from a starting point (like fire, water, or infection) at 1 unit per second.
+* **Problem Examples:** "Time to Burn Tree", "Rotting Oranges" (Graph/Grid version).
+* **Why DFS Fails:** DFS simulates one single path of fire burning to the end, then backtracks and burns another path. It cannot simulate "everything burning at once."
+* **Better Alternative:** **BFS**. It perfectly simulates simultaneous expansion.
+
+---
+
+### Summary Checklist for Interviews
+
+| If the problem asks for... | Do NOT use DFS because... | Use This Instead |
+| :--- | :--- | :--- |
+| **Minimum depth/steps** | DFS is inefficient (must check all paths). | **BFS** |
+| **Nearest node/target** | DFS might find a far one first. | **BFS** |
+| **Level-order output** | DFS requires extra Maps/Variables. | **BFS** |
+| **Max constraints ($N > 10^5$)** | Stack Overflow risk on skewed trees. | **BFS** or **Morris Traversal** |
+| **K-Distance away** | Hard to go "up" and "down" simultaneously. | **BFS + Parent Map** |
+
+---
+
+### One Exception
+If the problem asks for **Maximum depth** or **Longest path**, DFS is totally fine (and often easier to write) because you have to visit every node anyway.
+
+
+Q--> If the tree is a straight line of 20,000 nodes, your code will crash with StackOverflowError (Java) or Segmentation Fault (C++). 20000 nodes is 0.2MB 
+
+# Why 20,000 Recursive Calls is Dangerous
+
+You are doing the math for **Heap Memory** (data storage), but Recursion uses **Stack Memory** (execution context). These are two very different things.
+
+Here is the technical breakdown of why 20,000 recursive calls is dangerous, even if the data seems small.
+
+---
+
+### 1. The Math of a "Stack Frame"
+When you call `dfs(node)`, the program doesn't just store "one pointer" (8 bytes). It pushes an entire **Stack Frame** onto the call stack.
+
+A single stack frame contains:
+* **Return Address:** Where to go back to after this function finishes (8 bytes).
+* **Saved Base Pointer (RBP):** To restore the previous stack frame (8 bytes).
+* **Function Arguments:** `root`, `target`, `k`, `&visited`, etc. (8-32 bytes).
+* **Local Variables:** Any `int`, `bool`, or iterators declared inside the function.
+* **Register Spills:** Saving CPU registers that this function needs to use.
+* **Alignment Padding:** The compiler aligns frames to 16-byte boundaries for performance.
+
+**Realistic Size:**
+Even a minimal DFS function usually consumes **48 to 64 bytes** per frame in a 64-bit environment.
+
+---
+
+### 2. The Real Calculation
+Let's redo the math for a skewed tree (linked list) of depth 20,000.
+
+$$20,000 \text{ calls} \times 64 \text{ bytes/frame} \approx 1.28 \text{ MB}$$
+
+---
+
+### 3. The "Default Limit" Problem
+This is where the crash happens:
+
+* **Windows Default Stack Size:** 1 MB (Visual Studio / MSVC).
+    * **Result:** $1.28 \text{ MB} > 1 \text{ MB} \rightarrow$ **Stack Overflow (Crash).**
+* **Linux/Mac Default:** Usually 8 MB.
+    * **Result:** 20k might pass here.
+* **LeetCode/Online Judges:** Usually provide ample stack (often ~8MB or unlimited within memory), but they set strict limits on Time/Memory.
+
+---
+
+### 4. The "Standard Constraint" ($10^5$)
+Most tree problems have constraints up to $N = 10^5$.
+
+$$100,000 \times 64 \text{ bytes} \approx 6.4 \text{ MB}$$
+
+This is dangerously close to the 8MB limit. If your DFS function is slightly heavier (e.g., you declare a `vector` or `string` inside the recursion), you will blow past 8MB easily.
+
+---
+
+### Summary
+* You are right that the **data** (the Tree Nodes themselves) only takes ~0.2 MB on the Heap.
+* But the **recursion** (the path to get there) takes ~1.2 MB+ on the Stack.
+
+Since the **Stack is tiny** (1MB on Windows) compared to the **Heap** (GBs of RAM), DFS is unsafe for $N > 10^4$ on many standard environments. This is why iterative solutions (using `stack<Node*>`) are preferred for "production-grade" or "safe" code—they use the Heap, which has gigabytes of space.
+
+Let us see striver solution
+![alt text](Scanned_20260210-2306-01.jpg) ![alt text](Scanned_20260210-2306-02.jpg)
+```cpp
+
+class Solution {
+public:
+    vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+        // Step 1: Create a map to store the parent of each node
+        unordered_map<TreeNode*, TreeNode*> parentMap;
+        queue<TreeNode*> q;
+        q.push(root);
+        while (!q.empty()) {
+            TreeNode* node = q.front();
+            q.pop();
+            // If the left child exists, map its parent and push it into the queue
+            if (node->left) {
+                parentMap[node->left] = node;
+                q.push(node->left);
+            }
+            // If the right child exists, map its parent and push it into the queue
+            if (node->right) {
+                parentMap[node->right] = node;
+                q.push(node->right);
+            }
+        }
+
+        // Step 2: Use BFS to find all nodes at distance k from the target
+        vector<int> result;
+        unordered_set<TreeNode*> visited;
+        q.push(target);
+        visited.insert(target);
+        int currentDistance = 0;
+
+        // Continue BFS until the desired distance is reached
+        while (!q.empty()) {
+            if (currentDistance == k) {
+                // Collect all nodes at distance k
+                while (!q.empty()) {
+                    result.push_back(q.front()->data);
+                    q.pop();
+                }
+                return result;
+            }
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = q.front();
+                q.pop();
+                // Check left child
+                if (node->left && visited.find(node->left) == visited.end()) {
+                    q.push(node->left);
+                    visited.insert(node->left);
+                }
+                // Check right child
+                if (node->right && visited.find(node->right) == visited.end()) {
+                    q.push(node->right);
+                    visited.insert(node->right);
+                }
+                // Check parent
+                if (parentMap.find(node) != parentMap.end() && visited.find(parentMap[node]) == visited.end()) {
+                    q.push(parentMap[node]);
+                    visited.insert(parentMap[node]);
+                }
+            }
+            currentDistance++;
+        }
+
+        return result;
+    }
+};
+```
+
+
+
+### **Complexity Analysis**
+- **Time Complexity:** $O(N)$
+  - We traverse the tree once to map parents ($O(N)$).
+  - We traverse the tree again (BFS) starting from the target ($O(N)$ in worst case).
+- **Space Complexity:** $O(N)$
+  - To store the parent pointers map ($O(N)$).
+  - To store the BFS queue and visited set ($O(N)$).
+
+
+
+# Minimum time taken to burn the Binary Tree from a Node
+---
+
+### **Problem Statement**
+Given a binary tree and a **target** node value. You need to find the **minimum time** required to burn the complete binary tree if the target is set on fire.
+
+It is known that in **1 second**, all nodes connected to a given node get burned. That is, if a node is on fire, its **left child**, **right child**, and **parent** will get burned in the next second.
+
+Return the minimum time required to burn the entire tree.
+
+---
+
+### **Example 1**
+**Input:**
+```text
+      1
+    /   \
+   2     3
+  / \     \
+ 4   5     6
+    /     / \
+   7     8   9
+target = 8
+```
+root = [1, 2, 3, 4, 5, null, 6, null, null, 7, null, 8, 9], target = 8
+
+Output: 7
+
+Explanation: The target node 8 is set on fire at t = 0.
+
+t = 1: Node 6 burns.
+
+t = 2: Nodes 3, 9 burn.
+
+t = 3: Node 1 burns.
+
+t = 4: Node 2 burns.
+
+t = 5: Nodes 4, 5 burn.
+
+t = 6: Node 7 burns.
+
+t = 7: The last node (7) is fully burnt.
+Total time = 7 seconds.
+
+#### Constraints
+1 <= Number of Nodes <= $10^4$<br>
+-$10^5$ <= Node.val <= $10^5$<br>
+All Node.val values are unique.
+
+## My sol
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int data;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *      TreeNode(int val) : data(val) , left(nullptr) , right(nullptr) {}
+ * };
+ **/
+
+class Solution {
+    int res = 0;
+    unordered_map<int, vector<int>> mp;
+    void makegraph(TreeNode* node) {
+        if (node == nullptr) return;
+        makegraph(node->left);
+        makegraph(node->right);
+        if (node->left != nullptr) {
+            mp[node->data].push_back(node->left->data);
+            mp[node->left->data].push_back(node->data);
+        }
+        if (node->right != nullptr) {
+            mp[node->data].push_back(node->right->data);
+            mp[node->right->data].push_back(node->data);
+        }
+    }
+
+    void bfs(int src) {
+        unordered_map<int, bool> vis;
+        queue<pair<int, int>> q;
+        q.push({src, 0});
+
+        while (q.size() > 0) {
+            pair<int, int> rem = q.front();
+            q.pop();
+            vis[rem.first] = true;
+            res = max(res, rem.second);
+            for (auto nbr : mp[rem.first]) {
+                if (vis[nbr] == false) {
+                    q.push({nbr, rem.second + 1});
+                }
+            }
+        }
+    }
+
+   public:
+    int timeToBurnTree(TreeNode* root, int start) {
+        makegraph(root);
+
+        bfs(start);
+        return res;
+    }
+};
+```
+
+Beware of the Recursion Depth in makegraph. If the tree is a straight line of 10,000 nodes, makegraph will crash with a Stack Overflow. You should ideally use iteration (Queue) to build the graph too.
+
+Now from nodes at dist k i have my code 
+
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int data;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *      TreeNode(int val) : data(val) , left(nullptr) , right(nullptr) {}
+ * };
+ **/
+
+class Solution {
+   public:
+    int timeToBurnTree(TreeNode* root, int start) {
+        unordered_map<TreeNode*, TreeNode*> parentMap;
+        queue<TreeNode*> q;
+        q.push(root);
+		TreeNode* target=nullptr;
+        while (!q.empty()) {
+            TreeNode* node = q.front();
+            q.pop();
+            if(node->data==start) target=node;
+            if (node->left) {
+                parentMap[node->left] = node;
+                q.push(node->left);
+            }
+        
+            if (node->right) {
+                parentMap[node->right] = node;
+                q.push(node->right);
+            }
+        }
+		 unordered_set<TreeNode*> visited;
+        q.push(target);
+        visited.insert(target);
+        int currentTime = -1;
+        while (!q.empty()) {
+            
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = q.front();
+                q.pop();
+                if (node->left && visited.find(node->left) == visited.end()) {
+                    q.push(node->left);
+                    visited.insert(node->left);
+                }
+                if (node->right && visited.find(node->right) == visited.end()) {
+                    q.push(node->right);
+                    visited.insert(node->right);
+                }
+                if (parentMap.find(node) != parentMap.end() && visited.find(parentMap[node]) == visited.end()) {
+                    q.push(parentMap[node]);
+                    visited.insert(parentMap[node]);
+                }
+            }
+            currentTime++;
+        }
+		return currentTime;
+    }
+};
+```
+
+Why ` currentTime = -1;`? as when queue takes out src npdes of fire it do not spread ,spread is done when children of source node comes out !!
+
+or see Striver solution
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+/**
+ * Definition for a binary tree node.
+ */
+struct TreeNode {
+    int data;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(int val) : data(val), left(nullptr), right(nullptr) {}
+};
+
+class Solution {
+public:
+    // Method to burn the tree starting from a given node
+    int timeToBurnTree(TreeNode* root, int start) {
+        // Create a map to store the parent nodes
+        unordered_map<TreeNode*, TreeNode*> mpp;
+        // Get the target node (starting node for burning)
+        TreeNode* target = bfsToMapParents(root, mpp, start);
+        // Find the maximum distance to burn the tree
+        int maxi = findMaxDistance(mpp, target);
+        return maxi;
+    }
+
+private:
+    // Method to map parents of all nodes using BFS
+    TreeNode* bfsToMapParents(TreeNode* root, unordered_map<TreeNode*, TreeNode*>& mpp, int start) {
+        // Queue for BFS
+        queue<TreeNode*> q;
+        // Push the root node to the queue
+        q.push(root);
+        TreeNode* res = new TreeNode(-1);
+
+        while (!q.empty()) {
+            // Get the front node from the queue
+            TreeNode* node = q.front();
+            q.pop();
+            // Check if this is the start node
+            if (node->data == start) res = node;
+            // Map the left child to its parent
+            if (node->left != nullptr) {
+                mpp[node->left] = node;
+                q.push(node->left);
+            }
+            // Map the right child to its parent
+            if (node->right != nullptr) {
+                mpp[node->right] = node;
+                q.push(node->right);
+            }
+        }
+        return res;
+    }
+
+    // Method to find the maximum distance to burn the tree
+    int findMaxDistance(unordered_map<TreeNode*, TreeNode*>& mpp, TreeNode* target) {
+        // Queue for BFS to find max distance
+        queue<TreeNode*> q;
+        q.push(target);
+        // Map to check visited nodes
+        unordered_map<TreeNode*, int> vis;
+        vis[target] = 1;
+        int maxi = 0;
+
+        while (!q.empty()) {
+            int size = q.size();
+            int fl = 0;
+
+            for (int i = 0; i < size; i++) {
+                TreeNode* node = q.front();
+                q.pop();
+
+                // Check left child
+                if (node->left != nullptr && vis.find(node->left) == vis.end()) {
+                    fl = 1;
+                    vis[node->left] = 1;
+                    q.push(node->left);
+                }
+
+                // Check right child
+                if (node->right != nullptr && vis.find(node->right) == vis.end()) {
+                    fl = 1;
+                    vis[node->right] = 1;
+                    q.push(node->right);
+                }
+
+                // Check parent node
+                if (mpp.find(node) != mpp.end() && vis.find(mpp[node]) == vis.end()) {
+                    fl = 1;
+                    vis[mpp[node]] = 1;
+                    q.push(mpp[node]);
+                }
+            }
+            // Increment max distance if any node was burned
+            if (fl == 1) maxi++;
+        }
+        return maxi;
+    }
+};
+
+// Main method to test the functionality
+int main() {
+    Solution sol;
+
+    // Create the binary tree
+    TreeNode* root = new TreeNode(1);
+    root->left = new TreeNode(2);
+    root->right = new TreeNode(3);
+    root->left->left = new TreeNode(4);
+    root->left->right = new TreeNode(5);
+    root->right->left = new TreeNode(6);
+    root->right->right = new TreeNode(7);
+
+    int start = 4;
+
+    // Get the time to burn the tree
+    int result = sol.timeToBurnTree(root, start);
+    cout << "Time to burn the tree: " << result << endl;
+
+    return 0;
+}
+
+```
+
+here we have used flag `fl`
+
+### The Variable `fl` (Flag)
+
+The variable `fl` (short for flag) is a critical logic check to prevent an **"Off-By-One"** error.
+
+Its purpose is to answer the question: **"Did the fire actually spread to any NEW nodes during this second?"**
+
+---
+
+### The Problem It Solves
+In a BFS simulation, the queue processes nodes level-by-level.
+* **Time 0:** You start with the target node in the queue.
+* **Time 1:** You process the target, and its neighbors catch fire.
+* ...
+
+#### The Last Step (The Trap)
+Imagine the fire reaches the **"leaf"** nodes (the ends of the tree).
+1.  The queue is **not empty** (the leaves are in there).
+2.  The `while` loop runs one last time.
+3.  You pop the leaves. You check their neighbors.
+4.  **Result:** All neighbors are already visited or null. **No new nodes are added to the queue.**
+
+**Without `fl`:**
+If you simply did `maxi++` every time the loop ran, you would count this "Last Step" as an extra second.
+* **Actual Time to Burn:** 5 seconds.
+* **Your Result:** 6 seconds (because of the final check).
+
+---
+
+### With `fl`
+The flag acts as a gatekeeper:
+1.  **Reset `fl = 0`** at the start of the level.
+2.  If you successfully push a neighbor to the queue (meaning the fire spread), **set `fl = 1`**.
+3.  Only increment `maxi` if `fl == 1`.
+
+---
+
+### Example Walkthrough
+Imagine a tiny tree: `1 -- 2` (Start at `1`).
+
+**Iteration 1 (Processing Node 1):**
+* Pop `1`.
+* Check neighbor `2`: Not visited. Push `2`. Set `fl = 1`.
+* End of loop: `fl` is `1`. `maxi` becomes `1`.
+
+**Iteration 2 (Processing Node 2):**
+* Pop `2`.
+* Check neighbors: `1` is visited. No other neighbors.
+* `fl` remains `0`.
+* End of loop: `fl` is `0`. `maxi` stays `1`.
+
+**Result:** `1` second. (Correct).
+*(Without `fl`, Iteration 2 would have incremented `maxi` to `2`, which is wrong).*
+
