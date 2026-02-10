@@ -78,3 +78,39 @@ To solve it, your primary job is to figure out:
 > **"What specific values does the parent need to receive from its children to make its own decision?"**
 
 ---
+
+Q--> then whats point of calling it dp? in dp we store the recursive tree so that it is not calulated again.
+
+### Why "Tree DP" is a Confusing Name
+
+You are absolutely right to be skeptical. This is one of the most confusing naming conventions in algorithms.
+
+In **"Standard DP"** (like Fibonacci or Knapsack), the entire point is **Overlapping Subproblems**: different branches of the recursion tree need the exact same value, so we store it (memoize) to avoid re-calculating it.
+
+In **"Tree DP,"** we visit every node exactly once (Post-Order Traversal). There are **no overlapping subproblems**. Node A's subtree is distinct from Node B's subtree. We never "look up" a value we calculated 5 steps ago.
+
+---
+
+### So why is it called "DP on Trees"?
+
+It is called DP because it satisfies the **Optimal Substructure** property, which is the other half of the definition of Dynamic Programming.
+
+#### 1. Optimal Substructure
+The solution to the problem for a parent node (e.g., "Max path sum through Root") can be constructed optimally from the solutions of its children (e.g., "Max path sum ending at Left Child" and "Max path sum ending at Right Child").
+
+We are building a larger optimal solution from smaller optimal solutions. This structure—defining a state $dp(u)$ based on $dp(v)$ for all children $v$—is mathematically identical to the recurrence relations used in standard DP.
+
+#### 2. The "Table" is Implicit
+* In **Array DP**, we fill a physical table `dp[i]`.
+* In **Tree DP**, the "table" is the recursion stack. The return value from `dfs(node)` is the memoized value for that subtree. Since we process the tree bottom-up, we are effectively "filling the table" from leaves to root.
+
+---
+
+### The Verdict
+
+* **Is it "True" DP (Memoization)?** No. It’s really just DFS with a recurrence relation.
+* **Why the name?** Because we define a "state" (like $dp[u] = \{taken, not\_taken\}$) and transition using that state, just like in Knapsack or Longest Common Subsequence. The community kept the name "DP" to signal **"You need a recurrence relation here,"** not necessarily "You need a hash map."
+
+If you called it **"DFS with accumulation,"** you would be more accurate, but **"Tree DP"** is the standard term you will hear in competitive programming and interviews.
+
+---
