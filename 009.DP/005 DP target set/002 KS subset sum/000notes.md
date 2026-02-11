@@ -62,6 +62,61 @@ public:
     }
 };
 ```
+
+## Tabulation 
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+private:
+    bool func(int n, int target, vector<int> &arr) {
+        vector<vector<bool>> dp(n, vector<bool>(target + 1, false));
+
+        for (int i = 0; i < n; i++) {
+            dp[i][0] = true;
+        }
+
+        if (arr[0] <= target) {
+            dp[0][arr[0]] = true;
+        }
+
+        for (int ind = 1; ind < n; ind++) {
+            for (int i = 1; i <= target; i++) {
+                bool notTaken = dp[ind - 1][i];
+                bool taken = false;
+                if (arr[ind] <= i) {
+                    taken = dp[ind - 1][i - arr[ind]];
+                }
+                dp[ind][i] = notTaken || taken;
+            }
+        }
+
+        return dp[n - 1][target];
+    }
+public:
+    int isSubsetSum(vector<int> arr, int target) {
+        return func(arr.size(), target, arr);
+    }
+};
+
+int main() {
+    vector<int> arr = {1, 2, 3, 4};
+    int target = 4;
+
+    Solution sol;
+
+    if (sol.isSubsetSum(arr, target))
+        cout << "Subset with the given target found";
+    else
+        cout << "Subset with the given target not found";
+
+    return 0;
+}
+```
+Remember tabulation of this problem it can be used in many other problems!!
+
 ## Count subset with sum K
 
 ```cpp
@@ -91,7 +146,150 @@ class Solution{
 
 
 
-![alt text](<009 target set_231121_163402(3).jpg>) ![alt text](<009 target set_231121_163402(4).jpg>) ![alt text](<009 target set_231121_163402(5).jpg>) ![alt text](<009 target set_231121_163402(6).jpg>) ![alt text](<009 target set_231121_163402(7).jpg>) ![alt text](<009 target set_231121_163402(8).jpg>) ![alt text](<009 target set_231121_163402(9).jpg>) ![alt text](<009 target set_231121_163402(10).jpg>) ![alt text](<009 target set_231121_163402(11).jpg>) ![alt text](<009 target set_231121_163402(12).jpg>) ![alt text](<009 target set_231121_163402(13).jpg>) ![alt text](<009 target set_231121_163402(14).jpg>) ![alt text](<009 target set_231121_163402(15).jpg>) ![alt text](<009 target set_231121_163402(16).jpg>) ![alt text](<009 target set_231121_163402(17).jpg>) ![alt text](<009 target set_231121_163402(18).jpg>) ![alt text](<009 target set_231121_163402(19).jpg>) ![alt text](<009 target set_231121_163402(20).jpg>)
+![alt text](<009 target set_231121_163402(3).jpg>) ![alt text](<009 target set_231121_163402(4).jpg>) ![alt text](<009 target set_231121_163402(5).jpg>) ![alt text](<009 target set_231121_163402(6).jpg>) ![alt text](<009 target set_231121_163402(7).jpg>) ![alt text](<009 target set_231121_163402(8).jpg>) 
+
+
+```cpp
+class Solution {
+    bool subsetSum(vector<int> &arr, int tar, int i, vector<vector<int>> &dp) {
+        if (i == arr.size() || tar == 0) {
+            return dp[i][tar] = (tar == 0 ? true : false);
+        }
+
+        if (dp[i][tar] != -1) return dp[i][tar];
+        bool v1 = false;
+        bool v2 = false;
+
+        if (tar >= arr[i]) v1 = subsetSum(arr, tar - arr[i], i + 1, dp);
+        v2 = subsetSum(arr, tar, i + 1, dp);
+
+        return dp[i][tar] = v1 | v2;
+    }
+
+    bool isSubsetSum(vector<int> arr, int target) {
+        vector<vector<int>> dp(arr.size() + 1, vector<int>(target + 1, -1));
+        return subsetSum(arr, target, 0, dp);
+    }
+
+   public:
+    bool equalPartition(int n, vector<int> arr) {
+        int sum = accumulate(arr.begin(), arr.end(),0);
+        if (sum % 2 == 1) return false;
+        return isSubsetSum(arr,sum/2);
+    }
+};
+
+```
+
+
+
+
+![alt text](<009 target set_231121_163402(9).jpg>) ![alt text](<009 target set_231121_163402(10).jpg>) 
+
+# Partition a set into two subsets with minimum absolute sum difference
+
+### Problem Statement
+Given an array `arr` of `n` integers, partition the array into two subsets such that the absolute difference between their sums is minimized.
+
+### Examples
+
+**Example 1:**
+```text
+Input: arr = [1, 7, 14, 5]
+Output: 1
+Explanation: The array can be partitioned as [1, 7, 5] and [14], with an absolute difference of 1.
+```
+### Constraints
+- $1 \leq n \cdot \text{sum of array elements} \leq 10^6$
+- $0 < \text{arr}[i] \leq 10^4$
+
+```cpp
+class Solution {
+    bool subsetSum(vector<int> &arr, int tar, int i, vector<vector<int>> &dp) {
+        if (i == arr.size() || tar == 0) {
+            return dp[i][tar] = (tar == 0 ? true : false);
+        }
+
+        if (dp[i][tar] != -1) return dp[i][tar];
+        bool v1 = false;
+        bool v2 = false;
+
+        if (tar >= arr[i]) v1 = subsetSum(arr, tar - arr[i], i + 1, dp);
+        v2 = subsetSum(arr, tar, i + 1, dp);
+
+        return dp[i][tar] = v1 | v2;
+    }
+
+    int isSubsetSum(vector<int> arr, int target) {
+        vector<vector<int>> dp(arr.size() + 1, vector<int>(target + 1, -1));
+        for (int i = 0; i <= target / 2; i++) {
+            subsetSum(arr, i, 0, dp);
+        }
+        int ans = 1e9;
+        for (int i = 0; i <= target / 2; i++) {
+            if (dp[0][i] == true) ans = min(target - 2 * i, ans);
+        }
+        return ans;
+    }
+
+   public:
+    int minDifference(vector<int> &arr, int n) {
+        int sum = accumulate(arr.begin(), arr.end(), 0);
+        return isSubsetSum(arr, sum);
+    }
+};
+
+```
+Why i have this 
+```cpp
+ for (int i = 0; i <= target / 2; i++) {
+            subsetSum(arr, i, 0, dp);
+        }
+```
+
+### The "Lazy" Nature of Recursion (Memoization)
+
+If we call `subsetSum(arr, sum, 0, dp)` once.
+
+**Problem:** Top-Down DP (Recursion) is **"lazy."** It only computes the states necessary to find if `sum` is possible. It does **not** explore every possible subset sum.
+
+**Example:**
+* If you have `[1, 10]` and `sum = 11`.
+* The recursion checks `11 - 1 = 10`, then `10 - 10 = 0`. It finds a path.
+* It **never** checks if `sum = 5` is possible because the path to 11 never required asking *"Can I make 5?"*.
+
+**Consequence:** Your DP table will have `-1` (unvisited) for many valid sums that just weren't part of the path to the total sum.
+
+
+It will be accepted in interviews but AI suggested 
+```cpp
+
+int isSubsetSum(vector<int> arr, int target) {
+    // Initialize DP table with -1
+    // Size is [N+1][Sum+1]
+    vector<vector<int>> dp(arr.size() + 1, vector<int>(target + 1, -1));
+    
+    int minDiff = 1e9;
+
+    // Loop through all possible sums from 0 to Sum/2
+    for (int i = 0; i <= target / 2; i++) {
+        // DIRECTLY check if this sum 'i' is possible
+        if (subsetSum(arr, i, 0, dp) == true) {
+            // If possible, calculate the difference
+            int s1 = i;
+            int s2 = target - i;
+            minDiff = min(minDiff, abs(s2 - s1));
+        }
+    }
+    return minDiff;
+}
+```
+
+![alt text](<009 target set_231121_163402(11).jpg>) ![alt text](<009 target set_231121_163402(12).jpg>) ![alt text](<009 target set_231121_163402(13).jpg>) ![alt text](<009 target set_231121_163402(14).jpg>) 
+
+# O/1 KS
+
+ ![alt text](<009 target set_231121_163402(16).jpg>) ![alt text](<009 target set_231121_163402(17).jpg>) ![alt text](<009 target set_231121_163402(18).jpg>) ![alt text](<009 target set_231121_163402(19).jpg>) ![alt text](<009 target set_231121_163402(20).jpg>)
 
 ### Recursion
 
