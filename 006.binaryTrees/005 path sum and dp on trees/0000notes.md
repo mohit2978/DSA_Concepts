@@ -328,11 +328,70 @@ If you want to test this "DP on Trees" theory further, try **House Robber III (L
 
 
 
+# Q max path sum leaf to leaf path
+
+return max path from leaf to leaf ,if no leaf either right or left then height if maximum path straight line root to leaf can be answer
+
+```java
+/* class Node
+{
+    int data;
+    Node left, right;
+
+    Node(int item)
+    {
+        data = item;
+        left = right = null;
+    }
+} */
+class Solution {
+
+    int res;
+
+    int solve(Node root) {
+        if (root == null) return 0;
+
+        if (root.left == null && root.right == null) return root.data;
+
+        int ls = solve(root.left);
+        int rs = solve(root.right);
+
+        if (root.left != null && root.right != null) {
+
+            res = Math.max(res, ls + rs + root.data);
+            return Math.max(ls, rs) + root.data;
+        }
+
+        if (root.left == null) {
+            return rs + root.data;
+        } else {
+            return ls + root.data;
+        }
+    }
+    int maxPathSum(Node root) {
+        res = Integer.MIN_VALUE;
+        int h = solve(root);
+        if (root.left == null || root.right == null) {
+            res = Math.max(res, h);
+        }
+        return res; // Return the maximum path sum
+        
+    }
+}
+```
 
 
+### The Logic Breakdown
 
+1.  **The `solve` Function:**
+    * This correctly handles the standard "V-shape" logic (Leaf -> Node -> Leaf).
+    * It calculates maximum path sums recursively.
+    * Crucially, it updates the global result `res` **only** at turning points (nodes that have **both** left and right children).
 
-
+2.  **The `maxPathSum` Extra Check:**
+    * This handles the **Linear Tree / Single Branch** edge case.
+    * If the `root` itself prevents a "V-shape" from forming (because it has only 1 child), the strict `solve` logic would never update `res` (leaving it as `INT_MIN`).
+    * The extra check `if (root.left == null || root.right == null)` forces the straight-line path (Root-to-Leaf) to be the answer in these degenerate cases.
 
 
 
