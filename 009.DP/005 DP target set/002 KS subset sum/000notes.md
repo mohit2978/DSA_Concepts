@@ -284,8 +284,290 @@ int isSubsetSum(vector<int> arr, int target) {
     return minDiff;
 }
 ```
+# Count partitions with given difference
 
-![alt text](<009 target set_231121_163402(11).jpg>) ![alt text](<009 target set_231121_163402(12).jpg>) ![alt text](<009 target set_231121_163402(13).jpg>) ![alt text](<009 target set_231121_163402(14).jpg>) 
+### Problem Statement
+Given an array `arr` of `n` integers and an integer `diff`, count the number of ways to partition the array into two subsets $S_1$ and $S_2$ such that:
+
+$$|S_1 - S_2| = \text{diff} \quad \text{and} \quad S_1 \geq S_2$$
+
+Where $|S_1|$ and $|S_2|$ are the sum of subsets $S_1$ and $S_2$ respectively.
+
+Return the result modulo $10^9 + 7$.
+
+**Note:** A partition means that the union of $S_1$ and $S_2$ is the original array, and no element is left out or used twice — every element of the array belongs to exactly one of the two subsets.
+
+---
+
+### Examples
+
+**Example 1**
+```text
+Input: arr = [1, 1, 2, 3], diff = 1
+Output: 3
+Explanation: The subsets are:
+- [1, 2] and [1, 3]
+- [1, 3] and [1, 2]
+- [1, 1, 2] and [3]
+```
+### Example 2
+```text
+Input: arr = [1, 2, 3, 4], diff = 2
+Output: 2
+Explanation: The subsets are:
+- [1, 3] and [2, 4]
+- [1, 2, 3] and [4]
+```
+### Constraints
+- $1 \leq n \leq 200$
+- $0 \leq d \leq 10^4$
+- $0 \leq \text{arr}[i] \leq 50$
+### solution
+
+#### Wrong code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+    int MOD=1e9+7;
+      int subsetSum(vector<int>&arr, int tar,int i,vector<vector<int>> &dp){
+        if(i==arr.size() || tar==0){
+            return dp[i][tar]=(tar==0?1:0);
+        }
+
+        if(dp[i][tar]!=-1) return dp[i][tar];
+        int cnt=0;
+        if(tar>=arr[i]) cnt=(cnt+subsetSum(arr,tar-arr[i],i+1,dp))%MOD;
+        cnt=(cnt+subsetSum(arr,tar,i+1,dp))%MOD;
+
+        return dp[i][tar]=cnt;
+
+    }  
+  int perfectSum(vector<int>&arr, int K){
+      vector<vector<int>> dp(arr.size()+1, vector<int>(K + 1, -1));
+        return subsetSum(arr,K,0,dp);
+  }
+  public:
+   int countPartitions(int n, int diff, vector<int>& arr) {
+        int sum=accumulate(arr.begin(),arr.end(),0);
+        int tar=(sum+diff)/2;
+        return perfectSum(arr,tar);
+    }
+};
+```
+### This code has 2 logical bugs that will cause it to fail on standard test cases (especially those involving zeros or odd sums).
+
+Here is the breakdown of the errors and the corrected code.
+
+---
+
+### 1. The "Zeros" Trap (Critical Bug)
+**Your base case is:** `if (i == arr.size() || tar == 0)`
+
+* **The Bug:** You stop as soon as `tar == 0`.
+* **The Scenario:** Imagine `arr = [0, 0, 1]` and `target = 1`.
+    * If you pick `1`, target becomes `0`. Your code returns `1` immediately.
+    * It misses the fact that you can also include the zeros! (e.g., `{1}`, `{0,1}`, `{0,0,1}`, etc.).
+* **The Fix:** Do not stop when `tar == 0`. You must traverse the entire array (`i == n`) to ensure you count all combinations of zeros.
+
+---
+
+### 2. The "Odd Sum" Check (Wrong Answer)
+**You calculate** `tar = (sum + diff) / 2`.
+
+* **The Bug:** Integer division truncates.
+* **The Scenario:** Sum = 10, Diff = 3. $(10+3)/2$ becomes 6. But mathematically, $2 \cdot S_1 = 13$, which is impossible for integers.
+* **The Fix:** You must check if `((sum + diff) % 2 != 0)` and return `0`.
+
+#### Right code
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+  	int MOD=1e9+7;
+	    int subsetSum(vector<int>&arr, int tar,int i,vector<vector<int>> &dp){
+        if(i==arr.size() ){
+            return dp[i][tar]=(tar==0?1:0);
+        }
+
+        if(dp[i][tar]!=-1) return dp[i][tar];
+        int cnt=0;
+        if(tar>=arr[i]) cnt=(cnt+subsetSum(arr,tar-arr[i],i+1,dp))%MOD;
+        cnt=(cnt+subsetSum(arr,tar,i+1,dp))%MOD;
+
+        return dp[i][tar]=cnt;
+
+    }  
+	int perfectSum(vector<int>&arr, int K){
+   		vector<vector<int>> dp(arr.size()+1, vector<int>(K + 1, -1));
+        return subsetSum(arr,K,0,dp);
+	}
+  public:
+   int countPartitions(int n, int diff, vector<int>& arr) {
+        int sum=accumulate(arr.begin(),arr.end(),0);
+        if ((sum + diff) % 2 != 0 || diff > sum) return 0;
+        int tar=(sum+diff)/2;
+        return perfectSum(arr,tar);
+    }
+};
+```
+
+# Target sum
+
+![alt text](<009 target set_231121_163402(11).jpg>)
+
+Same as above question
+
+```cpp
+class Solution {
+  	int MOD=1e9+7;
+	    int subsetSum(vector<int>&arr, int tar,int i,vector<vector<int>> &dp){
+        if(i==arr.size() ){
+            return dp[i][tar]=(tar==0?1:0);
+        }
+
+        if(dp[i][tar]!=-1) return dp[i][tar];
+        int cnt=0;
+        if(tar>=arr[i]) cnt=(cnt+subsetSum(arr,tar-arr[i],i+1,dp))%MOD;
+        cnt=(cnt+subsetSum(arr,tar,i+1,dp))%MOD;
+
+        return dp[i][tar]=cnt;
+
+    }  
+	int perfectSum(vector<int>&arr, int K){
+   		vector<vector<int>> dp(arr.size()+1, vector<int>(K + 1, -1));
+        return subsetSum(arr,K,0,dp);
+	}
+
+   int countPartitions( int diff, vector<int>& arr) {
+        int sum=accumulate(arr.begin(),arr.end(),0);
+        if ((sum + diff) % 2 != 0 || diff > sum) return 0;
+        int tar=(sum+diff)/2;
+        return perfectSum(arr,tar);
+    } 
+  public:
+  int targetSum(int n, int target, vector<int>& arr) {
+       return countPartitions(target,arr);
+ }
+};
+
+```
+### The "Negative Target" Crash
+
+* **The Bug:** In LeetCode 494, the target can be negative (e.g., `target = -10`).
+* **The Math:** If `target` is negative, `sum + target` might be negative.
+
+**Example:**
+* `arr = [1]`, `target = -5`.
+* `sum = 1`.
+* `tar = (1 + (-5)) / 2 = -2`.
+
+* **The Crash:** You initialize `vector<int>(tar + 1)`. If `tar` is negative, this throws a `std::length_error` or crash.
+* **The Fix:** You must check if `sum + diff < 0` (or equivalently `abs(target) > sum`) and return `0`.
+
+Now let us see rajneesh way!!
+
+ ![alt text](<009 target set_231121_163402(12).jpg>) ![alt text](<009 target set_231121_163402(13).jpg>) ![alt text](<009 target set_231121_163402(14).jpg>) 
+
+# Lc 322 seen in prev lec
+## Minimum Coins
+
+
+
+---
+
+### **Problem Statement**
+Given an integer array of `coins` representing coins of different denominations and an integer `amount` representing a total amount of money.
+
+Return the **fewest number of coins** that are needed to make up that amount.
+
+If that amount of money cannot be made up by any combination of the coins, return `-1`.
+
+**Note:** You may assume that you have an infinite number of each kind of coin.
+
+---
+
+### **Examples**
+
+**Example 1**
+```text
+Input: coins = [1, 2, 5], amount = 11
+Output: 3
+Explanation: 11 = 5 + 5 + 1. We need 3 coins to make up the amount 11.
+```
+### Example 2
+```text
+Input: coins = [2, 5], amount = 3
+Output: -1
+Explanation: It's not possible to make amount 3 with coins 2 and 5.
+Since we can't combine the coin 2 and 5 to make the amount 3, the output is -1.
+```
+### Constraints
+- $1 \leq n \leq 100$
+- $1 \leq \text{coins}[i], \text{amount} \leq 10^3$
+
+using subsetsum Function
+```cpp
+class Solution {
+    int subsetSum(vector<int>& arr, int tar, int i, vector<vector<int>>& dp) {
+        if (i == arr.size() || tar == 0) {
+            return dp[i][tar] = (tar == 0 ? 0 : 1e4);
+        }
+
+        if (dp[i][tar] != 1e4) return dp[i][tar];
+        int cnt1 = 1e4,cnt2=1e4;
+        if (tar >= arr[i])
+            cnt1 =  subsetSum(arr, tar - arr[i], i , dp)+1;
+        cnt2 =  subsetSum(arr, tar, i + 1, dp);
+
+        return dp[i][tar] = min(cnt1,cnt2) ;
+    }
+    int perfectSum(vector<int>& arr, int K) {
+        vector<vector<int>> dp(arr.size() + 1, vector<int>(K + 1, 1e4));
+        return subsetSum(arr, K, 0, dp);
+    }
+
+   public:
+    int MinimumCoins(vector<int>& coins, int amount) {
+		int val=perfectSum(coins,amount);
+		return (val==1e4)?-1 :val;
+	}
+};
+```
+## LC 518
+
+```cpp
+class Solution {
+    int MOD = 1e9 + 7;
+    int subsetSum(vector<int>& arr, int tar, int i, vector<vector<int>>& dp) {
+        if (i == arr.size() || tar == 0) {
+            return dp[i][tar] = (tar == 0 ? 1 : 0);
+        }
+
+        if (dp[i][tar] != -1) return dp[i][tar];
+        int cnt = 0;
+        if (tar >= arr[i])
+            cnt = (cnt + subsetSum(arr, tar - arr[i], i, dp)) % MOD;
+        cnt = (cnt + subsetSum(arr, tar, i + 1, dp)) % MOD;
+
+        return dp[i][tar] = cnt;
+    }
+    int perfectSum(vector<int>& arr, int K) {
+        vector<vector<int>> dp(arr.size() + 1, vector<int>(K + 1, -1));
+        return subsetSum(arr, K, 0, dp);
+    }
+
+   public:
+    int count(vector<int>& coins, int N, int amount) {
+        int val = perfectSum(coins, amount);
+        return val;
+    }
+};
+
+```
+
 
 # O/1 KS
 
