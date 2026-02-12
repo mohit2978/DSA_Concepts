@@ -231,7 +231,7 @@ public:
 
 
 
-![alt text](<005kahns aliendisctionary courseschedule_240307_120321(11).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(12).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(13).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(14).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(15).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(16).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(17).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(18).jpg>) 
+![alt text](<005kahns aliendisctionary courseschedule_240307_120321(11).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(12).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(13).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(14).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(15).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(16).jpg>)  ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(18).jpg>) 
 
 
 ### Kahns algo cpp code
@@ -267,6 +267,178 @@ public:
 
 
 ```
+![alt text](<005kahns aliendisctionary courseschedule_240307_120321(17).jpg>)
+### Dtetect a cycle in directed graph 
+
+```cpp
+class Solution {
+    bool topoSort(int V, vector<int> adj[]) {
+        vector<int> indegree(V, 0);
+        for (int i = 0; i < V; i++) {
+            for (auto el : adj[i]) {
+                indegree[el]++;
+            }
+        }
+        queue<int> q;
+        int cnt = 0;
+        for (int i = 0; i < V; i++) {
+            if (indegree[i] == 0) {
+                cnt++;
+                q.push(i);
+            }
+        }
+        vector<int> res(V, 0);
+        int i = 0;
+
+        while (q.size() > 0) {
+            int v = q.front();
+            q.pop();
+            res[i++] = v;
+            for (int el : adj[v]) {
+                indegree[el]--;
+                if (indegree[el] == 0) {
+                    q.push(el);
+                    cnt++;
+                }
+            }
+        }
+        return cnt < V;
+    }
+
+   public:
+    bool isCyclic(int N, vector<int> adj[]) { 
+        return topoSort(N, adj); }
+};
+
+```
+
+## DFS sol
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+private:
+
+    // Function to perform DFS traversal
+    bool dfs(int node, vector<int> adj[], 
+             vector<bool> &visited, 
+             vector<bool> &pathVisited) {
+                 
+        // Mark the node as path visited
+        visited[node] = true;
+        
+        // Mark the node as path visited
+        pathVisited[node] = true;
+        
+        // Traverse all the neighbors
+        for(auto it : adj[node]) {
+            
+            /* If the neighbor is already visited 
+            in the path, a cycle is detected */
+            if(pathVisited[it]) 
+                return true;
+            
+            /* Else if the node is unvisited, 
+            perform DFS recursively from this node */
+            else if(!visited[it]) {
+                
+                // If cycle is detected, return true
+                if(dfs(it, adj, visited, pathVisited)) 
+                    return true;
+            }
+        }
+        
+        // Remove the node from path 
+        pathVisited[node] = false;
+        
+        // Return false if no cycle is detected
+        return false;
+    }
+    
+public:
+
+    // Function to detect cycle in a directed graph.
+    bool isCyclic(int V, vector<int> adj[]) {
+        
+        // Visited array
+        vector<bool> visited(V, false);
+        
+        /* Array to mark nodes that are 
+        visited in a particular path */
+        vector<bool> pathVisited(V, false);
+        
+        // Traverse the graph
+        for(int i=0; i<V; i++) {
+            if(!visited[i]) {
+                
+                // If a cycle is found, return true
+                if(dfs(i, adj, visited, pathVisited)) 
+                    return true;
+            }
+        }
+        
+        /* Return false if no cycle is 
+        detected in any component */
+        return false;
+    }
+};
+
+int main() {
+    
+    int V = 6;
+    vector<int> adj[V] = {
+        {1}, 
+        {2, 5}, 
+        {3}, 
+        {4}, 
+        {1},
+        {} 
+    };
+    
+    /* Creating an instance of 
+    Solution class */
+    Solution sol; 
+    
+    /* Function call to determine if cycle 
+    exists in given directed graph */
+    bool ans = sol.isCyclic(V, adj);
+    
+    // Output
+    if(ans)
+        cout << "The given directed graph contains a cycle.";
+    else 
+        cout << "The given directed graph does not contain a cycle.";
+    
+    return 0;
+}
+```
+
+This is the classic **Kahn's Algorithm (BFS)** vs. **Backtracking (DFS)** debate for Directed Acyclic Graphs (DAGs).
+
+Given your constraint $N \le 10^4$, both are mathematically efficient ($O(V+E)$), but **Solution 1 (Kahn's BFS)** is the superior "Software Engineering" choice for modern interviews.
+
+### 1. The Stability Factor (Stack Overflow)
+As we discussed previously with Trees, DFS relies on the **System Recursion Stack**.
+* **Solution 2 (DFS):** If the graph is just a long line (e.g., $1 \to 2 \to 3 \dots \to 10^4$), your recursion depth will be $10,000$. On many systems (like some GFG or LeetCode test runners), the default stack limit is small. This can trigger a **Stack Overflow crash**.
+* **Solution 1 (BFS):** Uses a queue on the **Heap**. The heap is gigabytes in size. It will never crash, even if the graph is a straight line of $10^6$ nodes.
+
+### 2. The Logic: Why BFS works for Cycles
+Kahn's algorithm is based on a simple fact: A directed cycle has no "start" (node with indegree 0).
+* If a graph has a cycle, the indegree of nodes in that cycle will never hit 0.
+* Consequently, those nodes never enter the queue.
+* Therefore, the total count of nodes processed (`cnt`) will be less than the total nodes in the graph ($V$).
+* This logic is extremely clean and avoids the need for a separate `pathVisited` array.
+
+### 3. Complexity Comparison
+
+| Feature | Solution 1 (BFS/Kahn's) | Solution 2 (DFS) |
+| :--- | :--- | :--- |
+| **Time** | $O(V + E)$ | $O(V + E)$ |
+| **Space** | $O(V)$ (Queue + Indegree) | $O(V)$ (Visited + PathVisited + Recursion) |
+| **Safety** | **High** (Iterative) | **Low** (Recursion risk) |
+| **Utility** | Also gives you the **Sorted Order** | Only tells you **Yes/No** |
 
 ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(19).jpg>) 
 ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(20).jpg>) 
