@@ -137,7 +137,9 @@ Explanation: The BST contains multiple pair of nodes that sum up to k.
 - $-10^4 \leq \text{Node.val} \leq 10^4$
 - $-10^5 \leq k \leq 10^5$
 
-Bruteforce be get inorder and then apply 2 sum!!
+Brute be like for every node try to find  node hvaing data (tar-node->data) this is O($n^2$)
+
+Better be get inorder and then apply 2 sum!!O(n)
 
 For next approach see `BST itrator` in 001 notes
 
