@@ -587,6 +587,39 @@ class Solution {
 
  ![alt text](<004 dp on string_231121_163402(13).jpg>) ![alt text](<004 dp on string_231121_163402(14).jpg>) ![alt text](<004 dp on string_231121_163402(15).jpg>) ![alt text](<004 dp on string_231121_163402(16).jpg>) ![alt text](<004 dp on string_231121_163402(17).jpg>) ![alt text](<004 dp on string_231121_163402(18).jpg>) ![alt text](<004 dp on string_231121_163402(19).jpg>) 
 
+## Tabulation
+
+```cpp
+class Solution {
+    int func(string& s1, string& s2, int N, int M, vector<vector<int>>& dp) {
+        for (int ind1 = 0; ind1 <= N; ind1++) {
+            for (int ind2 = 0; ind2 <= M; ind2++) {
+                if (ind1 == 0 || ind2 == 0) {
+                    dp[ind1][ind2] = (ind1 == 0) ? ind2 : ind1;
+                    continue;
+                }
+                if (s1[ind1 - 1] == s2[ind2 - 1])
+                    dp[ind1][ind2] = dp[ind1 - 1][ind2 - 1];
+                else
+                    dp[ind1][ind2] =
+                        1 + min({dp[ind1][ind2 - 1], dp[ind1 - 1][ind2]});
+            }
+        }
+        return dp[N][M];
+    }
+
+   public:
+    int minOperations(string str1, string str2) {
+        int n = str1.size();
+        int m = str2.size();
+
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, -1));
+        // Return the result
+        int val = func(str1, str2, n, m, dp);
+       return val;
+    }
+};
+```
 
 # Comparison: Sliding Window vs. Interval DP
 
