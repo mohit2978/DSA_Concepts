@@ -114,8 +114,7 @@ public:
     }
 };
 ```
-# Q3 target sum or
-# Two sum in BST
+# Q3 target sum or Two sum in BST
 
 ### Problem Statement
 Given the root of a binary search tree and an integer `k`. Return `true` if there exist two elements in the BST such that their sum is equal to `k` otherwise `false`.

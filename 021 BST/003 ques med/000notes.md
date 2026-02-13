@@ -97,6 +97,143 @@ class Solution {
 - **Time Complexity:** $O(N)$, where $N$ is the number of nodes in the tree. We visit each node exactly once.
 - **Space Complexity:** $O(H)$, where $H$ is the height of the tree, representing the maximum depth of the recursion stack. In the worst case (skewed tree), this is $O(N)$.
 
+## Morris traversal approach
+
+```java
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode() {}
+ *     TreeNode(int val) { this.val = val; }
+ *     TreeNode(int val, TreeNode left, TreeNode right) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+class Solution {
+    public TreeNode rightmost(TreeNode node,TreeNode curr){
+        while(node.right!=null&&node.right!=curr){
+            node=node.right;
+        }
+        return node;
+    }
+ 
+    public boolean isValidBST(TreeNode root) {
+        TreeNode curr=root;
+        TreeNode prev=null;
+        while(curr!=null){
+            TreeNode left=curr.left;
+            if(left==null){
+                if(prev!=null&&prev.val>=curr.val) return false;
+                prev=curr;
+                curr=curr.right;
+            }
+            else{
+                TreeNode rmn=rightmost(left,curr);
+                if(rmn.right==null){
+                    rmn.right=curr;
+                    curr=curr.left;
+                }
+                else{
+                    rmn.right=null;
+                    if(prev.val>=curr.val) return false;
+                    prev=curr;
+                    curr=curr.right;
+                }
+            
+            }
+            
+        }
+        return true;
+        
+    }
+}
+```
+
+## BST itertaor approach
+```cpp
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+ class BSTIterator {
+    stack<TreeNode*> st;
+    bool reverse;
+    
+    // Helper function to push all left or right nodes
+    void pushAll(TreeNode* node) {
+        while (node != nullptr) {
+            st.push(node);
+            node = (reverse) ? node->right : node->left;
+        }
+    }
+    
+public:
+    BSTIterator(TreeNode* root, bool isReverse) : reverse(isReverse) {
+        pushAll(root);
+    }
+    
+    // Check if there are more elements in the BST
+    bool hasNext() {
+        return !st.empty();
+    }
+    
+    // Get the next element in the inorder or reverse inorder traversal
+   TreeNode* next() {
+        TreeNode* node = st.top();
+        st.pop();
+        if (!reverse) pushAll(node->right);
+        else pushAll(node->left);
+        return node;
+    }
+};
+class Solution {
+    
+public:
+    bool isValidBST(TreeNode* root) {
+        if(root==nullptr) return true;
+        BSTIterator it=BSTIterator(root,false);
+        TreeNode* prev=it.next();
+        while(it.hasNext()){
+            TreeNode * curr=it.next();
+            if(prev->val> curr->val) return false;
+            prev=curr;
+        }
+        return true;
+    }
+};
+```
+
+### Comparison of Approaches
+
+| Approach | Logic | Time | Space | Verdict |
+| :--- | :--- | :--- | :--- | :--- |
+| **Recursive** | Passes (min, max) range | $O(N)$ | $O(H)$ | Good (Standard) |
+| **BST Iterator** | Stack-based Inorder | $O(N)$ | $O(H)$ | Excellent (Clean logic) |
+| **Morris Traversal** | Threaded Tree | $O(N)$ | $O(1)$ | Elite (But mention thread safety!) |
+
+### Recommendation
+For an interview, write the **BST Iterator (Stack)** approach.
+* It proves you understand **Inorder Traversal** properties.
+* It avoids the "Grandparent" bug.
+
+Then, verbally mention **Morris Traversal**:
+> "If we were strictly constrained on memory and single-threaded, I could use Morris Traversal to do this in constant space, but it temporarily mutates the tree."
+
+That sentence alone makes you look like a pro.
+
 
 ![alt text](<006path sum and construction of bt_240401_000658(11).jpg>) ![alt text](<006path sum and construction of bt_240401_000658(12).jpg>) ![alt text](<006path sum and construction of bt_240401_000658(13).jpg>) 
 
