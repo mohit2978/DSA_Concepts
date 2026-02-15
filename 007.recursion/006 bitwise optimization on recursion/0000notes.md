@@ -562,3 +562,324 @@ col ^= (1 << c);
 
 ---
 
+# Q M Coloring Problem
+
+### Problem Statement
+Given an integer `M` and an undirected graph with `N` vertices (zero-indexed) and `E` edges, determine whether the graph can be colored with a maximum of `M` colors such that no two adjacent vertices have the same color applied to them.
+
+In this context, coloring a graph refers to assigning a color to each vertex. If such a coloring is possible, return `true`; otherwise, return `false`.
+
+### Examples
+
+**Example 1**
+```text
+Input : N = 4 , M = 3 , E = 5 , Edges = [ (0, 1) , (1, 2) , (2, 3) , (3, 0) , (0, 2) ]
+Output : true
+Explanation : Consider the three colors to be red, green, blue.
+We can color the vertex 0 with red, vertex 1 with blue, vertex 2 with green, vertex 3 with blue.
+In this way we can color graph using 3 colors at most.
+```
+### Constraints
+- $1 \leq N \leq 20$
+- $1 \leq E \leq \frac{N \times (N-1)}{2}$
+- $1 \leq M \leq N$
+## Recursive code
+
+```cpp
+class Solution {
+public:
+    bool isSafe(int col, int node, vector<int>& colors, vector<int> adj[]) {
+        // Check adjacent nodes
+        for (int i = 0; i < adj[node].size(); i++) {
+            if (colors[adj[node][i]] == col) return false;
+        }
+        return true; // Safe to color
+    }
+
+    // Recursive function to solve graph coloring problem
+    bool solve(int node, int m, int n, vector<int>& colors, vector<int> adj[]) {
+        // If all nodes are colored
+        if (n == node) return true;
+        // Try all colors from 1 to m
+        for (int i = 1; i <= m; i++) {
+            // Check if it is safe to color the node with color i
+            if (isSafe(i, node, colors, adj)) {
+             // Assign color i to node
+                colors[node] = i;
+                // Recursively try to color the next node
+                if (solve(node + 1, m, n, colors, adj)) return true;
+                // Reset color if it doesn't lead to a solution
+                colors[node] = 0; 
+            }
+        }
+        // No color can be assigned
+        return false; 
+    }
+
+    // Function to check if the graph can be colored with m colors
+    bool graphColoring(vector<vector<int>>& edges, int m, int n) {
+     // Adjacency list representation of the graph 
+        vector<int> adj[n];
+
+        // Build the graph from edges
+        for (int i = 0; i < edges.size(); i++) {
+            adj[edges[i][0]].push_back(edges[i][1]);
+            adj[edges[i][1]].push_back(edges[i][0]);
+        }
+        // Initialize all colors to 0 (uncolored)
+        vector<int> colors(n, 0);
+        // Start solving from the first node
+        return solve(0, m, n, colors, adj);
+    }
+};
+```
+
+## Bitwise optimized code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    // Recursive function with Bitmasking
+    bool solve(int node, int m, int n, vector<long long>& colorMasks, vector<long long>& adj) {
+        // Base case: If we went past the last node (0 to n-1), we are done
+        if (node == n) return true;
+
+        // Try all colors from 1 to m
+        for (int c = 1; c <= m; c++) {
+            
+            // OPTIMIZATION HERE:
+            // Check intersection of Current Node's Neighbors AND Existing Nodes with Color 'c'
+            // If the result is 0, it means no neighbor has this color.
+            if ((adj[node] & colorMasks[c]) == 0) {
+                
+                // Assign color 'c' to 'node' (Set the bit)
+                colorMasks[c] |= (1LL << node);
+
+                // Recurse
+                if (solve(node + 1, m, n, colorMasks, adj)) return true;
+
+                // Backtrack (Unset the bit)
+                colorMasks[c] &= ~(1LL << node);
+            }
+        }
+        return false;
+    }
+
+    bool graphColoring(vector<vector<int>>& edges, int m, int n) {
+        // Use long long to support up to 64 nodes. 
+        // adj[i] is a bitmask representing all neighbors of node i
+        vector<long long> adj(n, 0);
+
+        // Build the graph using bits
+        for (auto& e : edges) {
+            int u = e[0];
+            int v = e[1];
+            adj[u] |= (1LL << v); // Set v-th bit for u
+            adj[v] |= (1LL << u); // Set u-th bit for v
+        }
+
+        // colorMasks[c] stores a bitmask of all nodes assigned to color c
+        // Size is m + 1 because colors are 1-based
+        vector<long long> colorMasks(m + 1, 0);
+
+        return solve(0, m, n, colorMasks, adj);
+    }
+};
+
+int main() {
+    Solution sol;
+    vector<vector<int>> edges = {
+        {0, 1}, {0, 2}, {1, 2}, {1, 3}
+    };
+    int m = 3; 
+    int n = 4; 
+
+    if (sol.graphColoring(edges, m, n)) {
+        cout << "The graph can be colored with " << m << " colors." << endl;
+    } else {
+        cout << "The graph cannot be colored with " << m << " colors." << endl;
+    }
+
+    return 0;
+}
+```
+### Why is this better?
+
+* **Complexity:** The original `isSafe` took $O(D)$ time where $D$ is the degree of the node (number of neighbors). The bitwise check takes **$O(1)$** time, as the CPU executes a bitwise AND in a single clock cycle.
+* **Memory Locality:** Bitwise operations happen directly in **CPU registers**, which is significantly faster than repeatedly fetching neighbor values from a heap-allocated `vector<vector<int>>`.
+
+---
+
+### Constraint Note
+This approach relies on the number of nodes $N$ fitting into a specific integer type:
+
+* `int` supports $N \le 32$.
+* `long long` supports $N \le 64$.
+* **If $N > 64$:** You would need to use C++'s `std::bitset<100>`. This works exactly the same way but supports arbitrary sizes, though it is slightly slower than a raw `long long`.
+
+
+# Learning Through Code: The Bitmask "Freeze Frame"
+
+It is completely normal to learn better by seeing the code. In fact, most senior engineers prefer reading code over reading documentation because code doesn't lie.
+
+Let's take a **"Freeze Frame"** of exactly what happens inside that bitwise check. This will solidify why it replaces the loop entirely.
+
+### The "Freeze Frame" Visualization
+Imagine we are in the middle of solving the graph.
+
+* **Current Node:** 2
+* **Neighbors of 2:** Node 0 and Node 1.
+* **Binary for Node 0:** `...0001`
+* **Binary for Node 1:** `...0010`
+* **adj[2] Mask:** `...0011` (Neighbors are 0 and 1)
+
+Now, we try to give Node 2 the color **Red** (Index 1).
+* **Who currently has Red?** Let's say Node 0 and Node 5 already have Red.
+* **colorMasks[1]:** `...100001` (Bits 0 and 5 are set)
+
+### The Magic Operation
+The code runs: `if ((adj[node] & colorMasks[c]) == 0)`
+
+Let's do the math:
+
+```text
+  00000011  (adj[2] - The neighbors of Node 2)
+& 00100001  (colorMasks[1] - Nodes that are already Red)
+------------------------------------------------
+  00000001  (Result is NOT zero!)
+```
+
+**Result:** The result is 1 (non-zero).  
+**Meaning:** "Collision detected at bit 0!"
+
+The CPU sees the collision instantly. It knows Node 0 is both a neighbor **AND** already Red. It returns `false` immediately.
+
+```cpp
+// O(Degree) - Loops 2 times for 2 neighbors
+for (int neighbor : adj[node]) {
+    if (colors[neighbor] == currentColor) return false;
+}
+```
+we replaced above code with this below code!!
+
+```cpp
+// O(1) - One CPU cycle. No loops. No jumps.
+if (adj[node] & colorMasks[c]) return false;
+```
+
+### When can you use this?
+You can use this **Adjacency Mask** trick whenever:
+* **N is small:** $N \le 64$ (using `long long`).
+* **The graph is dense:** You check connectivity a lot.
+* **The problem is NP-Hard:** Like Graph Coloring, Hamiltonian Path, or Traveling Salesman. These problems are exponential ($O(2^N)$), so shaving the inner loop from $O(N)$ to $O(1)$ makes your code roughly $N$ times faster.
+
+# Q Word Search
+
+### Problem Statement
+Given a grid of `n x m` dimension grid of characters `board` and a string `word`. The word can be created by assembling the letters of successively surrounding cells, whether they are next to each other vertically or horizontally. It is forbidden to use the same letter cell more than once.
+
+Return `true` if the word exists in the grid otherwise `false`.
+
+### Examples
+
+**Example 1**
+```text
+Input : board = [ ["A", "B", "C", "E"] , ["S" ,"F" ,"C" ,"S"] , ["A", "D", "E", "E"] ] , word = "ABCCED"
+Output : true
+Explanation : The word is coloured in yellow.
+```
+
+**Example 2**
+```text
+Input : board = [["A", "B", "C", "E"] , ["S", "F", "C", "S"] , ["A", "D", "E", "E"]] , word = "SEE"
+Output : true
+Explanation : The word is coloured in yellow.
+```
+### Constraints
+- $n = \text{board.length}$
+- $m = \text{board}[i].\text{length}$
+- $1 \leq n, m \leq 6$
+- $1 \leq \text{word.length} \leq 15$
+- `board` and `word` consist of only lowercase and uppercase English letters.
+
+Now as `n,m<=6` so `n*m<=36` so i no need of vis array i can use `long long` to track vis 
+
+
+
+
+```cpp
+class Solution {
+    vector<vector<int>> dir = {{-1, 0}, {1, 0}, {0, 1}, {0, -1}};
+
+    bool solve(vector<vector<char>>& board, int idx, string word, int widx,
+               long long vis) {
+        int n = board.size();
+        int m = board[0].size();
+        if (widx == word.size() - 1)
+            return word[widx] == board[idx / m][idx % m] ? true : false;
+        int r = idx / m;
+        int c = idx % m;
+        bool val = false;
+        vis |= (1 << idx);
+        if (word[widx] != board[r][c]) return val;
+
+        for (int i = 0; i < 4; i++) {
+            int newr = r + dir[i][0];
+            int newc = c + dir[i][1];
+            int newidx = newr * m + newc;
+            if (newr >= 0 && newr < n && newc >= 0 && newc < m &&
+                (vis & (1 << newidx)) == 0) {
+                val |= solve(board, newidx, word, widx + 1, vis);
+                if (val == true) return true;
+            }
+        }
+
+        // vis &= ~(1 << idx);
+        return val;
+    }
+
+   public:
+    bool exist(vector<vector<char>>& board, string word) {
+        int n = board.size();
+        int m = board[0].size();
+        for (int i = 0; i < n * m; i++) {
+            if (board[i / m][i % m] == word[0]) {
+                if (solve(board, i, word, 0, 0)) return true;
+            }
+        }
+        return false;
+    }
+};
+```
+
+## Ai review
+
+### It is very impressive, but it is also risky.
+
+Here is the "Senior Engineer" assessment of using this specific code in an interview:
+
+### The "High Risk, High Reward" Strategy
+
+**1. The "Wow" Factor (Why it impresses)**
+* **Space Optimization:** Most candidates allocate a full `vector<vector<bool>> visited` ($O(N \cdot M)$ space). You used a single `long long` integer ($O(1)$ space).
+* **Clean Backtracking:** Passing `vis` by value eliminates the need for manual backtracking (`vis[r][c] = false`). This makes your code significantly shorter and less bug-prone.
+
+**2. The "Fatal Flaw" (Why it fails)**
+* **The 64-Cell Limit:** Your code will crash or fail if the board is larger than $8 \times 8$ (64 cells).
+* If the interviewer gives you a $10 \times 10$ board, `1LL << 99` will overflow, and your logic breaks.
+* **Standard Constraints:** LeetCode constraints for "Word Search" are usually $N, M \le 6$ (Total $\le 36$), so it works there. But in real life or follow-ups, grids are bigger.
+
+### The "Senior" Verdict: How to Pitch It
+If you write this, you **MUST** verbally call out the constraint immediately. Don't just write it. Say this:
+
+> "I can solve this using a standard 2D visited array, but since the constraints here are small ($N \cdot M \le 64$), I will use a **Bitmask Optimization**. This reduces the auxiliary space from $O(N \cdot M)$ to $O(1)$ by storing the visited state in a single 64-bit integer. If the grid were larger, I would revert to the 2D array approach."
+
+### Final Recommendation
+* **For "Word Search I" (Small Grid):** Use your bitmask approach. It shows mastery.
+* **For General DFS (Unknown Grid Size):** Stick to `vector<vector<bool>>`. It is safer and works for any size.
+
+
+
