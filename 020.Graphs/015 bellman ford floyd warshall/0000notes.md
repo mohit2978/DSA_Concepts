@@ -50,7 +50,55 @@ All the E edges are relaxed for a total of V-1 times. And an extra iteration is 
 Space Complexity: O(V)
 The distance array takes O(V) time.
 
- ![alt text](<014bellman ford floyd warshall network flow_240423_222140(4).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(5).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(6).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(7).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(8).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(9).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(10).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(11).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(12).jpg>) 
+ ![alt text](<014bellman ford floyd warshall network flow_240423_222140(4).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(5).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(6).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(7).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(8).jpg>) 
+ 
+ 
+ 
+ 
+ ![alt text](<014bellman ford floyd warshall network flow_240423_222140(9).jpg>)
+ 
+
+
+They solve the same problem (Shortest Path) but at completely different scales and with different constraints.
+# Dijkstra (Single-Source) vs Floyd-Warshall (All-Pairs)
+
+###  The Core Difference: Scope
+* **Dijkstra (Single-Source):** "I am at Node A. What is the fastest way to get to B, C, D, E...?"
+    * *Analogy:* Google Maps calculating your route from Home to everywhere else.
+* **Floyd-Warshall (All-Pairs):** "What is the fastest way from **every** node to **every** other node?"
+    * *Analogy:* Creating a printed distance chart for a road atlas (Distance between every pair of cities).
+
+###  Comparison Table
+
+| Feature | Dijkstra | Floyd-Warshall |
+| :--- | :--- | :--- |
+| **Algorithm Type** | Greedy (Expand closest) | Dynamic Programming (Try intermediate nodes) |
+| **Complexity** | $O(E \log V)$ (Fast) | $O(V^3)$ (Very Slow) |
+| **Negative Edges** | Fails (Returns wrong answer) | Works (Handles them correctly) |
+| **Negative Cycles** | Loops forever (or gives garbage) | Detects them (Distance to self becomes negative) |
+| **Data Structure** | Adjacency List + Priority Queue | Adjacency Matrix (`dist[i][j]`) |
+| **Max Graph Size** | $V \approx 100,000$ (Large Sparse) | $V \approx 500$ (Small Dense) | 
+ 
+
+# Bellman-Ford vs Floyd-Warshall
+
+* **Bellman-Ford (Single Source):** "I am a router. What is the cost to reach every other IP address?"
+    * **Output:** A 1D array `dist[]` where `dist[i]` is the cost from **Source $\to$ i**.
+* **Floyd-Warshall (All Pairs):** "I am a logistics manager. I need a table of costs between every warehouse and every store."
+    * **Output:** A 2D Matrix `dist[][]` where `dist[i][j]` is the cost from **i $\to$ j**.
+
+###  Comparison Table
+
+| Feature | Bellman-Ford | Floyd-Warshall |
+| :--- | :--- | :--- |
+| **Problem Type** | SSSP (Single Source Shortest Path) | APSP (All Pairs Shortest Path) |
+| **Complexity** | $O(V \cdot E)$ (Better for sparse graphs) | $O(V^3)$ (Better for dense/small graphs) |
+| **Logic** | Relax all edges $(V-1)$ times. | Try every node $k$ as an intermediate stop. |
+| **Negative Cycles** | Detects them (Check if $V$-th iteration changes anything). | Detects them (Check if `dist[i][i] < 0`). |
+| **Space** | $O(V)$ (Linear space) | $O(V^2)$ (Quadratic Matrix) |
+| **Network Protocol** | Used in RIP (Distance Vector Routing). | Used in topology matrix calculations. |
+
+![alt text](<014bellman ford floyd warshall network flow_240423_222140(10).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(11).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(12).jpg>) 
  
  
  ![alt text](<014bellman ford floyd warshall network flow_240423_222140(13).jpg>) 
@@ -99,7 +147,58 @@ Space Complexity: O($N^2$) The algorithm uses a space of O($N^2$) to store short
  
  
  
- ![alt text](<014bellman ford floyd warshall network flow_240423_222140(17).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(18).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(19).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(20).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(21).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(22).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(23).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(24).jpg>) 
+ ![alt text](<014bellman ford floyd warshall network flow_240423_222140(17).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(18).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(19).jpg>) 
+ 
+```java
+class Solution {
+
+  public int findCity(int n, int m, int edges[][], int distanceThreshold) {
+    int[][] dp = new int[n][n];
+    for (int[] d : dp) {
+      Arrays.fill(d, Integer.MAX_VALUE);
+    }
+    for (var edge : edges) {
+      int u = edge[0];
+      int v = edge[1];
+      int wt = edge[2];
+      dp[u][v] = wt;
+      dp[v][u] = wt;
+    }
+
+    for (int v = 0; v < n; v++) {
+      for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+          if (dp[i][v] == Integer.MAX_VALUE
+              || dp[v][j] == Integer.MAX_VALUE
+              || i == j
+              || i == v
+              || j == v) continue;
+          dp[i][j] = Math.min(dp[i][j], dp[i][v] + dp[v][j]);
+        }
+      }
+    }
+    int res = -1;
+    int cities = Integer.MAX_VALUE;
+    for (int i = 0; i < n; i++) {
+      int count = 0;
+      for (int j = 0; j < n; j++) {
+        if (dp[i][j] != Integer.MAX_VALUE && dp[i][j] <= distanceThreshold) count++;
+      }
+      if (count <= cities) {
+        cities = count;
+        res = i;
+      }
+    }
+    return res;
+  }
+}
+
+```
+ Here we have Inf as value in dp array so no need of that 2nd if condition here as done in previous floyd warshall algo!!
+ 
+ 
+ 
+![alt text](<014bellman ford floyd warshall network flow_240423_222140(20).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(21).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(22).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(23).jpg>) ![alt text](<014bellman ford floyd warshall network flow_240423_222140(24).jpg>) 
  
  
  ```java

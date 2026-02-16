@@ -346,6 +346,51 @@ public:
     }
 };
 ```
+# Why `if (d > dist[node]) continue;`??
+
+## Lazy Deletion in Dijkstra's Algorithm
+
+This is a critical optimization known as **"Lazy Deletion."**
+
+Here is the "Senior Engineer" explanation of why that line is mandatory for performance, even though the algorithm works without it.
+
+### 1. The Problem: Duplicate Entries
+Standard C++ `priority_queue` does not support the `decrease_key` operation.
+* **Ideal Dijkstra:** If we find a shorter path to a node already in the queue, we update its value.
+* **Real (C++) Dijkstra:** We cannot update the value inside the heap. Instead, we just push a new pair `{new_dist, node}` into the queue.
+
+**Result:** The Priority Queue ends up containing multiple versions of the same node.
+* **Version 1:** `{10, NodeA}` (Old, worse path)
+* **Version 2:** `{5, NodeA}` (New, better path)
+
+### 2. The Execution Flow
+1.  **Pop Version 2:** The min-heap pops `{5, NodeA}` first (because $5 < 10$).
+2.  **Process:** You relax all neighbors of Node A using distance 5. `dist[NodeA]` is now finalized as 5.
+3.  **Time Passes...**
+4.  **Pop Version 1:** Eventually, the heap pops the "stale" entry `{10, NodeA}`.
+
+### 3. The "Guard Clause"
+**Without the line** `if (d > dist[node]) continue;`:
+* You would take this outdated path (cost 10).
+* You would iterate through all of Node A's neighbors again.
+* You would try to relax edges using a suboptimal distance ($10 + weight$), which is waste of CPU cycles.
+
+**With the Guard Clause:**
+```cpp
+// Popped: d = 10, node = A
+// Current Best: dist[A] = 5
+
+if (10 > 5) continue; // TRUE! Skip this garbage.
+```
+
+### Summary
+
+* **Is it for Correctness?** No. Dijkstra will still give the right answer without it (redundant relaxations won't find a shorter path).
+* **Is it for Complexity?** **YES.**
+    * **With Check:** Each node is processed once. Complexity: $O(E \log V)$.
+    * **Without Check:** Each edge pushing to the queue could trigger a process. Complexity degrades towards $O(E \cdot \text{Degree} \cdot \log E)$, which effectively makes it much slower on dense graphs.
+
+> **Senior Tip:** This line converts the "Push duplicate" workaround from a memory leak into a valid $O(E \log V)$ implementation. **Always include it.**
 
 ## Striver code
 ```cpp
