@@ -51,7 +51,43 @@ public int minCut_memo(String str, int si, boolean[][] isPlaindrome, int[] dp) {
 
 
 ```
+### Time Complexity (TC): $O(N^2)$
+The complexity is the sum of two independent parts:
 
+**1. Pre-computing the Palindrome Table ($O(N^2)$)**
+* You use a nested loop (Gap Strategy) to fill the `isPalindrome[n][n]` table.
+* The logic iterates through all possible substrings. The number of substrings is $\frac{N(N+1)}{2}$.
+* Each check inside the loop takes $O(1)$ time.
+* **Cost:** $O(N^2)$.
+
+**2. The Recursive Memoization ($O(N^2)$)**
+* **States:** The function `minCut_memo` has 1 state parameter: `si` (start index). `si` can range from 0 to $N$. Total states = $N$.
+* **Transitions:** For every state `si`, you run a loop `for (int cut = si; cut < n; cut++)`. In the worst case (at `si=0`), this loop runs $N$ times.
+* **Work per State:** Inside the loop, checking `isPalindrome[si][cut]` is an $O(1)$ lookup (thanks to step 1).
+* **Total Calculation:** $N \text{ states} \times N \text{ iterations per state} = O(N^2)$.
+
+**Total TC:** $O(N^2) + O(N^2) \approx \mathbf{O(N^2)}$.
+
+---
+
+### Space Complexity (SC): $O(N^2)$
+
+**1. Palindrome Table ($O(N^2)$)**
+* The `vector<vector<bool>> isPalindrome` of size $N \times N$ dominates the space usage.
+
+**2. Memoization Array ($O(N)$)**
+* The `vector<int> dp` is of size $N$.
+
+**3. Recursion Stack ($O(N)$)**
+* In the worst case (e.g., string "aaaaa"), you might make a cut at every single character. This creates a recursion depth of $N$.
+
+**Total SC:** dominated by the 2D table $\approx \mathbf{O(N^2)}$.
+
+### Senior Engineer Note
+Usually, $O(N^2)$ space is acceptable for $N \le 2000$.
+If memory were extremely tight, you could optimize the space, but you cannot optimize the Palindrome Table space easily without increasing the Time Complexity back to $O(N^3)$ (by re-checking palindromes on the fly).
+
+Therefore, this **$O(N^2)$ Time / $O(N^2)$ Space** approach is the standard optimal solution for this problem.
 
 ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(4).jpg>) ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(5).jpg>) ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(6).jpg>) ![alt text](<012cutset burstbaloon polygon bool parenthization_231121_163402(7).jpg>) 
 
