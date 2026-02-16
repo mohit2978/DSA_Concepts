@@ -416,3 +416,91 @@ public:
 };
 
 ```
+# The "Senior Engineer" Breakdown: Disadvantages of Dijkstra's Algorithm
+
+Here is the "Senior Engineer" breakdown of the disadvantages of Dijkstra's Algorithm, ranging from the obvious to the nuanced.
+
+### 1. The Critical Failure: Negative Edges
+This is the most famous limitation.
+* **The Issue:** Dijkstra assumes that adding an edge always increases (or keeps constant) the path length. This allows it to "finalize" a node once visited.
+* **The Consequence:** If you have negative weights, Dijkstra's "Greedy" approach settles on a suboptimal path because it never looks back to correct itself.
+* **The Fix:** Use **Bellman-Ford** ($O(V \cdot E)$) or **SPFA** (Shortest Path Faster Algorithm).
+
+### 2. It is "Blind" (Uninformed Search)
+Dijkstra explores the graph like a expanding circle (or spilling water). It searches in all directions equally, even if the target is clearly to the East.
+* **The Waste:** If you are finding a path from New York to London, Dijkstra will waste time calculating paths to South Africa and Tokyo because it doesn't know where London is.
+* **The Fix:** Use **A* (A-Star) Search**. It uses a "Heuristic" (like Euclidean distance) to prioritize nodes that move towards the target, making it much faster for point-to-point pathfinding.
+
+### 3. Overkill for Unweighted Graphs
+If all edge weights are 1 (or equal), Dijkstra is overkill.
+* **The Overhead:** Dijkstra uses a Priority Queue (Min-Heap), which adds a $\log V$ factor to every operation.
+* **The Fix:** Use standard **BFS (Breadth-First Search)**. It runs in $O(V + E)$ compared to Dijkstra's $O(E \log V)$.
+
+### 4. Overkill for DAGs (Directed Acyclic Graphs)
+If you know for a fact your graph has no cycles (e.g., a dependency graph or project schedule), Dijkstra is too slow.
+* **The Fix:** You can find the shortest path in a DAG using **Topological Sort + Linear Scan** in just $O(V + E)$ time.
+
+### Summary Table
+
+| Scenario | Dijkstra's Disadvantage | Better Alternative |
+| :--- | :--- | :--- |
+| **Negative Edges** | Returns wrong answer. | Bellman-Ford |
+| **Target Known** | Wastes time searching opposite directions. | A* (A-Star) |
+| **Unweighted Graph** | Unnecessary $\log V$ overhead. | BFS |
+| **No Cycles (DAG)** | Slower than linear time. | Topological Sort |
+
+
+# Why Dijkstra's Algorithm Fails with Negative Weights
+
+The core reason Dijkstra's algorithm fails with negative weights is because it is a **Greedy Algorithm** that makes a permanent decision based on local information.
+
+It assumes that once a node is processed (finalized), its shortest path is found and will never change. Negative weights break this assumption.
+
+### The "Greedy" Flaw
+Dijkstra follows this logic:
+1.  Pick the unvisited node with the smallest distance (let's call it $U$).
+2.  Mark $U$ as visited/finalized.
+3.  Relax its neighbors.
+
+**The Logic:** "Since $U$ is the closest node right now, and all edge weights are positive, there is no way I can go to a distant node $V$, take an edge back to $U$, and find a shorter path. Adding positive numbers only makes paths longer."
+
+**The Failure:** A negative edge allows a path to get shorter as you add more edges. Dijkstra doesn't account for this "time travel" effect where a longer path suddenly becomes cheaper.
+
+---
+
+### A Concrete Counter-Example
+Imagine a graph with Nodes A, B, and C. Start at A.
+* **A → B** (Cost: 2)
+* **A → C** (Cost: 5)
+* **C → B** (Cost: -10)
+
+**Correct Shortest Path to B:**
+$A \to C \to B = 5 + (-10) = -5$.
+
+**How Dijkstra Fails:**
+1.  **Start at A:**
+    * Distance to A: 0
+    * PQ: `{ (A, 0) }`
+2.  **Pop A:**
+    * Relax neighbors:
+    * B: 2
+    * C: 5
+    * PQ: `{ (B, 2), (C, 5) }`
+3.  **Pop B (Cost 2):**
+    * **CRITICAL ERROR:** Dijkstra sees B has the smallest distance (2 vs 5). It pops B and marks it as **Visited**.
+    * Dijkstra declares: "The shortest path to B is 2."
+    * It will never check B again.
+4.  **Pop C (Cost 5):**
+    * C is visited.
+    * Relax neighbor B: New path $A \to C \to B$ is $5 + (-10) = -5$.
+    * Since B is already marked "Visited", Dijkstra (standard version) ignores this update.
+
+**Result:** Dijkstra returns **2**, but the answer is **-5**.
+
+---
+
+### What algorithm should you use instead?
+If your graph has negative edges (but no negative cycles), you must use **Bellman-Ford**.
+
+* **Dijkstra:** $O(E \log V)$ — Fast, assumes non-negative weights.
+* **Bellman-Ford:** $O(V \cdot E)$ — Slower, works with negative weights, detects negative cycles.
