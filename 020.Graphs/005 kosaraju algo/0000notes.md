@@ -451,7 +451,93 @@ If you condense the graph into a **DAG (Directed Acyclic Graph)** of SCCs:
 > If an outsider could visit the Mother, the Mother wouldn't be at the "top" of the graph anymore (because someone would be above it), and it would fail to be a Mother Vertex to that node above it.
 
 
- ![alt text](004kosaraju_240112_103625(31).jpg) ![alt text](004kosaraju_240112_103625(32).jpg) ![alt text](004kosaraju_240112_103625(33).jpg) ![alt text](004kosaraju_240112_103625(34).jpg) ![alt text](004kosaraju_240112_103625(35).jpg) ![alt text](004kosaraju_240112_103625(36).jpg) ![alt text](004kosaraju_240112_103625(37).jpg) ![alt text](004kosaraju_240112_103625(38).jpg) ![alt text](004kosaraju_240112_103625(39).jpg) ![alt text](004kosaraju_240112_103625(40).jpg)
+Q--> can i say source cant be reached by anyone and sink by everyone so source will be always on TOS at end of dfs and at last vertex visited in mother vertex??
+
+# Connecting the Dots: Topological Sort, SCCs, and Mother Vertex
+
+Yes, you can absolutely say that. You have correctly connected the dots between three different advanced concepts: **Topological Sort (Stack)**, **SCCs (Source/Sink)**, and the **Mother Vertex**.
+
+Here is the "Senior Engineer" verification of your statement:
+
+### 1. "Source can't be reached by anyone..."
+* **Correct.** In the Condensation Graph (where every SCC is a single dot), a **Source Component** has an **In-Degree of 0**.
+* **Visual:** It is the "Tap" at the top of the hill. Water flows out, but no water flows in from other components.
+
+### 2. "...and Sink by everyone..."
+* **Mostly Correct.** A **Sink Component** has an **Out-Degree of 0**. It traps flow.
+* **Nuance:** In a disconnected graph, a sink might not be reachable by literally everyone (e.g., a disconnected island), but in the context of a connected flow or a Mother Vertex graph, the Sink is the ultimate destination where all paths end.
+
+### 3. "...so Source will be always on TOS (Top of Stack) at end of DFS"
+* **100% Correct.**
+* **The Logic:** DFS goes deep. It visits the children (Sinks) first and finishes them. It only finishes the parent (Source) after all children are done.
+* **The Result:** The Source is the last to finish, so it sits on the **Top of the Stack**.
+
+### 4. "...and last vertex visited in Mother Vertex"
+* **100% Correct.**
+* **The Connection:** The Mother Vertex algorithm effectively looks for a **Source Component**.
+* Since the Source Component "covers" the whole graph, it is either:
+    1. Processed early (and marks everyone else visited).
+    2. Processed last (because nobody else could reach it to mark it visited).
+* In the standard algorithm (`for i=0 to n`), the last node to trigger a DFS is always from a Source Component (the Top of the Stack equivalent).
+
+### Summary Table
+
+| Concept | Source Component | Sink Component |
+| :--- | :--- | :--- |
+| **Reachability** | Can reach everyone (Mother). | Can be reached by others. |
+| **Incoming Edges** | None (from outside). | Many. |
+| **DFS Finish Time** | Last (Finishes after children). | First (Finishes before parents). |
+| **Stack Position** | Top (Popped first in Kosaraju). | Bottom (Buried deep). |
+| **Mother Vertex Candidate?** | **YES** (Must be here). | **NO** (Can't reach Source). |
+
+> **Verdict:** Your mental model is now complete. You understand the "Flow" of directed graphs.
+
+ ![alt text](004kosaraju_240112_103625(31).jpg) ![alt text](004kosaraju_240112_103625(32).jpg) ![alt text](004kosaraju_240112_103625(33).jpg) ![alt text](004kosaraju_240112_103625(34).jpg) ![alt text](004kosaraju_240112_103625(35).jpg) ![alt text](004kosaraju_240112_103625(36).jpg) ![alt text](004kosaraju_240112_103625(37).jpg) ![alt text](004kosaraju_240112_103625(38).jpg) ![alt text](004kosaraju_240112_103625(39).jpg) 
+ 
+ ```java
+ /*
+// Definition for a Node.
+class Node {
+    public int val;
+    public List<Node> neighbors;
+    public Node() {
+        val = 0;
+        neighbors = new ArrayList<Node>();
+    }
+    public Node(int _val) {
+        val = _val;
+        neighbors = new ArrayList<Node>();
+    }
+    public Node(int _val, ArrayList<Node> _neighbors) {
+        val = _val;
+        neighbors = _neighbors;
+    }
+}
+*/
+
+class Solution {
+    private Node dfs(Node node,Map<Node,Node>nodes){
+        if(node==null) return null;
+        Node cNode=new Node(node.val);
+        nodes.put(node,cNode);
+        for(var ls:node.neighbors){
+            if(nodes.containsKey(ls)==false){
+                    dfs(ls,nodes);
+            }
+            cNode.neighbors.add(nodes.get(ls));
+        }
+        return cNode;
+    }
+    public Node cloneGraph(Node node) {
+        Map<Node,Node>nodes=new HashMap<>();
+        Node cloneGraph=dfs(node,nodes);
+        return cloneGraph;
+        
+    }
+}
+```
+ 
+ ![alt text](004kosaraju_240112_103625(40).jpg)
 
 
 
