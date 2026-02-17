@@ -346,6 +346,195 @@ public:
     }
 };
 ```
+
+If all have unit weight then no need of Dijkstara or all edges are of same weight just simple bfs
+
+here we have 0 to n-1 nodes
+## Striver code(code 1)
+
+```cpp
+class Solution {
+private:
+
+    // Function to perform BFS traversal
+    void bfs(int src, vector<int> adj[],
+             vector<int> &dist) {
+        
+        // Distance of source node from itself is zero
+        dist[src] = 0; 
+        
+        // Queue to facilitate BFS traversal
+        queue<int> q;
+        
+        // Adding source node to queue
+        q.push(src); 
+        
+        // Until the queue is empty
+        while(!q.empty()) {
+            
+            // Get the node from queue
+            int node = q.front(); 
+            q.pop(); 
+            
+            // Traverse all its neighbors
+            for(auto adjNode : adj[node]) {
+                
+                // If a shorter distance is found
+                if(dist[node] + 1 < dist[adjNode]) {
+                    
+                    // Update the distance
+                    dist[adjNode] = 1 + dist[node]; 
+                    
+                    // Add the node to the queue
+                    q.push(adjNode); 
+                }
+            }
+        }
+    }
+    
+public:
+
+    /* Function to get the shortest path 
+    for every node from source node 0 */
+    vector<int> shortestPath(vector<vector<int>>& edges, 
+                             int N, int M){
+
+        // To store the graph
+        vector<int> adj[N];
+        
+        // Add edges to the graph
+        for(auto it : edges) {
+            int u = it[0]; // first node
+            int v = it[1]; // second node
+            
+            // Add the edge
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+        
+        // Distance array to store the shortest paths
+        vector <int> dist(N, 1e9);
+        
+        // Start the BFS traversal from source node
+        bfs(0, adj, dist);
+        
+        /* If a node is unreachable, 
+        updating its distance to -1 */
+        for(int i = 0; i < N; i++) {
+            if (dist[i] == 1e9) 
+                dist[i] = -1;
+        }
+        
+        // Return the result
+        return dist;
+    }
+};
+```
+
+## My code(code 2)
+
+```cpp
+class Solution {
+  public:
+    vector<int> shortestPath(vector<vector<int>>& edges, int n,int M){
+      vector<vector<int>> adj(n );
+        for (auto& edge : edges) {
+            adj[edge[0]].push_back(edge[1]);
+            adj[edge[1]].push_back(edge[0]);
+        }
+        vector<int> dist(n , 1e9);
+        queue<pair<int,int>> q;
+        q.push({0,0});
+        while(q.size()>0){
+          auto vertex=q.front();
+          q.pop();
+          int wt=vertex.first;
+          int v=vertex.second;
+          dist[v]=min(wt,dist[v]);
+          for(int k=0;k<adj[v].size();k++){
+            if(dist[adj[v][k]]==1e9){
+              q.push({wt+1,adj[v][k]});
+            }
+          }
+        }
+        for(int i=0;i<dist.size();i++){
+          if(dist[i]==1e9) dist[i]=-1;
+        }
+        return dist;
+    }
+};
+
+```
+# BFS: Marking Visited on Push vs. Pop
+
+This is a classic example of **"Marking Visited on Push"** vs. **"Marking Visited on Pop."**
+
+* **Code 1:** **Correct (Standard BFS).** It updates the distance/visited status *before* pushing to the queue.
+* **Code 2:** **Buggy / Inefficient.** It updates the distance *after* popping from the queue.
+
+Here is the "Senior Engineer" breakdown of why Code 2 is dangerous.
+
+### 1. The "Queue Explosion" Bug in Code 2
+The critical error in the second snippet is here:
+
+```cpp
+// Inside the neighbor loop
+if(dist[adj[v][k]] == 1e9) {
+    q.push({wt+1, adj[v][k]}); 
+    // ERROR: You pushed it, but you didn't mark it as visited/updated dist!
+}
+```
+Because you don't update `dist` immediately, the neighbor remains "Unvisited" ($1e9$) even though it is already sitting in the queue.
+
+**Scenario:**
+1.  Imagine Node A connects to B and C. Both B and C connect to D.
+2.  **Pop A:** Push B and C. (Distances of B and C are still $1e9$).
+3.  **Pop B:** See neighbor D. `dist[D]` is $1e9$. Push D.
+4.  **Pop C:** See neighbor D. `dist[D]` is **still** $1e9$ (because B didn't update it yet!). Push D *again*.
+5.  **Result:** Node D enters the queue twice. In a large, dense graph, this causes the queue size to explode exponentially, leading to **Time Limit Exceeded (TLE)** or **Memory Limit Exceeded (MLE)**.
+
+### 2. Why Code 1 is Correct
+Code 1 follows the **Golden Rule of BFS**: "Mark as visited the moment you see it."
+
+
+```cpp
+if(dist[node] + 1 < dist[adjNode]) {
+    dist[adjNode] = 1 + dist[node]; // UPDATE HAPPENS HERE
+    q.push(adjNode); 
+}
+```
+By updating `dist` before pushing, if another node tries to visit `adjNode` later in the same layer, the `if` condition will fail, and it won't be pushed again.
+
+### 3. Redundant Logic in Code 2
+* `dist[v] = min(wt, dist[v])`: In an unweighted BFS, the **first time** you reach a node is always the shortest path. You never need `min`. You just need to check "Have I been here before?"
+* **priority_queue vs queue:** Your Code 2 uses `queue`, which is correct for unweighted graphs. If you used `priority_queue` (Dijkstra), the "lazy update" (checking on pop) would be valid, but for standard BFS, it is wrong.
+
+### Senior Engineer Recommendation
+**Use Code 1.** It is the standard template.
+
+If you strictly want to fix Code 2, you must move the update logic inside the loop:
+
+```cpp
+while(!q.empty()){
+    int node = q.front().second; // Just store node, no need for weight in pair
+    q.pop();
+    
+    for(int neighbor : adj[node]){
+        if(dist[neighbor] == 1e9){ 
+            dist[neighbor] = dist[node] + 1; // Mark visited IMMEDIATELY
+            q.push({dist[neighbor], neighbor});
+        }
+    }
+}
+```
+
+
+**Fixed Code 2:**
+
+---
+
+let us back to dijkstra
+
 # Why `if (d > dist[node]) continue;`??
 
 ## Lazy Deletion in Dijkstra's Algorithm

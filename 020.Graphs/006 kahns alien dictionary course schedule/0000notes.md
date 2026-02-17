@@ -1240,6 +1240,223 @@ They just come at the problem from opposite directions:
 ### Senior Engineer Verdict
 If the interview question is just **"Detect a cycle in a Directed Graph,"** most candidates use **DFS** because it requires less setup (no need to calculate indegrees for everyone first). However, **Kahn's** is often preferred in production systems because it is iterative and robust against stack overflow.
 
+# Shortest path in DAG
+
+## Striver code (code 1)
+
+```cpp
+class Solution {
+private:
+
+    // Function to perform DFS traversal
+    void topoSort(int node, vector <pair<int,int>> adj[],
+                  vector<bool> &vis, stack <int> & st) {
+                
+        // Mark the node as visited 
+        vis[node] = 1;
+        
+        // Traverse all the neighbors
+        for (auto it: adj[node]) {
+            
+            // Get the node
+            int v = it.first;
+            
+            // If not visited, recursively perform DFS.
+            if (!vis[v]) {
+                topoSort(v, adj, vis, st);
+            }
+        }
+        
+        /* Add the current node to stack 
+        once all the nodes connected to it 
+        have been processed */
+        st.push(node);
+    }
+    
+public:
+
+    /* Function to get the shortest path 
+    for every node from source node 0 */
+    vector<int> shortestPath(int N, int M, 
+            vector<vector<int>> &edges) {
+
+        // To store the graph
+        vector <pair<int,int>> adj[N];
+        
+        // Add edges to the graph
+        for (int i = 0; i < M; i++) {
+            int u = edges[i][0]; // node 1
+            int v = edges[i][1]; // node 2
+            int wt = edges[i][2]; // edge weight
+            
+            // Add the weighted edge 
+            adj[u].push_back({v, wt}); 
+        }
+        
+        
+        // Visited array
+        vector<bool> vis(N, false);
+        
+        /* Stack to facilitate topological 
+        sorting using DFS traversal */
+        stack <int> st;
+        
+        // Get the topological ordering
+        for (int i = 0; i < N; i++) {
+            if (!vis[i]) {
+              topoSort(i, adj, vis, st);
+            }
+        }
+        
+        // Distance array to store the shortest paths
+        vector <int> dist(N, 1e9);
+        
+        // Distance of source node to itself is zero
+        dist[0] = 0;
+        
+        // Until the stack is not empty
+        while (!st.empty()) {
+            
+            // Get the node from top of stack
+            int node = st.top();
+            st.pop();
+            
+            // Update the distances of adjacent nodes
+            for (auto it: adj[node]) {
+                int v = it.first; // adjacent node
+                int wt = it.second; // edge weight
+                
+                // SAFETY CHECK: If the current node is unreachable, 
+                // it cannot help anyone else. Skip it.
+                 if (dist[node] == 1e9) continue;
+                 
+                /* Relaxing the edge, i.e., if a 
+                shorter path is found, update its
+                distance to new shorter distance*/
+                if (dist[node] + wt < dist[v]) {
+                    dist[v] = wt + dist[node];
+                }
+            }
+        }
+        
+        /* If a node is unreachable, 
+        updating its distance to -1 */
+        for (int i = 0; i < N; i++) {
+            if (dist[i] == 1e9) 
+                dist[i] = -1;
+        }
+        
+        // Return the result
+        return dist;
+    }
+};
+```
+
+If it has negative weights then we can use Bellman-Ford
+
+## Use of dijkstra (code 2)
+
+```cpp
+class Solution {
+   public:
+    vector<int> shortestPath(int N, int M, vector<vector<int>>& edges) {
+        vector<vector<pair<int, int>>> adj(N);
+
+        for (auto edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int wt = edge[2];
+
+            adj[u].push_back({v, wt});
+        }
+
+        priority_queue<pair<int, int>, vector<pair<int, int>>,
+                       greater<pair<int, int>>>
+            pq;
+        vector<int> dist(N, 1e9);
+
+        dist[0] = 0;
+        pq.push({0, 0});
+
+        while (!pq.empty()) {
+            int d = pq.top().first;
+            int node = pq.top().second;
+            pq.pop();
+
+            if (d > dist[node]) continue;
+
+            for (auto& it : adj[node]) {
+                int adjNode = it.first;
+                int edgeWeight = it.second;
+
+                if (d + edgeWeight < dist[adjNode]) {
+                    dist[adjNode] = d + edgeWeight;
+                    pq.push({dist[adjNode], adjNode});
+                }
+            }
+        }
+        for(int i=0;i<N;i++){
+            if(dist[i]==1e9) dist[i]=-1;
+        }
+        return dist;
+    }
+};
+
+```
+Striver used topo sort now let us see why use topo sort and not dijkstra??
+
+# Algorithm Specificity vs. Generality: Shortest Path on DAG vs. Dijkstra
+
+This is a classic battle between Algorithm Specificity vs. Generality.
+
+* **Code 1:** Shortest Path on DAG (Using Topological Sort).
+* **Code 2:** Dijkstra’s Algorithm.
+
+Here is the "Senior Engineer" breakdown of which one to use and why.
+
+### 1. The Time Complexity (The Winner: Code 1)
+
+* **Code 1 (Topo Sort):** $O(V + E)$.
+    * It visits every node and edge exactly once. It is **Linear Time**.
+* **Code 2 (Dijkstra):** $O(E \log V)$.
+    * The Priority Queue adds a logarithmic overhead for every edge processing.
+
+**Verdict:** If the problem guarantees the graph is a **DAG (Directed Acyclic Graph)**, **Code 1 is strictly superior** in terms of performance.
+
+### 2. The Logic Difference
+
+**Why Code 1 works ($O(V+E)$):**
+* In a DAG, there is a strict hierarchy. If you process nodes in **Topological Order**, you guarantee that by the time you reach Node `u`, you have already processed all possible parents of `u`.
+* You never need to "re-visit" or "update" a node later. You solve it in one pass.
+
+**Why Code 2 works ($O(E \log V)$):**
+* Dijkstra doesn't care about hierarchy; it cares about "current cheapest path." It is "greedy."
+* It works on **Cyclic Graphs** too (as long as weights are non-negative).
+* It is "overkill" for a DAG because it does extra work sorting the queue.
+
+### 3. Critical Constraints
+
+* **Code 1 (Topo Sort)** fails immediately if the graph has a **Cycle**. It will produce incorrect results or not visit all nodes.
+* **Code 2 (Dijkstra)** fails if the graph has **Negative Edge Weights**. (It loops forever or gives wrong answers).
+
+### Senior Engineer Recommendation
+
+**Context Matters.**
+
+* **Is the problem "Shortest Path in a DAG"?**
+    * **Use Code 1.** It shows you understand graph theory properties. It is the optimal solution.
+    * *Note:* Code 1 is slightly buggy in your snippet. The `while(!st.empty())` loop processes nodes in topo order, but if the source node `0` appears late in the topo sort (after some other nodes), the `dist` array might not propagate correctly for nodes that come before `0` in the stack but are unreachable. (Though usually, we initialize `dist[0]=0` and everything else `INF`, so reachable nodes update correctly regardless of stack position).
+
+* **Is it a General Graph problem?**
+    * **Use Code 2 (Dijkstra).** It is safer. It handles cycles. It is the "Standard Library" solution for shortest paths.
+    * *Code Smell:* Your Code 2 has `vector<int> indegree(N, 0);` and logic to fill it, but never uses it. Delete that for production code.
+
+**Final Verdict:**
+For an interview, if the problem says **"DAG"**, write **Code 1**. If the problem just says **"Shortest Path with positive weights"**, write **Code 2 (Dijkstra)** because it's less prone to edge-case failures if the graph turns out to have a cycle.
+
+
+
+
 
 
 
