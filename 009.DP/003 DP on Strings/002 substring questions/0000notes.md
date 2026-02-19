@@ -80,12 +80,102 @@ Substring vala isi se liya hai bs else hta dia loop 1 se start kia and maxelne l
  ![alt text](<005 dp on string_231121_163402(20).jpg>) ![alt text](<005 dp on string_231121_163402(21).jpg>) ![alt text](<005 dp on string_231121_163402(22).jpg>)
 
 
+# Q LC1092. Shortest Common Supersequence
+
+Given two strings `str1` and `str2`, return the shortest string that has both `str1` and `str2` as **subsequences**. If there are multiple valid strings, return **any** of them.
+
+A string `s` is a **subsequence** of string `t` if deleting some number of characters from `t` (possibly `0`) results in the string `s`.
+
+### Example 1:
+
+**Input:** str1 = "abac", str2 = "cab"  
+**Output:** "cabac"  
+**Explanation:** `str1` = "abac" is a subsequence of "cabac" because we can delete the first "c".  
+`str2` = "cab" is a subsequence of "cabac" because we can delete the last "ac".  
+The answer provided is the shortest such string that satisfies these properties.
+
+### Example 2:
+
+**Input:** str1 = "aaaaaaaa", str2 = "aaaaaaaa"  
+**Output:** "aaaaaaaa"  
+
+### Constraints:
+
+* `1 <= str1.length, str2.length <= 1000`
+* `str1` and `str2` consist of lowercase English letters.
 
 
+```cpp
+class Solution{
+public:
+    //Function to fund the shortest common supersequence
+    string shortestCommonSupersequence(string str1, string str2) {
+        int n = str1.size();
+        int m = str2.size();
 
+        // Create a DP table with dimensions (n+1) x (m+1) initialized to 0
+        vector<vector<int>> dp(n + 1, vector<int>(m + 1, 0));
 
+        // Initialize the first row and column of the DP table
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = 0;
+        }
+        for (int i = 0; i <= m; i++) {
+            dp[0][i] = 0;
+        }
 
+        // Fill the DP table
+        for (int ind1 = 1; ind1 <= n; ind1++) {
+            for (int ind2 = 1; ind2 <= m; ind2++) {
+                if (str1[ind1 - 1] == str2[ind2 - 1])
+                    dp[ind1][ind2] = 1 + dp[ind1 - 1][ind2 - 1]; 
+                else
+                    dp[ind1][ind2] = max(dp[ind1 - 1][ind2], dp[ind1][ind2 - 1]); 
+            }
+        }
 
+        // Reconstruct the shortest supersequence from the DP table
+        int len = dp[n][m];
+        int i = n;
+        int j = m;
+
+        int index = len - 1;
+        string ans = "";
+
+        // Build the shortest supersequence by backtracking
+        while (i > 0 && j > 0) {
+            if (str1[i - 1] == str2[j - 1]) {
+                ans += str1[i - 1]; 
+                index--;
+                i--;
+                j--;
+            } else if (dp[i - 1][j] > dp[i][j - 1]) {
+                ans += str1[i - 1]; 
+                i--;
+            } else {
+                ans += str2[j - 1]; 
+                j--;
+            }
+        }
+
+        // Add remaining characters from str1 or str2
+        while (i > 0) {
+            ans += str1[i - 1];
+            i--;
+        }
+        while (j > 0) {
+            ans += str2[j - 1];
+            j--;
+        }
+
+        // Reverse the result since we built it backwards
+        reverse(ans.begin(), ans.end());
+        return ans;
+    }
+};
+```
+
+Here we need to get actual string but if we only need length of `Shortest common Susequence ` we can get by `s1.size()+s2.size()-lcs[s1.size()][s2.size()]`
 
 
 
