@@ -4,7 +4,88 @@
 ![alt text](<005 dp on string_231121_163402.jpg>)
 
 
-![alt text](<005 dp on string_231121_163402(1).jpg>) ![alt text](<005 dp on string_231121_163402(2).jpg>) ![alt text](<005 dp on string_231121_163402(3).jpg>) ![alt text](<005 dp on string_231121_163402(4).jpg>) ![alt text](<005 dp on string_231121_163402(5).jpg>) ![alt text](<005 dp on string_231121_163402(6).jpg>) ![alt text](<005 dp on string_231121_163402(7).jpg>) ![alt text](<005 dp on string_231121_163402(8).jpg>) ![alt text](<005 dp on string_231121_163402(9).jpg>) ![alt text](<005 dp on string_231121_163402(10).jpg>) ![alt text](<005 dp on string_231121_163402(11).jpg>) ![alt text](<005 dp on string_231121_163402(12).jpg>) ![alt text](<005 dp on string_231121_163402(13).jpg>) ![alt text](<005 dp on string_231121_163402(14).jpg>) ![alt text](<005 dp on string_231121_163402(15).jpg>) ![alt text](<005 dp on string_231121_163402(16).jpg>) ![alt text](<005 dp on string_231121_163402(17).jpg>)
+![alt text](<005 dp on string_231121_163402(1).jpg>) ![alt text](<005 dp on string_231121_163402(2).jpg>) ![alt text](<005 dp on string_231121_163402(3).jpg>) ![alt text](<005 dp on string_231121_163402(4).jpg>) ![alt text](<005 dp on string_231121_163402(5).jpg>) 
+
+```java
+class Solution {
+  int MOD=1000000007;
+  public int numDistinct_memo(String s1, String s2, int n, int m, int[][] dp) {
+    if (m == 0) {
+      return dp[n][m] = 1;
+    }
+    if (n == 0) {
+      return dp[n][m] = 0;
+    }
+    if (dp[n][m] != -1) return dp[n][m];
+    if (s1.charAt(n - 1) == s2.charAt(m - 1)) {
+
+      int a1 = numDistinct_memo(s1, s2, n - 1, m - 1, dp);
+      int a2 = numDistinct_memo(s1, s2, n - 1, m, dp);
+      return dp[n][m] = (a1 + a2)%MOD;
+    } else return dp[n][m] = numDistinct_memo(s1, s2, n - 1, m, dp);
+  }
+
+  public int distinctSubsequences(String s1, String s2) {
+    int n = s1.length();
+    int m = s2.length();
+    int[][] dp = new int[n + 1][m + 1];
+    for (int[] d : dp) {
+      Arrays.fill(d, -1);
+    }
+
+    int res = numDistinct_memo(s1, s2, n, m, dp);
+    return res;
+  }
+}
+
+```
+
+![alt text](<005 dp on string_231121_163402(6).jpg>) 
+
+```java
+class Solution {
+    int MOD=1000000007;
+  public int numDistinct_memo(String s1, String s2, int N, int M, int[][] dp) {
+    for (int n = 0; n <= N; n++) {
+      for (int m = 0; m <= M; m++) {
+        if (m == 0) {
+          dp[n][m] = 1;
+          continue;
+        }
+        if (n == 0) {
+          dp[n][m] = 0;
+          continue;
+        }
+
+        if (s1.charAt(n - 1) == s2.charAt(m - 1)) {
+
+          int a1 = dp[n - 1][m - 1];
+          int a2 = dp[n - 1][m];
+          dp[n][m] = (a1 + a2)%MOD;
+        } else dp[n][m] = dp[n - 1][m];
+      }
+    }
+    return dp[N][M];
+  }
+
+  public int distinctSubsequences(String s1, String s2) {
+    int n = s1.length();
+    int m = s2.length();
+    int[][] dp = new int[n + 1][m + 1];
+    for (int[] d : dp) {
+      Arrays.fill(d, -1);
+    }
+
+    int res = numDistinct_memo(s1, s2, n, m, dp);
+
+    return res;
+  }
+}
+
+```
+
+
+![alt text](<005 dp on string_231121_163402(7).jpg>) ![alt text](<005 dp on string_231121_163402(8).jpg>) ![alt text](<005 dp on string_231121_163402(9).jpg>) ![alt text](<005 dp on string_231121_163402(10).jpg>) ![alt text](<005 dp on string_231121_163402(11).jpg>) ![alt text](<005 dp on string_231121_163402(12).jpg>) ![alt text](<005 dp on string_231121_163402(13).jpg>) ![alt text](<005 dp on string_231121_163402(14).jpg>) ![alt text](<005 dp on string_231121_163402(15).jpg>) ![alt text](<005 dp on string_231121_163402(16).jpg>) ![alt text](<005 dp on string_231121_163402(17).jpg>)
 
 
 
