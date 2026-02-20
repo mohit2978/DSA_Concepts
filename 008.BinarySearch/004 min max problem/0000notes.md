@@ -479,6 +479,37 @@ The space complexity is O(1) as it uses a constant amount of extra space.
  ![alt text](<005bs min max problems_231231_215058(54).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(55).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(56).jpg>) 
+
+```java
+
+
+//User function Template for Java
+
+class Solution {
+ private static boolean isItPossible(int arr[],int K,double mid){
+     int station=0;
+     for(int i=1;i<arr.length;i++){
+         station+=(arr[i]-arr[i-1])/mid;
+         if(station>K) return true;
+     }
+     return false;
+     
+ }
+  public static double findSmallestMaxDist(int arr[],int K) {
+    int n=arr.length;
+    double si=0;
+    double ei=1e9;
+    while((ei-si)>1e-6){
+        double mid=(si+ei)/2.0;
+        if(isItPossible(arr,K,mid)) si=mid+1e-6;
+        else ei=mid;
+    }
+    return ei;
+  }
+}
+     
+```
+
  ![alt text](<005bs min max problems_231231_215058(57).jpg>)
 
  # Q3 Agggresive cows
