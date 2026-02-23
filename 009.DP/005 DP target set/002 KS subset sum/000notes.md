@@ -915,8 +915,72 @@ class Solution
  ![alt text](<009 target set_231121_163402(23).jpg>) ![alt text](<009 target set_231121_163402(24).jpg>) ![alt text](<009 target set_231121_163402(25).jpg>) ![alt text](<009 target set_231121_163402(26).jpg>) ![alt text](<009 target set_231121_163402(27).jpg>) ![alt text](<009 target set_231121_163402(28).jpg>) ![alt text](<009 target set_231121_163402(29).jpg>) ![alt text](<009 target set_231121_163402(30).jpg>) ![alt text](<009 target set_231121_163402(31).jpg>)
 
 
+```java
+class Solution {
+  static int ks_memo(int[] price, int[] cuts, int n, int size, int[][] dp) {
+    if (n == 0 || size == 0) {
+      return dp[n][size] = 0;
+    }
+    if (dp[n][size] != -1) return dp[n][size];
+    int max = (int) -1e8;
+    if (n - cuts[size - 1] >= 0) {
+      max = Math.max(max, ks_memo(price, cuts, n - cuts[size - 1], size, dp) + price[size - 1]);
+    }
+    max = Math.max(max, ks_memo(price, cuts, n, size - 1, dp));
+    return dp[n][size] = max;
+  }
 
+  public int RodCutting(int price[], int size) {
+    int n = price.length;
+    int[] cuts = new int[n];
+    int val = 1;
+    for (int i = 0; i < n; i++) {
+      cuts[i] = val;
+      val++;
+    }
+    int[][] dp = new int[n + 1][size + 1];
+    for (int[] d : dp) {
+      Arrays.fill(d, -1);
+    }
+    return ks_memo(price, cuts, n, size, dp);
+  }
+}
 
+```
+# Rod Cutting: From Unbounded Knapsack to Optimal DP
+
+This is a solid implementation of the **Rod Cutting** problem, mapped directly onto the **Unbounded Knapsack** pattern. You've correctly identified that because you can use the same cut length multiple times, it’s "unbounded."
+
+Here is the "Senior Engineer" code review. You’ve got the logic right, but we can clean up the "plumbing" to make it more efficient.
+
+### 1. The Logic Breakdown
+**The "Stay or Go" Choice:**
+* In your `if` block, you call `ks_memo` with `n - cuts[size - 1]` but keep the same `size`. This is the key to Unbounded Knapsack. It says: *"I used this cut, but I’m allowed to use it again."*
+* In the second `max` call, you use `size - 1`. This says: *"I’m done with this cut size forever."*
+* **Verdict:** This is exactly correct.
+
+### 2. The "Off-By-One" & Indexing Review
+Let's look at your boundaries using our rules:
+* Your DP table is `[n + 1][size + 1]`.
+* In your recursive calls, `size` represents the number of available cut options (1 to $n$).
+* When you access `cuts[size - 1]`, you are correctly shifting from "1-based count" to "0-based index."
+* **The "Extremes" Test:** If `size = 1`, `cuts[1-1]` is `cuts[0]`, which is the first cut. **Correct.**
+
+### 3. Senior Engineer Optimization: "Do we need the `cuts` array?"
+In the Rod Cutting problem, the length of the cut at `price[i]` is usually just `i + 1`. 
+You spent $O(N)$ time and space creating a `cuts` array that just contains `[1, 2, 3... n]`. You can eliminate this entirely:
+* `cuts[size - 1]` is literally just `size`.
+* **Revised logic:** `n - size >= 0` instead of `n - cuts[size - 1] >= 0`.
+
+### 4. Transition to Tabulation (Using the "Smallest Problem" Rule)
+Since we just discussed how to convert Memoization to Tabulation, let's look at your code:
+* **Base Case:** `if (n == 0 || size == 0) return 0;` $\to$ `dp[0][any] = 0` and `dp[any][0] = 0`.
+* **Recursive Calls:**
+    * You call `n - cuts[size - 1]` (Smallest $n$ is 0). Loop for `n`: `0 -> N`.
+    * You call `size - 1` (Smallest `size` is 0). Loop for `size`: `0 -> N`.
+
+**Wait!** Rod Cutting is famous for being solvable in **1D DP**.
+Because the "size" of the rod and the "index" of the price are often tied, you can simply track the max profit for every rod length from 1 to $N$.
 
 
 
