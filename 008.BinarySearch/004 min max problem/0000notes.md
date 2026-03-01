@@ -891,3 +891,78 @@ This template is powerful because the return value changes based on what you are
 * **Is it good?** It is the best.
 * **Why?** Because `lo` and `hi` naturally separate the "Valid" world from the "Invalid" world. You just pick the pointer that is standing in the "Valid" world.
 
+# Q6  Split Array - Largest Sum
+ or Painter's Partition
+ or Book Allocation Exactly same code
+### Problem Statement
+Given an integer array `a` of size `n` and an integer `k`, split the array `a` into `k` non-empty subarrays such that the largest sum of any subarray is **minimized**. Your task is to return the minimized largest sum of the split.
+
+A **subarray** is a contiguous part of the array.
+
+---
+
+### Examples
+
+#### Example 1:
+**Input:** `n = 5`, `a = [1, 2, 3, 4, 5]`, `k = 3`  
+**Output:** `6`  
+**Explanation:** There are many ways to split the array into 3 consecutive subarrays. The best way is to split it into `[1, 2, 3]`, `[4]`, and `[5]`. The sums are 6, 4, and 5. The largest among them is 6. Any other way to split will result in a larger "maximum sum."
+
+#### Example 2:
+**Input:** `n = 3`, `a = [3, 5, 1]`, `k = 3`  
+**Output:** `5`  
+**Explanation:** Since `k` is equal to the number of elements, each element must be its own subarray: `[3]`, `[5]`, and `[1]`. The largest sum among these is 5.
+
+---
+
+### Constraints
+* `1 ≤ n ≤ 10^4`
+* `1 ≤ k ≤ n`
+* `1 ≤ a[i] ≤ 10^4`
+
+---
+![alt text](Scanned_20260302-0113-01.jpg) 
+![alt text](Scanned_20260302-0113-02.jpg)
+```cpp
+class Solution {
+    bool booksallocatedTomStudents(vector<int> &arr, int m, long long k) {
+        int student = 1;
+        int i = 0;
+        long long sum = 0;
+        while (i < arr.size()) {
+            sum += arr[i];
+            if (sum > k) {
+                student++;
+                sum = arr[i];
+            }
+            i++;
+        }
+        return student <= m;
+    }
+
+   public:
+    int largestSubarraySumMinimized(vector<int> &arr, int m) {
+        long long si = *max_element(arr.begin(), arr.end());
+        long long ei = accumulate(arr.begin(), arr.end(), 0);
+        if (m == 1) return ei;
+        if (m > arr.size()) return -1;  // edge case
+        while (si <= ei) {
+            long long mid = (si + ei) / 2;
+            if (booksallocatedTomStudents(arr, m, mid)) {
+                ei = mid - 1;
+            } else
+                si = mid + 1;
+        }
+        return si;
+    }
+};
+```
+
+---
+
+### Complexity Analysis
+* **Time Complexity:** `O(N * log(Sum(a) - Max(a)))`  
+    * Where `N` is the number of elements in the array.
+    * The binary search runs `log(range)` times, and for each step, we traverse the array once (`O(N)`).
+* **Space Complexity:** `O(1)`  
+    * No extra data structures are used.
