@@ -231,7 +231,441 @@ public:
 
 
 
-![alt text](<005kahns aliendisctionary courseschedule_240307_120321(11).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(12).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(13).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(14).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(15).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(16).jpg>)  ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(18).jpg>) 
+![alt text](<005kahns aliendisctionary courseschedule_240307_120321(11).jpg>) 
+
+
+```java
+class Solution {
+  private void toposort(int i, ArrayList<Integer>[] graph, LinkedList<Integer> stk, boolean[] vis) {
+    vis[i] = true;
+    for (var val : graph[i]) {
+      if (vis[val] == false) {
+        toposort(val, graph, stk, vis);
+      }
+    }
+    stk.addFirst(i);
+  }
+
+  public String findOrder(String[] dict, int N, int K) {
+    ArrayList<Integer>[] graph = new ArrayList[K];
+    for (int i = 0; i < K; i++) {
+      graph[i] = new ArrayList<>();
+    }
+    for (int i = 1; i < dict.length; i++) {
+      String s1 = dict[i - 1];
+      String s2 = dict[i];
+      int lim = Math.min(s1.length(), s2.length());
+      for (int c = 0; c < lim; c++) {
+        if (s1.charAt(c) != s2.charAt(c)) {
+          int c1 = s1.charAt(c) - 'a';
+          int c2 = s2.charAt(c) - 'a';
+          graph[c1].add(c2);
+          break;
+        }
+      }
+    }
+    boolean[] vis = new boolean[K];
+    LinkedList<Integer> stk = new LinkedList<>();
+    for (int i = 0; i < K; i++) {
+      if (vis[i] == false) {
+        toposort(i, graph, stk, vis);
+      }
+    }
+
+    StringBuilder sb = new StringBuilder("");
+    while (stk.size() > 0) {
+      int c = stk.removeFirst();
+      char ch = (char) (c + 'a');
+      sb.append(ch);
+    }
+    return sb.toString();
+  }
+}
+
+```
+
+
+## cpp code 
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+private:
+
+    /* Function to return the topological
+     sorting of given graph */
+    vector<int> topoSort(int V, vector<int> adj[]) {
+	    
+        // To store the In-degrees of nodes
+	    vector<int> inDegree(V, 0);
+	    
+	    // Update the in-degrees of nodes
+		for (int i = 0; i < V; i++) {
+		    
+			for(auto it : adj[i]) {
+			    // Update the in-degree
+			    inDegree[it]++;
+			}
+		}
+        
+        // To store the result
+        vector<int> ans;
+	    
+	    // Queue to facilitate BFS
+	    queue<int> q;
+	    
+	    // Add the nodes with no in-degree to queue
+	    for(int i=0; i<V; i++) {
+	        if(inDegree[i] == 0) q.push(i);
+	    }
+	    
+	    // Until the queue is empty
+	    while(!q.empty()) {
+	        
+	        // Get the node
+	        int node = q.front();
+	        
+	        // Add it to the answer
+	        ans.push_back(node);
+	        q.pop();
+	        
+	        // Traverse the neighbours
+	        for(auto it : adj[node]) {
+	            
+	            // Decrement the in-degree
+	            inDegree[it]--;
+	            
+	            /* Add the node to queue if 
+	            its in-degree becomes zero */
+	            if(inDegree[it] == 0) q.push(it);
+	        }
+	    }
+	    
+	    // Return the result
+	    return ans;
+    }
+    
+public:
+
+	/* Function to determine order of 
+	letters based on alien dictionary */
+	string findOrder(string dict[], int N, int K) {
+		
+		// Initialise a graph of K nodes
+		vector<int> adj[K];
+		
+		// Compare the consecutive words
+		for(int i=0; i < N-1; i++) {
+		    
+		    string s1 = dict[i];
+			string s2 = dict[i + 1];
+			int len = min(s1.size(), s2.size());
+			
+			/* Compare the pair of strings letter by 
+			letter to identify the differentiating letter */
+			for (int ptr = 0; ptr < len; ptr++) {
+			    
+			    // If the differentiating letter is found
+				if (s1[ptr] != s2[ptr]) {
+				    
+				    // Add the edge to the graph
+					adj[s1[ptr] - 'a'].push_back(s2[ptr] - 'a');
+					break;
+				}
+			}
+		}
+		
+		/* Get the topological sort 
+		of the graph formed */
+		vector<int> topo = topoSort(K, adj);
+		
+		// To store the answer
+		string ans;
+		
+        for(int i=0; i < K; i++) {
+            // Add the letter to the result
+            ans.push_back('a' + topo[i]);
+            ans.push_back(' ');
+        }
+		
+		// Return the answer
+		return ans;
+	}
+};
+
+int main() {
+    
+    int N = 5, K = 4;
+    string dict[N] = {
+        "baa","abcd","abca","cab","cad"
+    };
+    
+    /* Creating an instance of 
+    Solution class */
+    Solution sol; 
+    
+    /* Function call to determine order of 
+	letters based on alien dictionary */
+    string ans = sol.findOrder(dict, N, K);
+    
+    // Output
+    cout << "The order to characters as per alien dictionary is: " << ans;
+    
+    return 0;
+}
+```
+
+
+# Topological Sort: Alien Dictionary Showdown
+
+Welcome to Graph Theory! You have just stepped into the classic Topological Sort showdown. This problem involves mapping out an alien alphabet based on a sorted dictionary of words.
+
+You provided two distinct ways to solve the famous **Alien Dictionary** problem:
+* **The C++ Code:** Uses **BFS (Breadth-First Search)**, specifically known as **Kahn’s Algorithm**.
+* **The Java Code:** Uses **DFS (Depth-First Search)** with a Stack.
+
+Both algorithms successfully map out the alien alphabet, but they behave very differently under the hood. Here is the "Senior Engineer" breakdown of how they compare.
+
+---
+
+### 1. The High-Level Matchup
+
+| Feature | C++ (Kahn's BFS) | Java (DFS + Stack) |
+| :--- | :--- | :--- |
+| **Core Mechanism** | In-degree array + Queue | Recursion + Stack |
+| **Logic** | "Who has no prerequisites? Go first." | "Go as deep as possible, then add to front." |
+| **Cycle Detection** | **Easy**: Returns early/smaller size if stuck. | **Harder**: Requires 3-state coloring logic. |
+
+---
+
+### 2. Time Complexity (TC)
+
+**Winner: Tie** Both algorithms have the exact same mathematical Time Complexity: **$O(N \times L + K + E)$**
+
+* **Graph Construction:** Both codes loop through the $N$ words and compare characters up to length $L$ (the length of the shortest string in the pair). This takes **$O(N \times L)$**.
+* **Graph Traversal (Topo Sort):** Whether you use a Queue (BFS) or Recursion (DFS), you visit every node ($K$ letters) and every directed edge ($E$ rules) exactly once. This takes **$O(K + E)$**.
+* **Note:** Because the alphabet size $K$ is usually fixed (e.g., 26 letters), $E$ can be at most $K^2$. In strict terms, the traversal is essentially $O(1)$ relative to the input size, making the total time dominated by string comparison.
+
+---
+
+### 3. Space Complexity (SC)
+
+**Winner: C++ (By a tiny margin)** Both algorithms have an asymptotic Space Complexity of **$O(K + E)$**, but the Java code hides a recursive penalty.
+
+* **Graph Storage (Both):** An Adjacency List storing $K$ nodes and $E$ edges takes **$O(K + E)$** space.
+* **Data Structures:** * **C++:** Uses an `inDegree` array of size $K$ and a queue of max size $K$.
+    * **Java:** Uses a `vis` array of size $K$ and a `LinkedList` (stack) of max size $K$.
+* **The Hidden Cost:** The Java DFS code uses recursion. In the worst-case scenario (a straight-line graph like $a \to b \to c \to d$), the **Call Stack** will grow to size $K$. This consumes extra memory that the iterative C++ Queue completely avoids.
+
+---
+
+### 4. The Senior Engineer Catch: The "Invalid Dictionary" Trap
+
+There is a massive hidden trap in the Alien Dictionary problem: **The Paradox.** Example: `["abc", "bcd", "abc"]`
+* Rule 1 implies `a` comes before `b`.
+* Rule 2 implies `b` comes before `a`.
+* This creates a **cycle** ($a \to b \to a$). A topological sort is impossible.
+
+**How your codes handle it:**
+* **The C++ BFS (Kahn's):** If there is a cycle, the `inDegree` of those nodes will never drop to 0. They never enter the queue. The final `ans` array will have a size smaller than $K$. (Kahn's naturally detects the cycle).
+* **The Java DFS:** Your Java code has no cycle detection. If a cycle exists, the DFS will quietly skip visited nodes and return a completely incorrect alphabet order without an error. 
+
+> **Senior Tip:** To fix the Java code, a simple `boolean[] vis` is not enough. You must use a **3-state visited array** (0 = Unvisited, 1 = Visiting, 2 = Processed) to catch if a path points back to a node currently in the call stack.
+
+---
+
+### The Verdict
+The **C++ BFS (Kahn's Algorithm)** is the industry standard for Topological Sorting precisely because it naturally handles cycles and avoids recursive stack overflows.
+
+### The Cycle Fix: The "Invisible" Logic Gap
+
+While **Kahn's Algorithm** naturally gets "stuck" when there is a cycle (because the `in-degree` of the nodes in the cycle will never hit zero), your specific C++ code currently ignores the fact that it got stuck. It blindly constructs a partial string and returns it as if nothing went wrong!
+
+If an interviewer gave you the dictionary `["abc", "bcd", "abc"]`, your C++ code would output an incomplete, "garbage" alphabet instead of returning `""` (which is the standard requirement for an invalid dictionary).
+
+---
+
+### 1. The Cycle Fix (The Size Check)
+
+Because a cycle prevents the `inDegree` of trapped nodes from ever reaching 0, Kahn's algorithm will finish its `while` loop early. The fix is literally one line of code: you must check if the number of nodes you processed matches the total number of unique characters ($K$) in the graph.
+
+In your `findOrder` function, right after calling `topoSort`, add this check:
+
+
+```cpp
+vector<int> topo = topoSort(K, adj);
+
+// THE FIX: If topo size is less than K, a cycle exists. 
+// The dictionary is mathematically invalid.
+if (topo.size() != K) {
+    return ""; 
+}
+
+string ans = "";
+for (auto it : topo) {
+    ans = ans + char(it + 'a');
+}
+return ans;
+```
+### 2. The "Prefix" Edge Case (The Deadly Trap)
+
+There is one more edge case that isn't about cycles, but about **logical impossibility**. 
+
+**Scenario:** **Words:** `["abcd", "abc"]`
+
+In a standard dictionary, a shorter word must always come **before** a longer word if the shorter word is a prefix of the longer one. If the alien dictionary lists `"abcd"` before `"abc"`, the dictionary is **invalid**.
+
+* **Your Current Code:** It compares `a==a`, `b==b`, `c==c`, and then the loop ends because the second string is exhausted. It finds **no** differences, so it adds **no** edges. Because no constraints were added for these words, the code then proceeds to give you a "valid" Topological Sort.
+* **The Senior Fix:** You must check if the first word is longer than the second word while being its prefix. If no difference is found and the first word is longer, the dictionary is impossible.
+
+```cpp
+for (int i = 0; i < n - 1; i++) {
+    string s1 = dict[i];
+    string s2 = dict[i + 1];
+    int len = min(s1.size(), s2.size());
+    
+    bool foundDifference = false;
+    for (int ptr = 0; ptr < len; ptr++) {
+        if (s1[ptr] != s2[ptr]) {
+            adj[s1[ptr] - 'a'].push_back(s2[ptr] - 'a');
+            foundDifference = true;
+            break;
+        }
+    }
+    
+    // Prefix Check: If s2 is a prefix of s1 and s1 is longer, it's invalid!
+    if (!foundDifference && s1.size() > s2.size()) return "";
+}
+```
+## Java 3 state Dfs solution
+
+### 3-State Cycle Detection: The "Active Path" Technique
+
+This is the exact technique that separates a basic textbook DFS from production-grade graph traversal. When you use a standard `boolean[] vis` array, you only know if you have seen a node before. You don't know *when* or *how* you saw it.
+
+To catch a cycle, we need to upgrade the `boolean[]` to an `int[]` to track three distinct states:
+
+* **State 0 (Unvisited):** We have never seen this node.
+* **State 1 (Visiting):** We are currently exploring this node's path. It is in our **active Call Stack**.
+* **State 2 (Visited):** We have fully explored this node and all its children. It is completely safe.
+
+---
+
+### The Logic (The "Active Path" Concept)
+
+* **If the DFS hits a node marked State 1:** It means the path just looped back onto itself while we were still exploring it. **That is a cycle.**
+* **If the DFS hits a node marked State 2:** It just means another previous DFS branch already did the work here, so we can safely ignore it and move on.
+
+---
+
+### Java Implementation (Senior-Optimized)
+
+Here is your Java code, supercharged with **3-State Cycle Detection** and the **Prefix Trap** fix:
+
+
+```java
+import java.util.*;
+
+class Solution {
+    
+    // Returns true if successful, false if a cycle is detected
+    private boolean toposort(int i, ArrayList<Integer>[] graph, LinkedList<Integer> stk, int[] vis) {
+        // TRAP CAUGHT: We hit a node that is currently in our active path. Cycle!
+        if (vis[i] == 1) return false; 
+        
+        // SAFE: We already fully processed this node in a previous path.
+        if (vis[i] == 2) return true;  
+
+        // Mark as 'Visiting' (State 1)
+        vis[i] = 1; 
+
+        for (int val : graph[i]) {
+            // If any child detects a cycle, bubble the failure all the way up
+            if (!toposort(val, graph, stk, vis)) {
+                return false; 
+            }
+        }
+
+        // Mark as 'Visited/Done' (State 2)
+        vis[i] = 2; 
+        stk.addFirst(i); // Safely add to our Topological Sort stack
+        return true;
+    }
+
+    public String findOrder(String[] dict, int N, int K) {
+        ArrayList<Integer>[] graph = new ArrayList[K];
+        for (int i = 0; i < K; i++) {
+            graph[i] = new ArrayList<>();
+        }
+        
+        // 1. Build the Graph & Catch the Prefix Trap
+        for (int i = 1; i < dict.length; i++) {
+            String s1 = dict[i - 1];
+            String s2 = dict[i];
+            int lim = Math.min(s1.length(), s2.length());
+            boolean foundDifference = false;
+            
+            for (int c = 0; c < lim; c++) {
+                if (s1.charAt(c) != s2.charAt(c)) {
+                    int c1 = s1.charAt(c) - 'a';
+                    int c2 = s2.charAt(c) - 'a';
+                    graph[c1].add(c2);
+                    foundDifference = true;
+                    break;
+                }
+            }
+            
+            // PREFIX TRAP: e.g., "abcd" comes before "abc". Invalid dictionary!
+            if (!foundDifference && s1.length() > s2.length()) {
+                return "";
+            }
+        }
+        
+        // 2. The 3-State Array
+        int[] vis = new int[K]; 
+        LinkedList<Integer> stk = new LinkedList<>();
+        
+        for (int i = 0; i < K; i++) {
+            if (vis[i] == 0) {
+                // If a cycle is detected anywhere, the whole dictionary is invalid
+                if (!toposort(i, graph, stk, vis)) {
+                    return ""; 
+                }
+            }
+        }
+        
+        // 3. Build the final string
+        StringBuilder sb = new StringBuilder("");
+        while (stk.size() > 0) {
+            int c = stk.removeFirst();
+            char ch = (char) (c + 'a');
+            sb.append(ch);
+        }
+        return sb.toString();
+    }
+}
+```
+### Why This Is Bulletproof
+
+* **Memory Efficient:** Instead of creating complex hash sets or auxiliary data structures to track the "current path," you simply changed a `boolean` to an `int`. In most environments, this uses the exact same amount of memory while providing significantly more information.
+* **Fail-Fast:** The moment `vis[neighbor] == 1` triggers, the code immediately returns `true` (indicating a cycle) and collapses the entire Call Stack. It doesn't waste time trying to process the rest of the broken graph once it knows the topological sort is impossible.
+* **Industry Standard:** This **3-State DFS pattern** is the exact algorithm used in compilers and build systems to detect **Circular Dependencies** in your code (e.g., File A imports File B, which imports File A). 
+
+---
+
+### The Professional Implementation
+
+By combining the **Prefix Check** (to catch logical length errors) and **3-State Coloring** (to catch logical cycles), your DFS implementation moves from a "basic exercise" to a robust, production-grade system.
+
+```java
+// Logic Recap:
+// 0: Unvisited (White)
+// 1: Visiting (Gray) -> If we hit this again, it's a CYCLE!
+// 2: Visited (Black)  -> Safe; already processed.
+```
+
+![alt text](<005kahns aliendisctionary courseschedule_240307_120321(12).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(13).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(14).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(15).jpg>) ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(16).jpg>)  ![alt text](<005kahns aliendisctionary courseschedule_240307_120321(18).jpg>) 
 
 
 ### Kahns algo cpp code
