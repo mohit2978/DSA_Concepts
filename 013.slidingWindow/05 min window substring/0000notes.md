@@ -1,7 +1,168 @@
 # Notes
 
 ![alt text](<002sliding window variable subarray ques_240514_125143.jpg>)
-![alt text](<002sliding window variable subarray ques_240514_125143(1).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(2).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(3).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(4).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(5).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(6).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(7).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(8).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(9).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(10).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(11).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(12).jpg>) 
+
+A junior developer solves this problem using a `Set` and a `while` loop, shrinking the left pointer `i` one step at a time until the duplicate is gone. It works, but it takes $O(2N)$ time in the worst case because the left pointer crawls.
+
+Your code uses a HashMap to achieve true $O(N)$ time by turning the left pointer into a teleporter. Here is the "Senior Engineer" breakdown of the two massive tricks hidden in this short block of code.
+
+### Trick 1: The "Next Index" Teleporter (`j + 1`)
+
+Look at what you are storing in the map:
+
+```java
+map.put(s.charAt(j), j + 1);
+```
+Most people naturally try to store the exact index `j`. But you stored `j + 1`. Why?
+
+Because when you encounter a duplicate character, you don't want your new window to start at the old duplicate. You want it to start immediately *after* the old duplicate. By storing `j + 1`, you pre-calculate the exact landing spot for your left pointer `i`. When a collision happens, `i` teleports directly to the correct starting line, completely skipping the `while` loop crawl.
+
+### Trick 2: The Backwards-Prevention Trap (`Math.max`)
+
+This is the single line that separates a FAANG offer from a rejection:
+
+```java
+i = Math.max(map.get(s.charAt(j)), i);
+```
+
+Why do we need `Math.max`? Why can't we just say `i = map.get(s.charAt(j))`?
+
+Because the HashMap remembers everything, even characters that are no longer inside your current window. If you aren't careful, the map will trick your left pointer into jumping backwards!
+
+### The "abba" Death Trap (Dry Run)
+
+Let's trace the string `"abba"` without the `Math.max` protection.
+
+* **`j = 0` ('a'):** Map gets `('a', 1)`. `i` is 0. **Window: `[a]`**
+* **`j = 1` ('b'):** Map gets `('b', 2)`. `i` is 0. **Window: `[ab]`**
+* **`j = 2` ('b'):** Collision! The map says the next 'b' starts at index 2. So `i` jumps to 2. Map updates `('b', 3)`. **Window: `[b]`** (Valid!)
+* **`j = 3` ('a'):** Collision! The map remembers seeing an 'a' and says its next index is 1.
+
+**Without `Math.max`:** `i` jumps backward from 2 to 1! Your window is now from index 1 to 3: `"bba"`. This is invalid (it has two 'b's), and your code fails.
+
+**With `Math.max`:** The code says, *"Wait, the old 'a' is at index 1, but my left pointer is already at index 2. I'm not going backward!"* `i = Math.max(1, 2)` so `i` stays at 2. Your window safely becomes `"ba"`.
+
+### The Verdict
+
+By combining `j + 1` (the teleporter) and `Math.max` (the directional lock), you have built a Sliding Window that only ever moves forward, and does it in massive leaps instead of tiny steps.
+
+Let us see rajneesh way!!
+
+![alt text](<002sliding window variable subarray ques_240514_125143(1).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(2).jpg>) 
+
+![alt text](<002sliding window variable subarray ques_240514_125143(3).jpg>)
+
+## Mycode
+
+```cpp
+/*
+Given a string s and an integer k.Find the length of the longest substring with at most k distinct characters.
+
+
+Examples:
+Input : s = "aababbcaacc" , k = 2
+
+Output : 6
+
+Explanation : The longest substring with at most two distinct characters is "aababb".
+
+The length of the string 6.
+
+Input : s = "abcddefg" , k = 3
+
+Output : 4
+
+Explanation : The longest substring with at most three distinct characters is "bcdd".
+
+The length of the string 4.
+
+Input : s = "abccab" , k = 4
+
+Output:
+6
+*/
+
+
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    int kDistinctChar(string& s, int k) {
+        unordered_map<char,int>mp;
+        int n=s.size();
+        int res=0;
+        int l=0;
+        for(int r=0;r<n;r++){
+            mp[s[r]]++;
+            if(mp.size()>k){
+                mp[s[l]]--;
+                if(mp[s[l]]==0) mp.erase(s[l]);
+                l++;
+            }
+           res=max(res,r-l+1);
+        }
+        return res;
+    }
+};
+```
+
+## Striver code
+
+```java
+import java.util.*;
+
+class Solution {
+
+    public int kDistinctChar(String s, int k) {
+        
+
+        int n = s.length();  
+        int maxLen = 0;  
+
+        HashMap<Character, Integer> mpp = new HashMap<>();
+        
+        int l = 0, r = 0;
+        
+        while(r < n){
+            char charR = s.charAt(r);
+            mpp.put(charR, mpp.getOrDefault(charR, 0) + 1);
+            if(mpp.size() > k){
+                char charL = s.charAt(l);
+                mpp.put(charL, mpp.get(charL) - 1);
+                if(mpp.get(charL) == 0){
+                    mpp.remove(charL);
+                }
+                l++;
+            }
+            if(mpp.size() <= k){
+                maxLen = Math.max(maxLen, r - l + 1);
+            }
+            
+            r++;
+        }
+        
+        // Return the maximum length
+        return maxLen;
+    }
+
+    public static void main(String[] args) {
+        String s = "aaabbccd";  
+        int k = 2;
+        
+        // Create an instance of Solution class
+        Solution sol = new Solution();
+        
+        int length = sol.kDistinctChar(s, k);
+        
+        // Print the result
+        System.out.println("Maximum length of substring with at most " + k + " distinct characters: " + length);
+    }
+}
+
+```
+
+![alt text](<002sliding window variable subarray ques_240514_125143(4).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(5).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(6).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(7).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(8).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(9).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(10).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(11).jpg>) ![alt text](<002sliding window variable subarray ques_240514_125143(12).jpg>) 
 
 ```java
 class Solution {
