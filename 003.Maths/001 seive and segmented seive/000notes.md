@@ -1,7 +1,7 @@
 # Notes
 ## Prime Till N
 
-![img_1.png](img_1.png)
+Print all primes till N
 
 ### Brute 
 
@@ -218,7 +218,165 @@ public:
 
 ```
 
+## Sieve of Eratosthenes — Complete Guide
 
+### What Is It?
+
+Find **all prime numbers up to N** — efficiently.
+
+> Instead of checking each number one by one, **start with "everyone is prime" and cross out the non-primes.**
+
+---
+
+### The Core Idea — Why It Works
+
+A number is **not prime** if it has a factor other than 1 and itself. So:
+
+```
+Start at 2 (first prime)
+Cross out ALL multiples of 2  (4,6,8,10...)  → they can't be prime
+Move to next uncrossed number (3) → it's prime
+Cross out ALL multiples of 3  (6,9,12,15...) → they can't be prime
+Move to next uncrossed (5) → prime
+...repeat...
+Whatever is never crossed out = PRIME
+```
+
+**The key insight — why stop at √N?**
+
+```
+If n has a factor larger than √n,
+it MUST also have a factor smaller than √n
+(because factors come in pairs: a × b = n)
+
+So by the time we reach √n,
+all composite numbers are already crossed out
+by their smaller factors.
+
+Example n=36: factors are 2×18, 3×12, 4×9, 6×6
+√36 = 6 → once we process 2,3,4,5,6 we're done
+```
+![alt text](image.png)
+
+![alt text](image-1.png)
+
+
+![alt text](image-2.png)
+
+![alt text](image-3.png)
+
+![alt text](image-4.png)
+
+![alt text](image-5.png)
+
+
+![alt text](image-6.png)
+
+
+![alt text](image-7.png)
+
+
+
+
+
+### The Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> sieve(int n) {
+    vector<bool> isPrime(n + 1, true);  // assume all prime initially
+    isPrime[0] = isPrime[1] = false;    // 0 and 1 are not prime by definition
+
+    for (int p = 2; p * p <= n; p++) {  // only go up to √n
+        if (isPrime[p]) {               // if p is still marked prime
+            // start from p*p — everything below already crossed by smaller primes
+            for (int m = p * p; m <= n; m += p) {
+                isPrime[m] = false;     // mark multiples as composite
+            }
+        }
+    }
+
+    vector<int> primes;
+    for (int i = 2; i <= n; i++)
+        if (isPrime[i]) primes.push_back(i);
+
+    return primes;
+}
+
+int main() {
+    auto primes = sieve(30);
+    for (int p : primes) cout << p << " ";
+    // Output: 2 3 5 7 11 13 17 19 23 29
+}
+```
+
+---
+
+### Why `p * p` and Not `p * 2`?
+
+This is the most asked question:
+
+```
+When we reach prime p, all multiples BELOW p*p
+are already crossed out by smaller primes.
+
+Example p = 5:
+5×2 = 10  ← already crossed by prime 2
+5×3 = 15  ← already crossed by prime 3
+5×4 = 20  ← already crossed by prime 2
+5×5 = 25  ← NOT yet crossed → start here ✅
+
+So starting from p*p saves redundant work.
+```
+
+---
+
+### Dry Run — n = 30
+
+| p | p*p | Multiples crossed out | Reason skipped |
+|---|---|---|---|
+| 2 | 4 | 4,6,8,10,12,14,16,18,20,22,24,26,28,30 | — |
+| 3 | 9 | 9,15,21,27 | 6,12,18,24,30 already done by 2 |
+| 4 | 16 | — | isPrime[4]=false, skip |
+| 5 | 25 | 25 | rest already done |
+| 6 | 36 | — | 36 > 30, loop ends |
+
+**Final primes: 2 3 5 7 11 13 17 19 23 29**
+
+---
+
+### Complexity
+
+```
+Time:   O(n log log n)   ← almost linear, very fast
+Space:  O(n)             ← the boolean array
+
+Why log log n?
+Each prime p does n/p work.
+Sum of 1/p for all primes ≤ n = log log n  (number theory result)
+```
+
+---
+
+### Why It Works — The Proof in Plain English
+
+```
+Claim: after the sieve, isPrime[i]=true ↔ i is actually prime
+
+Proof sketch:
+→ If i is composite, it has a prime factor p ≤ √i
+   When we processed p, we crossed out all multiples of p
+   including i (since i = p × something)
+   So isPrime[i] = false ✓
+
+→ If i is prime, no number from 2 to i-1 divides it
+   So it was never crossed out
+   So isPrime[i] = true ✓
+```
+
+The sieve is essentially a **proof by elimination** — it doesn't guess, it rules out everything that can't be prime, leaving only what must be.
 
 ![img.png](img.png)
 
