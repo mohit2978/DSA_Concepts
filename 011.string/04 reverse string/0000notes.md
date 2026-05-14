@@ -255,3 +255,171 @@ public:
     } 
 };
 ```
+
+
+# Sort Characters by Frequency
+
+**Difficulty:** Easy
+
+## Problem Statement
+
+You are given a string `s`. Return the array of unique characters, sorted by highest to lowest occurring characters.
+
+If two or more characters have the same frequency, then arrange them in alphabetic order.
+
+## Examples
+
+**Example 1**
+> **Input:** `s = "tree"`
+> **Output:** `['e', 'r', 't']`
+> **Explanation:** > The occurrences of each character are as shown below:
+> * `e` --> 2
+> * `r` --> 1
+> * `t` --> 1
+> 
+> The `r` and `t` have the same occurrences, so we arrange them by alphabetic order.
+
+**Example 2**
+> **Input:** `s = "raaaajj"`
+> **Output:** `['a', 'j', 'r']`
+> **Explanation:** > The occurrences of each character are as shown below:
+> * `a` --> 4
+> * `j` --> 2
+> * `r` --> 1
+
+**Example 3 (Quiz)**
+> **Input:** `s = "bbccddaaa"`
+> **Output:** `['a', 'b', 'c', 'd']`
+> **Explanation:** > * `a` --> 3
+> * `b` --> 2
+> * `c` --> 2
+> * `d` --> 2
+> 
+> `a` has the highest frequency. `b`, `c`, and `d` are tied, so they are arranged in alphabetic order.
+
+## Constraints
+
+* `1 <= s.length <= 10^5`
+* `s` consists of only lowercase English characters.
+
+
+
+```cpp
+class Solution {
+   public:
+    vector<char> frequencySort(string& s) {
+        vector<pair<char, int>> v(26, {' ', 0});
+        for (char ch : s) {
+            int val = ch - 'a';
+            if (v[val].first ==' ') v[val].first = ch;
+            v[val].second++;
+        }
+
+        sort(v.begin(), v.end(),
+             [](const auto& a, const auto& b) { 
+                return a.second!=b.second?a.second >b.second:a.first<b.first; 
+                });
+    
+        vector<char> res;
+
+        int i=0;
+
+        while(i<v.size() && v[i].first!=' '){
+            res.push_back(v[i].first);
+            i++;
+        }
+        return res;
+    
+    }
+
+
+};
+```
+## Time & Space Complexity Analysis
+
+### Time Complexity — O(n)
+
+Breaking down each part:
+
+```cpp
+// PART 1 — frequency counting
+for (char ch : s) {        // O(n) — iterate every character once
+    int val = ch - 'a';
+    if (v[val].first == ' ') v[val].first = ch;
+    v[val].second++;
+}
+```
+
+```cpp
+// PART 2 — sorting
+sort(v.begin(), v.end(), ...);   // O(26 log 26) = O(1)
+//   ↑ always exactly 26 elements regardless of input size
+//   sorting a FIXED size array = constant time
+```
+
+```cpp
+// PART 3 — collecting results
+while (i < v.size() && v[i].first != ' ') {  // O(26) = O(1)
+    res.push_back(v[i].first);                // at most 26 unique chars
+    i++;
+}
+```
+
+**Total:**
+```
+O(n) + O(26 log 26) + O(26)
+= O(n) + O(1)      + O(1)
+= O(n)
+```
+
+The entire complexity is dominated by the single pass through the string.
+
+---
+
+### Space Complexity — O(1)
+
+```cpp
+vector<pair<char, int>> v(26, {' ', 0});  // always exactly 26 pairs
+                                          // fixed regardless of input
+vector<char> res;                         // at most 26 chars
+                                          // fixed regardless of input
+```
+
+**Total:**
+```
+O(26) + O(26) = O(1)
+
+No matter if s has 10 chars or 100,000 chars
+→ memory usage NEVER changes
+→ truly constant space
+```
+
+---
+
+### The Key Insight
+
+```
+Why O(1) space despite large input?
+
+Constraint: only lowercase English letters
+→ max 26 unique characters EVER
+→ array size is bounded by alphabet, not input
+
+Same reason sort is O(1):
+→ you never sort more than 26 elements
+→ input size has zero effect on sort time
+```
+
+---
+
+### Summary Table
+
+| Part | Time | Space | Why constant? |
+|---|---|---|---|
+| Frequency count | O(n) | O(1) | array fixed at 26 |
+| Sort | O(1) | O(1) | always 26 elements |
+| Collect result | O(1) | O(1) | at most 26 chars |
+| **Total** | **O(n)** | **O(1)** | alphabet is finite |
+
+> The trick that makes this O(1) space is using a **fixed-size array indexed by character** instead of a hashmap. A hashmap would be O(k) where k = unique chars — still bounded by 26 here, but the intent is less clear. The fixed array makes the O(1) guarantee explicit and obvious.
+
