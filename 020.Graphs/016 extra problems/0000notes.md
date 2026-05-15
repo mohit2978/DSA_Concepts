@@ -1156,7 +1156,101 @@ Safer to handle explicitly:
 ```cpp
 if(start == end) return 0;
 ```
+Good question. Let me explain both parts.
 
+---
+
+### Part 1 — Why check before pushing is better
+
+**Your way — check after popping:**
+```
+push end into queue
+...some time passes...
+pop end from queue
+THEN check → return
+```
+
+You do **unnecessary work**:
+- end sits in the queue
+- other neighbours might get pushed after it
+- wastes memory and time
+
+**Better way — check before pushing:**
+```
+calculate mul
+mul == end? → return immediately
+don't even touch the queue
+```
+
+```
+Example: arr=[2,5,7], start=3, end=6
+
+Your way:
+  pop 3 → not end
+  mul = 3×2 = 6 → push {6,1} into queue   ← unnecessary
+  mul = 3×5 = 15 → push {15,1}
+  mul = 3×7 = 21 → push {21,1}
+  pop 6 → IS end → return 1
+
+Better way:
+  pop 3 → not end
+  mul = 3×2 = 6 == end → return 1 immediately ✅
+  never pushed anything
+```
+
+---
+
+### Part 2 — Why `start == end` needs special handling
+
+When you check **before pushing**, you only check `mul` — the result after multiplication. You **never check start itself**.
+
+```
+start = 5, end = 5
+
+Your loop:
+  pop {5, 0}
+  mul = 5×arr[0] → not end
+  mul = 5×arr[1] → not end
+  ...
+  never returns 0 ❌
+  eventually returns -1 ❌
+```
+
+With check-after-pop this isn't a problem because:
+
+```
+pop {5, 0} → val==end → return 0 ✅
+```
+
+So the two approaches have a tradeoff:
+
+```
+Check after pop:
+  ✅ handles start==end naturally
+  ❌ slightly wasteful — end enters queue before being caught
+
+Check before push:
+  ✅ more efficient — return the moment end is found
+  ❌ misses start==end → need explicit guard
+```
+
+That's exactly why the explicit guard is needed:
+
+```cpp
+if (start == end) return 0;   // guard for check-before-push approach
+```
+
+---
+
+### Summary
+
+```
+Check after pop  →  simpler, handles start==end, slightly wasteful
+Check before push →  faster, needs start==end guard explicitly
+
+Both are correct — just different tradeoffs
+Your original code (check after pop) is fine as-is
+```
 ---
 
 ### Minor — Prefer `!q.empty()` over `q.size() > 0`
@@ -1248,7 +1342,58 @@ int mul = ((long long)v * val) % 100000;
 | potential overflow | ⚠️ | cast to `long long` |
 
 
+Q--> dist was only for checking if node is vsisted ,why it is bug??
 
+You're right, I misread your intent.
+
+---
+
+### Your Code's Actual Logic
+
+```cpp
+vector<int> dist(100000, -1);  // -1 = not visited
+dist[start] = 1;               // 1 = visited
+
+if(dist[mul] == 1) continue;   // skip if already visited
+dist[mul] = 1;                 // mark as visited
+```
+
+You're using `dist` as a **visited tracker** with two states only:
+
+```
+-1  →  not visited
+ 1  →  visited
+```
+
+This is **completely correct** and has **no bug**. There is no collision because you never store actual distances — just visited/unvisited.
+
+---
+
+### My Mistake
+
+I assumed `dist` was storing distances (like in Dijkstra) because of the name. But you're storing levels inside the queue pair itself:
+
+```cpp
+queue<pair<int,int>> q;   // {value, level}
+//                  ↑
+//            level tracked here, not in dist
+```
+
+So `dist` is purely a visited array — my collision concern was wrong.
+
+---
+
+### The Only Real Suggestion Then
+
+Just rename it for clarity:
+
+```cpp
+vector<int> dist(100000, -1);   // misleading name
+// rename to:
+vector<bool> visited(100000, false);   // intent is crystal clear
+```
+
+Same logic, clearer name. Everything else in your code is correct.
 
 
 
