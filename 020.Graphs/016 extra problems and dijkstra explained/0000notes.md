@@ -2346,3 +2346,548 @@ Space: O(V + E)
          ↑    ↑
        dist  heap + adjacency list
 ```
+
+
+```cpp
+class Solution {
+public:
+    vector<int> dijkstra(int V, vector<vector<vector<int>>> &adj, int S) {
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, S});
+        
+        vector<int> res(V, 1e9);
+        vector<bool> vis(V, false);
+        
+        while(!pq.empty()) {
+            int wt = pq.top().first;
+            int v = pq.top().second;
+            pq.pop();
+            
+            if(vis[v]) continue;
+            vis[v] = true;
+            res[v] = wt;
+            
+            for(auto &it : adj[v]) {
+                int nbr = it[0];
+                int w = it[1];
+                if(!vis[nbr]) {
+                    pq.push({wt + w, nbr});
+                }
+            }
+        }
+        return res;
+    }
+};
+```
+This is also dijsktsra we have seen in level 1 ,which to use??
+
+
+
+
+
+
+
+
+Yes! This is also Dijkstra — but with a **slightly different implementation style**. Let me compare both.
+
+---
+
+### Two Valid Approaches
+
+| | Your code | My code |
+|---|---|---|
+| Visited tracking | `vis[]` boolean array | `if(d > dist[u]) continue` |
+| dist update | `res[v] = wt` when popped | `dist[v] = newDist` when pushing |
+| Push condition | `if(!vis[nbr])` | `if(newDist < dist[v])` |
+| Style | visited-based | distance-based |
+
+Both are correct. Both are O((V+E) log V).
+
+---
+
+### Your Code Flow
+
+```cpp
+// 1. pop minimum
+int wt = pq.top().first;
+int v  = pq.top().second;
+
+// 2. if already visited → skip
+if(vis[v]) continue;
+
+// 3. NOW finalise — mark visited and set distance
+vis[v] = true;
+res[v] = wt;        // ← distance set at POP time, not push time
+
+// 4. push unvisited neighbours
+if(!vis[nbr])
+    pq.push({wt + w, nbr});
+```
+
+---
+
+### Key Difference — When Distance is Set
+
+**My approach — distance set at PUSH time:**
+```cpp
+// when pushing:
+dist[v] = newDist;          // set immediately
+pq.push({newDist, v});
+
+// stale check at pop:
+if(d > dist[u]) continue;   // skip old entries
+```
+
+**Your approach — distance set at POP time:**
+```cpp
+// when pushing:
+pq.push({wt + w, nbr});     // just push, don't update dist
+
+// finalise at pop:
+vis[v] = true;
+res[v] = wt;                // set distance only when popped
+```
+
+---
+
+### Why Your Code is Still Correct
+
+```
+Min heap always pops smallest distance first
+First time a node is popped = smallest possible distance
+  because all other paths in heap cost >= current
+  + non-negative edges on top
+  = can never be smaller
+
+So first pop = optimal distance ✅
+vis[] prevents processing same node twice ✅
+```
+
+---
+
+### One Subtle Difference — Push Condition
+
+**Your code:**
+```cpp
+if(!vis[nbr])
+    pq.push({wt + w, nbr});
+```
+
+**My code:**
+```cpp
+if(newDist < dist[v])
+    pq.push({dist[v], v});
+```
+
+Your code pushes neighbour if **not yet finalised** — even if a better entry already exists in heap. This means heap can have more duplicate entries.
+
+```
+Example:
+Node 3 reachable via two paths: cost 11 and cost 10
+Your code pushes BOTH {11,3} and {10,3} to heap
+Mine pushes {11,3} first, then when 10 found,
+  dist[3] updates to 10 and pushes {10,3}
+  but also has {11,3} as stale
+
+Both end up with same stale entries in heap
+Both skip them correctly (vis[] vs d>dist[])
+```
+Let me trace both codes **side by side** on the same example.
+
+---
+
+### The Graph
+
+```
+0 →(4)→ 1
+0 →(2)→ 2
+2 →(1)→ 1       ← shorter path to node 1 exists!
+1 →(5)→ 3
+```
+
+So node 1 reachable two ways:
+```
+0→1 = 4
+0→2→1 = 2+1 = 3   ← shorter
+```
+
+---
+
+### My Code — dist[] updated at PUSH time
+
+```cpp
+dist[v] = newDist;       // update immediately
+pq.push({newDist, v});   // then push
+```
+
+**Trace:**
+
+```
+dist = [0, INF, INF, INF]
+pq   = [{0,0}]
+
+─── pop {0, node=0} ───
+  neighbour 1: newDist=4 < INF → dist[1]=4, push {4,1}
+  neighbour 2: newDist=2 < INF → dist[2]=2, push {2,2}
+
+dist = [0, 4, 2, INF]
+pq   = [{2,2}, {4,1}]
+
+─── pop {2, node=2} ───
+  neighbour 1: newDist=3 < dist[1]=4
+               → dist[1]=3         ← updated immediately
+               → push {3,1}        ← new entry
+
+dist = [0, 3, 2, INF]
+pq   = [{3,1}, {4,1}]
+           ↑     ↑
+         fresh  stale (dist was 4, now 3)
+
+─── pop {3, node=1} ───
+  3 == dist[1]=3 → NOT stale → process ✅
+  neighbour 3: newDist=8, push {8,3}
+
+─── pop {4, node=1} ───
+  4 > dist[1]=3 → STALE → skip ✅
+
+Final dist = [0, 3, 2, 8]
+```
+
+---
+
+### Your Code — dist set at POP time, vis[] tracks finalised
+
+```cpp
+if(!vis[nbr])
+    pq.push({wt+w, nbr});   // push without updating dist[]
+vis[v]=true;
+res[v]=wt;                  // set dist only when popped
+```
+
+**Trace:**
+
+```
+res = [INF, INF, INF, INF]
+vis = [F, F, F, F]
+pq  = [{0,0}]
+
+─── pop {0, node=0} ───
+  vis[0]=false → process
+  vis[0]=true, res[0]=0
+
+  neighbour 1: vis[1]=false → push {4,1}
+  neighbour 2: vis[2]=false → push {2,2}
+
+pq  = [{2,2}, {4,1}]
+vis = [T, F, F, F]
+
+─── pop {2, node=2} ───
+  vis[2]=false → process
+  vis[2]=true, res[2]=2
+
+  neighbour 1: vis[1]=false → push {3,1}  ← pushed again!
+
+pq  = [{3,1}, {4,1}]
+           ↑     ↑
+         fresh  stale (same node, different cost)
+vis = [T, F, T, F]
+
+─── pop {3, node=1} ───
+  vis[1]=false → process  ✅ first time seeing node 1
+  vis[1]=true, res[1]=3   ← correct! smallest cost wins
+
+  neighbour 3: vis[3]=false → push {8,3}
+
+─── pop {4, node=1} ───
+  vis[1]=TRUE → skip ✅   ← stale entry caught here
+
+Final res = [0, 3, 2, 8] ✅ same answer
+```
+
+---
+
+### Side by Side — What's in the Heap
+
+```
+After processing node 2:
+
+My code heap:                Your code heap:
+[{3,1}, {4,1}]              [{3,1}, {4,1}]
+    ↑      ↑                    ↑      ↑
+  fresh   stale              fresh   stale
+
+IDENTICAL heap contents! ✅
+```
+
+---
+
+### How Each Detects the Stale Entry
+
+```
+Stale entry = {4, node=1}
+
+My code:
+  pop {4,1}
+  check: 4 > dist[1]=3?  YES → skip
+  "distance in heap > best known distance"
+
+Your code:
+  pop {4,1}
+  check: vis[1]=true?    YES → skip
+  "node already finalised"
+
+Different check, same result ✅
+```
+
+---
+
+### The Core Difference Visualised
+
+```
+MY CODE:
+                     dist[1] updated HERE
+                           ↓
+  push {4,1} ─────────────► dist[1]=4
+                             ...
+  push {3,1} ─────────────► dist[1]=3  ← overwrites
+                             ...
+  pop  {3,1} → 3==dist[1]=3 → valid ✅
+  pop  {4,1} → 4> dist[1]=3 → stale ❌ skip
+
+
+YOUR CODE:
+                     res[1] updated HERE
+                                    ↓
+  push {4,1} → nothing updated yet
+  push {3,1} → nothing updated yet
+  ...
+  pop  {3,1} → vis[1]=false → valid ✅ → res[1]=3
+  pop  {4,1} → vis[1]=true  → stale ❌ skip
+```
+
+---
+
+### Summary in One Table
+
+| Moment | My code | Your code |
+|---|---|---|
+| When dist set | at PUSH | at POP |
+| Stale detection | `d > dist[u]` | `vis[u] == true` |
+| Heap contents | identical | identical |
+| Final answer | same | same |
+| Conceptual model | "update eagerly, check at pop" | "push freely, finalise at pop" |
+
+Both are correct because the **min-heap guarantees the smallest cost entry is always popped first** — so whether you detect stale entries via `dist[]` or `vis[]`, you always process each node at its optimal cost exactly once.
+---
+
+### Which is Preferred in Interview?
+
+```
+Your approach (vis[] based):
+✅ cleaner code — no stale check logic
+✅ easier to explain — "first pop = final"
+✅ more intuitive — visited = done
+⚠️ slightly more entries in heap
+
+My approach (dist[] based):
+✅ more entries pruned before pushing
+✅ dist[] available at any time during algorithm
+⚠️ stale check needed — slightly more logic
+```
+
+**For interviews — your approach is actually cleaner to write and explain.**
+
+---
+
+### One Real Issue in Your Code ⚠️
+
+```cpp
+vector<int> res(V, 1e9);
+//               ^^^
+//        1e9 is a double → implicit conversion to int
+//        = 999999999 or 1000000000 depending on precision
+```
+
+Safer to write:
+
+```cpp
+vector<int> res(V, INT_MAX);   // explicit integer max
+// or
+vector<int> res(V, 1e9);       // works but imprecise
+```
+
+Also if you do `wt + w` where `wt` is near `INT_MAX`:
+
+```cpp
+// overflow risk:
+int wt = INT_MAX;
+int w  = 5;
+wt + w = overflow ❌
+
+// but since you use 1e9 not INT_MAX, this is fine here ✅
+// 1e9 + 1e4 < INT_MAX (2.1e9)
+```
+
+---
+
+### Summary
+
+```
+Both implementations are correct Dijkstra ✅
+
+Your code  →  vis[] array  →  finalise at pop
+My code    →  dist[] check →  update at push
+
+Yours is arguably cleaner for interviews
+The only real difference is heap size
+(yours may have slightly more entries)
+```
+
+
+
+In L1 we have seen
+
+
+### Comparison of Implementations
+
+| Implementation | Time Complexity | Best Use Case |
+| :--- | :--- | :--- |
+| **Binary Heap (Priority Queue)** | $O(E \log V)$ | **Sparse Graphs** (Most Interview Problems) |
+| **Array (Naive)** | $O(V^2)$ | **Dense Graphs** (where $E \approx V^2$) |
+| **Fibonacci Heap** | $O(E + V \log V)$ | Theoretical best (Often too complex for interviews) |
+
+## Claude explained
+
+
+
+
+
+
+
+Exactly right! But let me add one important nuance — the difference is **smaller than it looks**.
+
+---
+
+### The Nuance — Both Have Same Worst Case
+
+```
+Blind Push (your code):
+  pushes neighbour if !vis[nbr]
+  a node can be pushed MULTIPLE times
+  once per incoming edge
+
+Edge Relaxation (my code):
+  pushes only if newDist < dist[v]
+  still can push multiple times
+  (old entry becomes stale when dist improves)
+```
+
+**Both have same worst case heap size:**
+
+```
+Worst case = every edge causes a push
+           = O(E) total entries in heap
+           = O(E log E) time
+
+This is the SAME for both approaches ❌ not truly different
+```
+
+---
+
+### Where They Actually Differ
+
+```
+Dense graph with many equal-cost paths:
+
+Blind Push:
+  pushes neighbour even if same cost already in heap
+  → more duplicate entries
+
+Edge Relaxation:
+  only pushes if STRICTLY better
+  → fewer entries when costs are equal
+```
+
+```
+Example:
+Node 3 reachable via 5 paths all costing 10
+
+Blind Push    → pushes {10,3} five times
+Edge Relaxation → pushes {10,3} once (rest are not < dist[3])
+```
+
+---
+
+### The Complete Honest Table
+
+| Feature | Blind Push | Edge Relaxation |
+|---|---|---|
+| Heap size worst case | O(E) | O(E) |
+| Heap size avg case | larger | smaller |
+| Equal cost paths | pushes duplicates | pushes only first |
+| Strictly better path | pushes | pushes |
+| Stale detection | `vis[]` check | `d > dist[]` check |
+| Code simplicity | ✅ simpler | slightly more complex |
+| dist[] available mid-run | ❌ not maintained | ✅ always current |
+| Interview preference | ✅ clean to explain | ✅ standard textbook |
+| Production preference | ✅ fine for sparse | ✅ better for dense |
+
+---
+
+### When the Difference Actually Matters
+
+```
+Sparse graph (E ≈ V):
+  both are nearly identical
+  use whichever is cleaner to write
+
+Dense graph (E ≈ V²):
+  edge relaxation wins
+  significantly fewer heap operations
+
+Competitive programming:
+  dense graphs with tight time limits
+  → edge relaxation preferred
+
+Interviews:
+  either is fine
+  explain your choice → shows depth
+```
+
+---
+
+### The One Real Advantage of Edge Relaxation
+
+```cpp
+// dist[] is always up to date during the run
+// useful when you need current best distance
+// for conditional logic MID algorithm
+
+// Example: "minimum effort" problem
+if (newEffort < dist[ni][nj]) {
+    dist[ni][nj] = newEffort;   // dist[] reflects truth always
+    pq.push({newEffort, ni, nj});
+}
+```
+
+```
+Blind push has no dist[] maintained
+Can't query "what's current best to node X?"
+during the algorithm without extra tracking
+```
+
+---
+
+### TL;DR
+
+```
+Worst case time:  SAME      O(E log E) both
+Average case:     Edge relaxation slightly better for dense graphs
+Code clarity:     Blind push simpler
+Interview:        Both acceptable — explain the tradeoff
+Production:       Edge relaxation for dense graphs
+
+The gap is smaller than most people think
+The real difference is equal-cost duplicate entries
+not fundamentally different complexity class
+```
