@@ -843,6 +843,415 @@ Word Ladder II is significantly more expensive than I because storing full paths
 
 
 
+# Q3 Minimum Multiplications to Reach End
+
+
+## Problem Statement
+
+Given `start`, `end` and an array `arr` of `n` numbers. At each step, `start` is multiplied with any number in `arr` and then modulo `100000` is taken to get the new `start`. 
+
+Find the minimum steps in which `end` can be achieved starting from `start`. If it is not possible to reach `end`, then return `-1`.
+
+---
+
+## Examples
+
+**Example 1**
+> **Input:** `arr = [2, 5, 7]`, `start = 3`, `end = 30`
+> **Output:** `2`
+> **Explanation:** > Step 1: `3 * 2 = 6 % 100000 = 6`
+> Step 2: `6 * 5 = 30 % 100000 = 30`
+> Minimum steps taken to reach 30 from 3 is 2.
+
+**Example 2**
+> **Input:** `arr = [3, 4, 65]`, `start = 7`, `end = 66175`
+> **Output:** `4`
+> **Explanation:** > Step 1: `7 * 3 = 21 % 100000 = 21` 
+> Step 2: `21 * 65 = 1365 % 100000 = 1365` 
+> Step 3: `1365 * 65 = 88725 % 100000 = 88725` 
+> Step 4: `88725 * 3 = 266175 % 100000 = 66175`
+> Minimum steps taken to reach 66175 from 7 is 4.
+
+---
+
+## Constraints
+
+* `1 <= arr.length <= 10^4`
+* `1 <= arr[i] <= 10^4`
+* `0 <= start, end < 100000`
+
+---
+*Senior Engineer Hint: This is not a math problem; it is a shortest-path Graph problem. Because the modulo is $10^5$, there are exactly 100,000 possible nodes (0 to 99,999). Use Dijkstra's Algorithm (or a simple BFS queue since edge weights are all exactly 1 step) to find the shortest path from the `start` node to the `end` node.*
+
+Intuition--> bfs problem and same like previous need to travel whole array ech time.we put start on queue and multily by each element in array and at each level we check do we get the end
+
+## Ai reply
+
+Yes! You've understood it **exactly right.**
+
+---
+
+### Your Mental Model is Correct
+
+```
+start = node
+multiply by each arr[i] = edges to neighbours
+% 100000 = keeps values within 0..99999 (finite graph)
+find end = shortest path question
+             ↓
+            BFS
+```
+
+---
+
+### Why BFS Works Here
+
+```
+Level 0:  start                    → 0 multiplications
+Level 1:  start × arr[0,1,2...]    → 1 multiplication
+Level 2:  each of those × arr[...] → 2 multiplications
+...
+First time we see end = minimum multiplications ✅
+```
+
+Each multiplication = one step = one edge of equal weight. Unweighted graph → BFS guarantees shortest path.
+
+---
+
+### The Graph You're Imagining is Correct
+
+```
+arr = [2, 5, 7],  start = 3
+
+Level 0:        3
+              / | \
+Level 1:     6  15  21        (×2, ×5, ×7)
+           /|\  ...  ...
+Level 2: 12 30 42 ...         (×2, ×5, ×7 again)
+              ↑
+             end=30 found! → return 2
+```
+
+---
+
+### The One Key Detail — Why % 100000
+
+Without the mod, values grow infinitely → infinite nodes → BFS never terminates.
+
+```
+With % 100000:
+max possible value = 99999
+so there are only 100000 possible nodes (0 to 99999)
+BFS is guaranteed to terminate ✅
+```
+
+This is what makes it a **finite graph** problem.
+
+---
+
+### Quiz Answer
+
+```
+arr=[3,4,65], start=7, end=21
+
+Level 0: 7
+Level 1: 7×3=21 ← end found immediately!
+
+Answer = 1 ✅
+```
+
+---
+
+### One-line Summary
+
+```
+nodes  = numbers 0..99999
+edges  = multiply by any arr[i] then %100000
+goal   = shortest path from start to end
+method = BFS  ✅
+```
+
+Your intuition was completely right — trust it.
+
+Q--> if we do not get the answer then graph will always be ongoing as we are multiplying??
+
+Great observation — but it **won't go on forever**. Here's why:
+
+---
+
+### The Visited Array Saves You
+
+```cpp
+vector<int> dist(100000, -1);  // only 100000 possible values (0 to 99999)
+```
+
+After `% 100000` every value is in range `[0, 99999]`.
+
+So there are only **100000 possible nodes** in the entire graph.
+
+```
+Once all 100000 nodes are visited
+→ nothing new can ever be added to queue
+→ queue becomes empty
+→ BFS terminates
+→ return -1
+```
+
+---
+
+### Concrete Picture
+
+```
+Without visited check:
+3 → 6 → 12 → 24 → 48 ...  infinite ❌
+
+With % 100000 + visited array:
+values stay in [0, 99999]
+once a value is visited, never added to queue again
+max 100000 nodes ever processed
+BFS always terminates ✅
+```
+
+---
+
+### The Termination Proof
+
+```
+Total possible nodes   = 100000  (0 to 99999)
+Each node visited      = at most once
+Each node removed from queue = at most once
+
+So queue can have at most 100000 items EVER
+→ BFS always ends in finite steps
+→ if end never found → queue empties → return -1
+```
+
+---
+
+### One Line Summary
+
+```
+% 100000  →  caps the graph at 100000 nodes
+visited   →  each node processed at most once
+together  →  BFS always terminates, never infinite
+```
+
+The modulo is not just a math trick — it's what **converts an infinite multiplication chain into a finite graph**.
+
+## My code
+
+```cpp
+class Solution{
+public:
+    int minimumMultiplications(vector<int> &arr,
+                               int start, int end) {
+        queue<pair<int,int>> q;
+        q.push({start,0});
+        vector<int> dist(100000, -1);
+        dist[start]=1;
+
+        while(q.size()>0){
+            pair<int,int> p=q.front();
+            q.pop();
+            int val=p.first;
+            int lvl=p.second;
+            if(val==end) return lvl;
+            for(int v:arr){
+
+                int mul=(v*val)%100000;
+                if(dist[mul]==1) continue;
+                dist[mul]=1;
+                q.push({mul,lvl+1});
+            }
+        }   
+
+        return -1;         
+   
+    }
+};
+
+```
+
+## Ai reply 
+
+## Full Code Review
+
+### Logic is Correct ✅
+
+Your core approach is right:
+- BFS from start
+- multiply by each arr element
+- mod 100000
+- return level when end found
+
+---
+
+### Bug 1 — Wrong Initial dist value ❌
+
+```cpp
+dist[start] = 1;   // ❌ using 1 as "visited" marker
+
+if(dist[mul] == 1) continue;   // ❌ checking for 1
+```
+
+This works **by accident** here — but it's semantically wrong and fragile.
+
+```
+dist is initialised to -1 (unvisited)
+you mark visited as 1
+but what if the ACTUAL distance to a node is 1?
+they collide — same value means two different things
+```
+
+**Fix — use a boolean visited array instead:**
+
+```cpp
+vector<bool> visited(100000, false);
+visited[start] = true;
+
+if(visited[mul]) continue;
+visited[mul] = true;
+```
+
+Clean separation — visited means visited, nothing else.
+
+---
+
+### Bug 2 — Check end BEFORE pushing, not after popping ⚠️
+
+```cpp
+// your way — check after popping
+auto [val, lvl] = q.front();
+q.pop();
+if(val == end) return lvl;   // works but slightly wasteful
+```
+
+```cpp
+// better way — check before pushing
+int mul = (v * val) % 100000;
+if(mul == end) return lvl + 1;  // return immediately, don't even push
+```
+
+This also handles the edge case where `start == end`:
+
+```cpp
+// add before BFS loop
+if(start == end) return 0;
+```
+
+---
+
+### Bug 3 — `start` itself is never distance-checked early ⚠️
+
+```cpp
+q.push({start, 0});
+dist[start] = 1;
+// what if start == end?
+// BFS pops it, checks val==end, returns 0 ✅ -- ok actually
+// but only by luck of the loop structure
+```
+
+Safer to handle explicitly:
+
+```cpp
+if(start == end) return 0;
+```
+
+---
+
+### Minor — Prefer `!q.empty()` over `q.size() > 0`
+
+```cpp
+while(q.size() > 0)    // works but non-idiomatic
+while(!q.empty())      // ✅ standard C++ idiom, clearer intent
+```
+
+---
+
+### Minor — Use structured bindings (C++17)
+
+```cpp
+pair<int,int> p = q.front();
+int val = p.first;
+int lvl = p.second;
+
+// cleaner:
+auto [val, lvl] = q.front();
+```
+
+---
+
+### Clean Version
+
+```cpp
+class Solution {
+public:
+    int minimumMultiplications(vector<int>& arr, int start, int end) {
+        if (start == end) return 0;
+
+        vector<bool> visited(100000, false);
+        visited[start] = true;
+
+        queue<pair<int,int>> q;
+        q.push({start, 0});
+
+        while (!q.empty()) {
+            auto [val, lvl] = q.front();
+            q.pop();
+
+            for (int v : arr) {
+                int mul = ((long long)v * val) % 100000;
+
+                if (mul == end) return lvl + 1;   // check before pushing
+
+                if (!visited[mul]) {
+                    visited[mul] = true;
+                    q.push({mul, lvl + 1});
+                }
+            }
+        }
+
+        return -1;
+    }
+};
+```
+
+---
+
+### One Extra — Integer Overflow Guard
+
+```cpp
+int mul = (v * val) % 100000;
+```
+
+```
+v   can be up to 10^4
+val can be up to 99999 ≈ 10^5
+
+v * val = 10^4 × 10^5 = 10^9  → fits in int (max ~2.1×10^9) ✅
+          but only barely — safer to cast:
+
+int mul = ((long long)v * val) % 100000;
+```
+
+---
+
+### Summary
+
+| Issue | Severity | Fix |
+|---|---|---|
+| `dist=1` as visited marker | ⚠️ semantic bug | use `vector<bool> visited` |
+| Check end after pop not before | ⚠️ minor inefficiency | check before pushing |
+| `start==end` not handled | ⚠️ edge case | add early return |
+| `q.size() > 0` | style | use `!q.empty()` |
+| `p.first/p.second` | style | use structured bindings |
+| potential overflow | ⚠️ | cast to `long long` |
+
+
+
+
+
+
 
 
 
