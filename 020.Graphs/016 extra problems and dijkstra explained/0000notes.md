@@ -1397,9 +1397,952 @@ Same logic, clearer name. Everything else in your code is correct.
 
 
 
+# Q4 Path With Minimum Effort
+
+## Problem Statement
+
+You are a hiker preparing for an upcoming hike. You are given a 2D array `heights`, where `heights[row][col]` represents the height of cell `(row, col)`. You are situated in the top-left cell, `(0, 0)`, and you hope to travel to the bottom-right cell, `(rows-1, columns-1)` (i.e., **0-indexed**). You can move up, down, left, or right, and you wish to find a route that requires the minimum **effort**.
+
+A route's **effort** is the **maximum absolute difference** in heights between two consecutive cells of the route.
+
+Return the minimum **effort** required to travel from the top-left cell to the bottom-right cell.
+
+---
+
+## Examples
+
+**Example 1**
+> **Input:** `heights = [[1,2,2],[3,8,2],[5,3,5]]`
+> **Output:** `2`
+> **Explanation:** > The route of [1,3,5,3,5] has a maximum absolute difference of 2 in consecutive cells.
+> This is better than the route of [1,2,2,2,5], where the maximum absolute difference is 3.
+
+**Example 2**
+> **Input:** `heights = [[1,2,3],[3,8,4],[5,3,5]]`
+> **Output:** `1`
+> **Explanation:** > The route of [1,2,3,4,5] has a maximum absolute difference of 1 in consecutive cells, which is better than route [1,3,5,3,5].
+
+**Example 3**
+> **Input:** `heights = [[1,2,1,1,1],[1,2,1,2,1],[1,2,1,2,1],[1,2,1,2,1],[1,1,1,2,1]]`
+> **Output:** `0`
+> **Explanation:** This route does not require any effort.
+
+---
+
+## Constraints
+
+* `rows == heights.length`
+* `columns == heights[i].length`
+* `1 <= rows, columns <= 100`
+* `1 <= heights[i][j] <= 10^6`
+
+---
+*Senior Engineer Hint: There are two elite ways to solve this. 1) **Modified Dijkstra:** Instead of summing edge weights, track the `max` difference seen on the path using a Min-Heap. 2) **Binary Search + BFS:** If Priority Queues are banned on your exam, binary search the answer range `[0, 10^6]`. For a chosen `mid` effort, run a simple BFS. If you can reach the end using only steps where the height difference is `<= mid`, then `mid` is a valid answer. Try smaller!*
+
+
+## My sol
+
+```cpp
+class Solution {
+    int gans=INT_MAX;
+    vector<vector<int>> dir = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    bool isVisisted(int i, int j, int n, int m, vector<vector<int>> &mat) {
+        if (i < 0 || i >= n || j < 0 || j >= m || mat[i][j] < 0) return true;
+        return false;
+    }
+    void minEffort(int i, int j, int n, int m, vector<vector<int>> &mat,int temp) {
+        if(i==n-1 && j==m-1)  gans=min(temp,gans);
+        mat[i][j]=-mat[i][j];
+        
+        for(int k=0;k<4;k++){
+            int newi=i+dir[k][0];
+            int newj=j+dir[k][1];
+            if(isVisisted(newi,newj,n,m,mat)==false){
+                int tres= abs(-mat[i][j]-mat[newi][newj]);
+                int tvar=max(tres,temp);
+                minEffort(newi,newj,n,m,mat,tvar);
+            }
+        }
+
+        mat[i][j]=-mat[i][j];
+    }
+
+   public:
+    int MinimumEffort(vector<vector<int>> &mat) {
+        int n = mat.size();
+        int m = mat[0].size();
+        minEffort(0, 0, n, m, mat,0);
+        return gans;
+    }
+};
+
+```
+## Code Review + Better Solution
+
+### Your Approach — Recursive DFS with Backtracking
+
+Your logic is correct conceptually:
+- Mark visited by negating the value
+- Track max absolute difference along path
+- Backtrack by restoring the value
+- Update global answer at destination
+
+---
+
+### Problems with Your Solution
+
+**Problem 1 — Exponential Time Complexity ❌**
+
+```
+DFS explores ALL possible paths
+No pruning based on current best effort
+On a 100×100 grid → paths are astronomical
+
+Time: O(4^(N×M))  ← way too slow
+```
+
+**Problem 2 — No Pruning ❌**
+
+```cpp
+// you always explore even if current effort
+// already exceeds the best answer found
+
+int tvar = max(tres, temp);
+minEffort(newi, newj, n, m, mat, tvar);
+// what if tvar > gans already? still recurse ❌
+```
+
+Simple fix would be:
+
+```cpp
+if(tvar < gans)   // prune — only recurse if worth it
+    minEffort(newi, newj, n, m, mat, tvar);
+```
+
+**Problem 3 — Global variable `gans` ❌**
+
+```cpp
+int gans = INT_MAX;   // class member
+```
+
+If `Solution` object is reused across test cases, `gans` retains old value. Should be reset at start of `MinimumEffort`.
+
+---
+
+### Quiz Answer
+
+```
+heights = [[1,2,1,1,1],
+           [1,2,1,2,1],
+           [1,2,1,2,1],
+           [1,2,1,2,1],
+           [1,1,1,2,1]]
+
+Path: go down column 0, then across bottom, then up column 4
+1→1→1→1→1→1→1→1→1→1→1→1→1
+
+All differences = 0 or 1
+Max difference along this path = 1
+
+Answer = 1 ✅
+```
+
+---
+
+### The Right Approach — Dijkstra
+
+This is a **shortest path** problem where:
+
+```
+node   = cell (i,j)
+edge   = move to adjacent cell
+weight = abs difference in heights
+goal   = minimise MAXIMUM weight along path
+```
+
+Dijkstra with a min-heap on **effort so far** finds the optimal path efficiently.
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+    vector<vector<int>> dir = {{1,0},{-1,0},{0,1},{0,-1}};
+
+public:
+    int MinimumEffort(vector<vector<int>>& mat) {
+        int n = mat.size(), m = mat[0].size();
+
+        // dist[i][j] = min effort to reach (i,j)
+        vector<vector<int>> dist(n, vector<int>(m, INT_MAX));
+        dist[0][0] = 0;
+
+        // min heap: {effort, row, col}
+        priority_queue<tuple<int,int,int>,
+                       vector<tuple<int,int,int>>,
+                       greater<>> pq;
+        pq.push({0, 0, 0});
+
+        while (!pq.empty()) {
+            auto [effort, i, j] = pq.top();
+            pq.pop();
+
+            // reached destination
+            if (i == n-1 && j == m-1) return effort;
+
+            // stale entry
+            if (effort > dist[i][j]) continue;
+
+            for (auto& d : dir) {
+                int ni = i + d[0];
+                int nj = j + d[1];
+
+                if (ni < 0 || ni >= n || nj < 0 || nj >= m) continue;
+
+                // effort = max of current effort and this step's diff
+                int newEffort = max(effort,
+                                   abs(mat[i][j] - mat[ni][nj]));
+
+                if (newEffort < dist[ni][nj]) {
+                    dist[ni][nj] = newEffort;
+                    pq.push({newEffort, ni, nj});
+                }
+            }
+        }
+
+        return dist[n-1][m-1];
+    }
+};
+```
+
+---
+
+### Dry Run — Example 1
+
+```
+heights = [[1,2,2],
+           [3,8,2],
+           [5,3,5]]
+
+dist = [[0,  INF, INF],
+        [INF,INF, INF],
+        [INF,INF, INF]]
+
+pq = [{0, 0,0}]
+```
+
+```
+pop {0, 0,0}:
+  →(0,1): effort=max(0,|1-2|)=1 < INF → dist[0][1]=1, push {1,0,1}
+  →(1,0): effort=max(0,|1-3|)=2 < INF → dist[1][0]=2, push {2,1,0}
+
+pop {1, 0,1}:
+  →(0,2): effort=max(1,|2-2|)=1 < INF → dist[0][2]=1, push {1,0,2}
+  →(1,1): effort=max(1,|2-8|)=6 < INF → dist[1][1]=6, push {6,1,1}
+  →(0,0): effort=max(1,|2-1|)=1 > dist[0][0]=0 → skip
+
+pop {1, 0,2}:
+  →(1,2): effort=max(1,|2-2|)=1 < INF → dist[1][2]=1, push {1,1,2}
+
+pop {1, 1,2}:
+  →(2,2): effort=max(1,|2-5|)=3 < INF → dist[2][2]=3, push {3,2,2}
+  →(1,1): effort=max(1,|2-8|)=6 < dist? no
+
+pop {2, 1,0}:
+  →(2,0): effort=max(2,|3-5|)=2 < INF → dist[2][0]=2, push {2,2,0}
+
+pop {2, 2,0}:
+  →(2,1): effort=max(2,|5-3|)=2 < INF → dist[2][1]=2, push {2,2,1}
+
+pop {2, 2,1}:
+  →(2,2): effort=max(2,|3-5|)=2 < dist[2][2]=3 → dist[2][2]=2, push {2,2,2}
+
+pop {2, 2,2}: ← destination!
+  return 2 ✅
+```
+
+---
+
+### Complexity Comparison
+
+| | Your DFS | Dijkstra |
+|---|---|---|
+| Time | O(4^(N×M)) | O(N×M × log(N×M)) |
+| Space | O(N×M) recursion stack | O(N×M) dist array + heap |
+| Correct? | ✅ but TLE | ✅ optimal |
+| N=100,M=100 | impossible | 10000 × log(10000) ≈ fast |
+
+---
+
+### Key Insight
+
+```
+Standard Dijkstra:   minimise SUM of edge weights
+This problem:        minimise MAX of edge weights
+
+Only change needed:
+dist[v] = dist[u] + weight        ← standard
+dist[v] = max(dist[u], weight)    ← this problem
+
+Same algorithm, one line different ✅
+```
+## Q-->how u get to know it is dijkstra ?? it is not shortest path??
+
+Great question — this is about **pattern recognition**, not just knowing the algorithm name.
+
+---
+
+### Your Objection is Valid
+
+```
+Traditional Dijkstra  →  minimise SUM of weights
+This problem          →  minimise MAXIMUM weight
+
+So yes — it's NOT the standard shortest path problem
+```
+
+But Dijkstra is more general than that. Here's how to see it.
+
+---
+
+### The 3 Signals That Point to Dijkstra
+
+**Signal 1 — Grid or Graph with weighted edges**
+```
+heights[i][j] are different values
+moving between cells has a "cost" (abs difference)
+→ weighted graph problem
+```
+
+**Signal 2 — Find OPTIMAL path from source to destination**
+```
+not asking for ALL paths
+not asking for count of paths
+asking for ONE optimal value along best path
+→ greedy single-source search
+```
+
+**Signal 3 — Optimal substructure exists**
+```
+if the optimal path goes through cell X
+then the sub-path from (0,0) to X
+must also be optimal
+
+this property = Dijkstra works
+```
+
+---
+
+### The Real Question to Ask
+
+Not "is this shortest path?" but:
+
+```
+"Can I make a greedy decision at each step
+ that guarantees the globally optimal answer?"
+         ↓
+        YES → Dijkstra
+```
+
+In this problem:
+
+```
+At each step, always expand the cell
+with the MINIMUM effort so far
+
+Why greedy works:
+  effort can only stay same or increase
+  so the first time you reach destination
+  = guaranteed minimum effort path
+  (same logic as why Dijkstra works for shortest path)
+```
+
+---
+
+### The Abstraction — Dijkstra is Really About This
+
+```
+Standard Dijkstra:
+  dist[v] = best "accumulated value" to reach v
+  "accumulated" = SUM
+
+Generalised Dijkstra:
+  dist[v] = best "accumulated value" to reach v
+  "accumulated" = ANY monotonic function
+
+Monotonic means:
+  going further never makes it better
+  (adding more edges never decreases the cost)
+```
+
+Both SUM and MAX are monotonic:
+
+```
+SUM:  adding positive weights always increases total  ✅
+MAX:  adding more edges never decreases the maximum  ✅
+```
+
+So Dijkstra works for both.
+
+---
+
+### The Pattern Map
+
+Whenever you see these problem types — think Dijkstra:
+
+```
+"minimum cost path"          → dist = sum        standard Dijkstra
+"minimum effort path"        → dist = max        this problem
+"minimum bottleneck path"    → dist = max        same pattern
+"minimum time with delays"   → dist = sum+delay  modified Dijkstra
+"minimum multiplications"    → dist = level      BFS (all equal weight)
+"safest path"                → dist = max prob   Dijkstra with max
+```
+
+---
+
+### How to Recognise in an Interview — 3 Questions
+
+```
+Q1: Is there a graph or grid with varying costs between nodes?
+    YES → not plain BFS (BFS = equal weights only)
+
+Q2: Am I optimising one path from source to destination?
+    YES → not DP on all paths, not DFS brute force
+
+Q3: Does "expanding the cheapest option first" make sense?
+    YES → Dijkstra
+
+All three YES → Dijkstra (possibly with modified accumulation)
+```
+Great — let me explain each point deeply with intuition.
+
+---
+
+### Q1 — Why Varying Costs Mean BFS Fails
+
+**BFS assumes all edges cost the same.**
+
+```
+BFS explores level by level:
+Level 1 = all nodes 1 step away
+Level 2 = all nodes 2 steps away
+...
+First time you reach destination = shortest path ✅
+```
+
+This works ONLY when every step costs the same:
+
+```
+BFS on unweighted graph:
+A →(1)→ B →(1)→ D
+A →(1)→ C →(1)→(1)→ D
+
+BFS correctly finds A→B→D = 2 steps ✅
+```
+
+Now add varying weights:
+
+```
+BFS on weighted graph:
+A →(1)→ B →(1)→ D    total = 2
+A →(10)→ C →(1)→ D   total = 11
+
+BFS sees both paths as "2 levels deep"
+treats them as equal cost ❌
+returns wrong answer
+```
+
+```
+Applied to this problem:
+moving from height 1 to height 2 = cost 1
+moving from height 1 to height 8 = cost 7
+
+BFS treats BOTH as "one step"
+has no way to prefer the cheaper move
+→ wrong answer guaranteed ❌
+```
+
+**The rule:**
+```
+All edges equal weight  →  BFS
+Edges have different weights  →  Dijkstra
+```
+
+---
+
+### Q2 — Why "One Optimal Path" Rules Out DP and DFS
+
+**DFS brute force** explores every possible path:
+
+```
+Grid 3×3 → could have thousands of paths
+Grid 100×100 → astronomical number of paths
+DFS visits all of them → exponential time ❌
+
+Your original solution was DFS
+Works for tiny inputs, TLEs on large ones
+```
+
+**DP on all paths** works when:
+
+```
+You need answers for ALL sources or ALL destinations
+Example: "find shortest path from every node to every other"
+→ Floyd Warshall (DP)
+
+But here: fixed source (0,0), fixed destination (n-1,m-1)
+Computing answers for ALL cells is wasteful
+→ DP overkill ❌
+```
+
+**Dijkstra** works because:
+
+```
+Single source (0,0) → single destination (n-1,m-1)
+Only need ONE optimal path
+Don't care about suboptimal paths at all
+→ Dijkstra explores only promising paths
+→ stops the moment destination is reached
+→ never wastes time on bad paths
+```
+
+```
+DFS:       explores ALL paths         O(4^(N×M))
+DP:        computes ALL subproblems   O(N²×M²)
+Dijkstra:  explores OPTIMAL paths     O(N×M×log(N×M))
+```
+
+---
+
+### Q3 — Why "Expand Cheapest First" Guarantees Optimal Answer
+
+This is the heart of Dijkstra. Let me build the intuition slowly.
+
+**Imagine you're the hiker.**
+
+You're standing at (0,0). You can see all your immediate neighbours. Which one do you step to first?
+
+```
+Neighbour A: effort = 1
+Neighbour B: effort = 7
+```
+
+You step to A first — effort 1.
+
+Now from A you can reach more neighbours. You always pick the globally cheapest unvisited cell next.
+
+**Why does this work?**
+
+```
+Key property: effort never decreases as you walk further
+
+If current effort to reach cell X = 3
+Any path continuing from X has effort >= 3
+(because effort = MAX, adding more steps never reduces MAX)
+
+So if cell X has the minimum effort among all
+cells in the priority queue right now...
+
+No future path can improve on it
+Because future steps can only keep effort same or increase it
+
+→ the first time you pop a cell from the heap
+  = you have found the optimal effort to that cell
+  = never need to visit it again ✅
+```
+
+**Concrete example:**
+
+```
+heap = [{effort=1, cell=A}, {effort=3, cell=B}, {effort=7, cell=C}]
+
+Pop A (effort=1):
+  Can any other path reach A with effort < 1?
+  NO — because B costs 3 and C costs 7 to reach
+  Any path through B or C to A costs at least 3
+  So effort=1 to A is FINAL ✅
+
+Pop B (effort=3):
+  Similarly — effort=3 to B is FINAL ✅
+```
+
+**What if we expanded B before A?** (wrong order)
+
+```
+We'd say "effort to reach further cells via B = 3"
+But later we find A with effort=1
+Cells reachable via A might have effort=2
+Which is LESS than 3
+So our earlier answer via B was WRONG ❌
+
+→ expanding cheapest first prevents this mistake
+```
+
+---
+
+### The Three Questions as a Flowchart
+
+```
+See a path problem
+        │
+        ▼
+Varying edge weights?
+   │              │
+  NO             YES
+   │              │
+  BFS             ▼
+           Single source to
+           single destination?
+              │         │
+             YES        NO
+              │         │
+              ▼      Floyd Warshall
+        Greedy expansion    or Bellman Ford
+        makes sense?
+           │       │
+          YES      NO
+           │       │
+        Dijkstra   DP / other
+```
+
+---
+
+### One-Line Summary for Each
+
+```
+Q1 — varying weights?
+     BFS is blind to cost differences → need cost-aware search
+
+Q2 — single optimal path?
+     DFS wastes time on bad paths
+     DP wastes time on irrelevant subproblems
+     Dijkstra targets exactly what you need
+
+Q3 — expand cheapest first?
+     Effort/cost is monotonic — never decreases going forward
+     So cheapest current option = already optimal for that cell
+     Greedy choice is globally safe → Dijkstra correct
+```
+---
+
+### Applied to This Problem
+
+```
+Q1: Grid with abs(height difference) as edge cost?   YES ✅
+Q2: Find optimal single path 0,0 to n-1,m-1?        YES ✅
+Q3: Always expand minimum effort cell first?
+    → if I expand minimum effort first,
+      can any other path give less effort later?
+    → NO — because effort is MAX, it never decreases
+    → so minimum effort cell = already optimal      YES ✅
+
+→ Dijkstra ✅
+```
+
+---
+
+### The One-Line Intuition
+
+```
+Dijkstra works whenever:
+"the best partial path to a node
+ will always be part of the best full path"
+
+This is true for SUM (positive weights)
+This is true for MAX (any weights)
+This is why both use Dijkstra
+```
+
+The moment you see **optimal path** + **weighted edges** + **greedy expansion makes sense** — reach for Dijkstra, then just figure out what "distance" means in that specific problem.
+
+
+## Dijkstra
 
 
 
+## Dijkstra's Algorithm — Complete Guide
+
+### What Problem Does It Solve?
+
+```
+Given a weighted graph
+Find shortest path from ONE source to ALL other nodes
+Edge weights must be NON-NEGATIVE
+```
+
+### The Core Idea — Always Expand Cheapest First
+
+Think of it like **water flowing** from the source:
+
+```
+Water always takes the path of least resistance
+It reaches nearby nodes first
+Then gradually spreads to farther nodes
+The first time water reaches a node = shortest path ✅
+```
+
+---
+
+### The Data Structures
+
+```
+dist[]   → shortest distance found so far to each node
+           initially INF for all, 0 for source
+
+visited[] → whether node's shortest distance is FINALISED
+            once popped from heap = finalised forever
+
+min-heap  → always gives the node with minimum distance next
+            {distance, node}
+```
 
 
+---
 
+### The Algorithm Steps
+
+```
+1. dist[source] = 0, push {0, source} to heap
+2. pop minimum {d, u} from heap
+3. if u already visited → skip (stale entry)
+4. mark u visited
+5. for each neighbour v of u:
+      if dist[u] + weight(u,v) < dist[v]:
+          dist[v] = dist[u] + weight(u,v)
+          push {dist[v], v} to heap
+6. repeat until heap empty
+```
+![alt text](image-10.png)
+
+![alt text](image-11.png)
+
+![alt text](image-12.png)
+
+
+## Q--> in dry runn in step 3 how u can say  dist[1]=4 is final?? it an be changed later?
+
+Excellent question — this is the **core proof** of why Dijkstra works.
+
+---
+
+### Your Doubt
+
+```
+Step 3: we pop {4, node=1}
+You ask: how do we KNOW dist[1]=4 is final?
+         what if some other path gives dist[1] < 4 later?
+```
+
+---
+
+### The Proof — Why It Cannot Be Improved
+
+When we pop node 1 with dist=4, look at what's left in the heap:
+
+```
+heap = [{4, node=1}, {8, node=2}]
+
+Everything remaining in heap has distance >= 4
+```
+
+Now ask: **can any future path reach node 1 with distance < 4?**
+
+```
+Any path to node 1 must go THROUGH some node in the heap
+The cheapest node in heap right now = dist 4
+
+To reach node 1 via any other route:
+  must pass through heap node first  (dist >= 4)
+  then travel more edges             (weight >= 0)
+
+total = dist of heap node + edge weights
+      >= 4 + 0
+      >= 4
+```
+
+So no future path can give dist[1] < 4. **4 is already optimal.**
+
+---
+
+### The Key Assumption Hidden Here
+
+```
+edge weights >= 0
+```
+
+This is EVERYTHING. If weights are non-negative:
+
+```
+going through more edges NEVER decreases distance
+so the minimum in heap RIGHT NOW = globally optimal
+```
+
+If weights could be negative:
+
+```
+dist of heap node = 4
+edge weight = -10
+total = 4 + (-10) = -6 < 4  ← could improve!
+
+→ Dijkstra breaks with negative weights
+→ use Bellman Ford instead
+```
+
+---
+
+### Visualising Why Finality Works
+
+```
+Source = 0,  dist[1] = 4 just popped
+
+All undiscovered paths to node 1 look like:
+
+0 ──?──► X ──?──► ... ──?──► 1
+          ↑
+     must pass through
+     some node in heap
+     cheapest = dist 4
+
+path cost = dist[X] + remaining edges
+          ≥ 4       + 0
+          ≥ 4
+
+Cannot be less than 4  ✅
+So 4 is FINAL the moment it's popped
+```
+
+---
+
+### One Line Summary
+
+```
+Popped node = final  because:
+
+  all other paths to it cost >= current heap minimum
+  + non-negative edges on top of that
+  = can never be cheaper than what we already found
+```
+
+This is the **entire correctness proof of Dijkstra** in one paragraph. The non-negative weight constraint is not optional — it is what makes the greedy choice safe at every step.
+
+![alt text](image-13.png)
+
+![alt text](image-14.png)
+
+![alt text](image-15.png)
+
+![alt text](image-16.png)
+---
+
+### The Code
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<int> dijkstra(int src, int n, vector<vector<pair<int,int>>>& adj) {
+
+    vector<int> dist(n, INT_MAX);
+    dist[src] = 0;
+
+    // min heap {distance, node}
+    priority_queue<pair<int,int>,
+                   vector<pair<int,int>>,
+                   greater<>> pq;
+    pq.push({0, src});
+
+    while (!pq.empty()) {
+        auto [d, u] = pq.top();
+        pq.pop();
+
+        // stale entry — already found better path
+        if (d > dist[u]) continue;
+
+        for (auto [v, w] : adj[u]) {
+            if (dist[u] + w < dist[v]) {
+                dist[v] = dist[u] + w;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+    return dist;
+}
+```
+
+---
+
+### Full Dry Run Table
+
+| Step | Pop | Neighbour | Old dist | New dist | Action |
+|---|---|---|---|---|---|
+| 1 | init | — | all ∞ | dist[0]=0 | push {0,0} |
+| 2 | {0,0} | 1 (w=4) | ∞ | 4 | update ✅ |
+| 2 | {0,0} | 2 (w=8) | ∞ | 8 | update ✅ |
+| 3 | {4,1} | 3 (w=7) | ∞ | 11 | update ✅ |
+| 3 | {4,1} | 2 (w=9) | 8 | 13 | skip ❌ |
+| 4 | {8,2} | 3 (w=2) | 11 | 10 | update ✅ improved! |
+| 5 | {10,3} | 4 (w=5) | ∞ | 15 | update ✅ |
+| 6 | {11,3} | — | 10 | — | stale, skip |
+| 7 | {15,4} | — | — | — | done ✅ |
+
+**Final distances from node 0:**
+
+```
+node 0 → 0
+node 1 → 4
+node 2 → 8
+node 3 → 10   (via 0→2→3, not 0→1→3)
+node 4 → 15
+```
+
+---
+
+### The Stale Entry — Most Asked Interview Question
+
+```cpp
+if (d > dist[u]) continue;   // why is this needed?
+```
+
+When we updated `dist[3]` from 11 to 10, the old entry `{11, 3}` is **still sitting in the heap**. We cannot remove it. So when it gets popped:
+
+```
+d=11, dist[3]=10
+11 > 10 → this is stale → skip ✅
+
+Without this check:
+we'd reprocess node 3 unnecessarily
+push its neighbours again with wrong distances ❌
+```
+
+---
+
+### Why Negative Weights Break Dijkstra
+
+```
+Graph: 0 →(4)→ 1 →(-10)→ 2
+                0 →(2)→ 2
+
+Dijkstra pops 2 with dist=2, marks it FINAL
+Later finds path 0→1→2 = 4+(-10) = -6 which is BETTER
+But node 2 is already finalised — too late ❌
+
+Negative weights = use Bellman Ford instead
+```
+
+---
+
+### Complexity
+
+```
+V = vertices, E = edges
+
+Time:  O((V + E) log V)
+         ↑           ↑
+    each node    each edge push
+    popped once  to heap = log V
+
+Space: O(V + E)
+         ↑    ↑
+       dist  heap + adjacency list
+```
