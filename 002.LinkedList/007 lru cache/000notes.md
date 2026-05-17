@@ -1279,4 +1279,90 @@ minFreq = 1;  // on every new put
 
 > New insertions always reset `minFreq` to 1 because the new node starts at frequency 1 — which is by definition the new minimum.
 
+
+### `putIfAbsent(key, value)`
+
+Simple one liner:
+
+```java
+map.putIfAbsent(key, value)
+// "put this value ONLY IF key doesn't already exist"
+```
+
+---
+
+### Compared to regular `put`
+
+```java
+// regular put — ALWAYS overwrites
+map.put(key, value);        // replaces existing value ❌
+
+// putIfAbsent — only inserts if missing
+map.putIfAbsent(key, value); // keeps existing value ✅
+```
+
+---
+
+### Concrete Example
+
+```java
+HashMap<Integer, String> map = new HashMap<>();
+map.put(1, "hello");
+
+map.put(1, "world");          // overwrites → map = {1:"world"}
+
+map.putIfAbsent(1, "again");  // key exists → does NOTHING
+                               // map stays {1:"world"}
+
+map.putIfAbsent(2, "new");    // key missing → inserts
+                               // map = {1:"world", 2:"new"}
+```
+
+---
+
+### How it's Used in LFU Code
+
+```java
+freqMap.putIfAbsent(node.freq, new DLL());
+freqMap.get(node.freq).addFirst(node);
+```
+
+```
+Line 1: "if freqMap doesn't have a list for this frequency
+         create a new empty DLL for it
+         if it already has one — leave it alone"
+
+Line 2: now safely get that list and add node to it
+
+Without putIfAbsent you'd have to write:
+  if (!freqMap.containsKey(node.freq)) {
+      freqMap.put(node.freq, new DLL());
+  }
+  freqMap.get(node.freq).addFirst(node);
+
+putIfAbsent collapses those 3 lines into 1 ✅
+```
+
+---
+
+### Return Value
+
+```java
+// putIfAbsent returns the EXISTING value if key present
+// returns null if key was absent (just inserted)
+
+String old = map.putIfAbsent(1, "hello");
+// old = null    → key was absent, inserted successfully
+// old = "hello" → key existed, nothing changed
+```
+
+---
+
+### One Line Summary
+
+```
+put(k,v)          → always insert/overwrite
+putIfAbsent(k,v)  → insert ONLY if key missing, skip if exists
+```
+
 ![alt text](<005 lru cache_240218_120443 (1)(12).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(13).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(14).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(15).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(16).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(17).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(18).jpg>)
