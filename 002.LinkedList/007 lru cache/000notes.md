@@ -795,6 +795,389 @@ LFU tracks **two dimensions** — frequency AND time (for tie-breaking). You nee
 
 ![alt text](image-6.png)
 
+
+## LFU Cache — Complete Java Guide
+
+### Quick Recap — LFU vs LRU
+
+```
+LRU → evict item unused for LONGEST TIME
+LFU → evict item used FEWEST TIMES
+
+LRU asks: "when was it last used?"
+LFU asks: "how many times was it used?"
+```
+
+---
+
+### Why LFU Needs More Data Structures
+
+```
+LRU needs:
+  1 HashMap  (key → node)
+  1 DLL      (order by time)
+
+LFU needs:
+  HashMap 1  (key → node)           find node by key
+  HashMap 2  (freq → DLL of nodes)  group nodes by frequency
+  int minFreq                        track which freq to evict from
+```
+
+The extra complexity comes from tracking **two dimensions** — frequency AND time (for tie-breaking within same frequency).
+
+---
+
+### The Three Rules
+
+```
+Rule 1: get(key)
+  → find node
+  → increment its frequency
+  → move it from freqMap[f] to freqMap[f+1]
+  → update minFreq if freqMap[f] becomes empty
+
+Rule 2: put(key) — key exists
+  → update value
+  → same as get (increment frequency)
+
+Rule 3: put(key) — new key, cache full
+  → evict from freqMap[minFreq]
+  → evict the TAIL of that list (LRU within same freq)
+  → insert new node into freqMap[1]
+  → minFreq = 1 (new node always starts at freq 1)
+```
+
+---
+
+### The Code
+
+```java
+import java.util.*;
+
+class LFUCache {
+
+    // Node for doubly linked list
+    private class Node {
+        int key, val, freq;
+        Node prev, next;
+
+        Node(int key, int val) {
+            this.key  = key;
+            this.val  = val;
+            this.freq = 1;       // new node always starts at freq 1
+            this.prev = null;
+            this.next = null;
+        }
+    }
+
+    // Doubly Linked List — tracks order within same frequency
+    // head.next = MRU,  tail.prev = LRU
+    private class DLL {
+        Node head, tail;
+        int size;
+
+        DLL() {
+            head = new Node(-1, -1);   // dummy head
+            tail = new Node(-2, -2);   // dummy tail
+            head.next = tail;
+            tail.prev = head;
+            size = 0;
+        }
+
+        // add node right after dummy head (MRU position)
+        void addFirst(Node node) {
+            Node next = head.next;
+            node.prev = head;
+            node.next = next;
+            next.prev  = node;
+            head.next  = node;
+            size++;
+        }
+
+        // remove any node from list
+        void removeNode(Node node) {
+            node.prev.next = node.next;
+            node.next.prev = node.prev;
+            node.prev = null;
+            node.next = null;
+            size--;
+        }
+
+        // remove and return LRU node (tail.prev)
+        Node removeLast() {
+            if (size == 0) return null;
+            Node lru = tail.prev;
+            removeNode(lru);
+            return lru;
+        }
+
+        boolean isEmpty() {
+            return size == 0;
+        }
+    }
+
+    private HashMap<Integer, Node> keyMap;    // key → node
+    private HashMap<Integer, DLL>  freqMap;   // freq → DLL
+    private int capacity;
+    private int minFreq;
+
+    public LFUCache(int capacity) {
+        this.capacity = capacity;
+        this.minFreq  = 0;
+        keyMap  = new HashMap<>();
+        freqMap = new HashMap<>();
+    }
+
+    // ── core helper: increment frequency of a node ──────────
+    private void updateFreq(Node node) {
+        int oldFreq = node.freq;
+
+        // remove from old freq bucket
+        DLL oldList = freqMap.get(oldFreq);
+        oldList.removeNode(node);
+
+        // if old bucket is now empty AND it was the minFreq bucket
+        // minFreq must increase by 1
+        if (oldList.isEmpty() && oldFreq == minFreq) {
+            minFreq++;
+        }
+
+        // move to new freq bucket
+        node.freq++;
+        freqMap.putIfAbsent(node.freq, new DLL());
+        freqMap.get(node.freq).addFirst(node);
+    }
+
+    // ── get ─────────────────────────────────────────────────
+    public int get(int key) {
+        if (!keyMap.containsKey(key)) return -1;
+
+        Node node = keyMap.get(key);
+        updateFreq(node);           // increment frequency
+        return node.val;
+    }
+
+    // ── put ─────────────────────────────────────────────────
+    public void put(int key, int value) {
+
+        if (capacity <= 0) return;
+
+        // key exists → update value and frequency
+        if (keyMap.containsKey(key)) {
+            Node node = keyMap.get(key);
+            node.val  = value;
+            updateFreq(node);
+            return;
+        }
+
+        // cache full → evict LFU node
+        if (keyMap.size() >= capacity) {
+            DLL minList = freqMap.get(minFreq);
+            Node evicted = minList.removeLast();  // LRU within minFreq
+            keyMap.remove(evicted.key);
+        }
+
+        // insert new node
+        Node newNode = new Node(key, value);
+        keyMap.put(key, newNode);
+        freqMap.putIfAbsent(1, new DLL());
+        freqMap.get(1).addFirst(newNode);
+        minFreq = 1;                // new node always resets minFreq to 1
+    }
+}
+```
+
+---
+
+### How Every Piece Works
+
+#### keyMap — finds node in O(1)
+
+```
+keyMap = {
+  1 → Node(key=1, val=10, freq=2)
+  2 → Node(key=2, val=20, freq=1)
+  3 → Node(key=3, val=30, freq=3)
+}
+
+get(2) → keyMap.get(2) → node directly → O(1)
+```
+
+#### freqMap — groups nodes by frequency
+
+```
+freqMap = {
+  1 → DLL: [HEAD ↔ node2 ↔ TAIL]
+  2 → DLL: [HEAD ↔ node1 ↔ TAIL]
+  3 → DLL: [HEAD ↔ node3 ↔ TAIL]
+}
+
+within each DLL:
+  head.next = most recently used
+  tail.prev = least recently used (evict this on tie)
+```
+
+#### minFreq — tells us where to evict from
+
+```
+minFreq = 1
+
+evict → freqMap.get(1).removeLast()
+        ↑ the LRU node among all freq=1 nodes
+
+why minFreq is always correct:
+  only decreases when new node inserted (resets to 1)
+  only increases by 1 when minFreq bucket becomes empty
+  never jumps or skips
+```
+
+---
+
+### Full Dry Run
+
+```
+capacity = 2
+Operations: put(1,10), put(2,20), get(1), put(3,30), get(2)
+```
+
+**`put(1, 10)`**
+
+```
+new node → freq=1
+keyMap  = {1→Node(1,10,freq=1)}
+freqMap = {1→[HEAD↔Node1↔TAIL]}
+minFreq = 1
+```
+
+**`put(2, 20)`**
+
+```
+new node → freq=1
+keyMap  = {1→Node1, 2→Node2}
+freqMap = {1→[HEAD↔Node2↔Node1↔TAIL]}
+                    ↑MRU    ↑LRU
+minFreq = 1
+```
+
+**`get(1)`**
+
+```
+found Node1 in keyMap
+updateFreq(Node1):
+  remove Node1 from freqMap[1]
+  freqMap[1] = [HEAD↔Node2↔TAIL]  ← not empty, minFreq stays 1
+  Node1.freq = 2
+  add Node1 to freqMap[2]
+
+keyMap  = {1→Node1(freq=2), 2→Node2(freq=1)}
+freqMap = {1→[HEAD↔Node2↔TAIL],
+           2→[HEAD↔Node1↔TAIL]}
+minFreq = 1
+return 10 ✅
+```
+
+**`put(3, 30)` — cache FULL**
+
+```
+size=2 == capacity=2 → must evict
+
+evict from freqMap[minFreq=1]:
+  removeLast() → Node2 (tail.prev)
+  keyMap.remove(2)
+
+insert Node3(key=3,val=30,freq=1):
+  freqMap[1].addFirst(Node3)
+  minFreq = 1   ← always reset on new insert
+
+keyMap  = {1→Node1(freq=2), 3→Node3(freq=1)}
+freqMap = {1→[HEAD↔Node3↔TAIL],
+           2→[HEAD↔Node1↔TAIL]}
+minFreq = 1
+```
+
+**`get(2)` — evicted key**
+
+```
+keyMap.containsKey(2) = false
+return -1 ✅
+```
+
+---
+
+### The updateFreq — Most Critical Method
+
+```java
+private void updateFreq(Node node) {
+    int oldFreq = node.freq;
+
+    // Step 1: remove from current bucket
+    DLL oldList = freqMap.get(oldFreq);
+    oldList.removeNode(node);
+
+    // Step 2: update minFreq ONLY if this bucket
+    //         is now empty AND was the minimum
+    if (oldList.isEmpty() && oldFreq == minFreq) {
+        minFreq++;             // can only go up by 1
+    }                          // because next freq = oldFreq+1
+
+    // Step 3: add to next frequency bucket
+    node.freq++;
+    freqMap.putIfAbsent(node.freq, new DLL());
+    freqMap.get(node.freq).addFirst(node);
+}
+```
+
+**Why minFreq only increases by 1:**
+
+```
+node moves from freq f → freq f+1
+if freq f bucket is now empty:
+  minimum possible freq = f+1
+  so minFreq = f+1 = minFreq+1
+
+it CANNOT jump to f+2 or higher because:
+  we only moved ONE node
+  that node went to f+1 specifically
+  so f+1 bucket definitely has at least one node
+```
+
+---
+
+### Complexity
+
+| Operation | Time | Why |
+|---|---|---|
+| `get` | O(1) | keyMap lookup + DLL operations |
+| `put` | O(1) | keyMap + freqMap + DLL all O(1) |
+| Space | O(capacity) | keyMap + freqMap store at most capacity nodes |
+
+---
+
+### LRU vs LFU — When Each Fails
+
+```
+LRU failure case:
+  put(1), put(2)
+  get(1) × 100 times   ← node 1 used heavily
+  put(3)               ← evicts node 2 (LRU) ✅ correct
+
+  but what if node 2 is important and node 1 is just
+  being polled in a loop? LRU doesn't care about frequency
+
+LFU failure case:
+  put(1), put(2)
+  get(1) × 5           ← node 1 freq=6
+  ← now node 1 is "famous" and never gets evicted
+  even if it's not needed anymore
+  LFU suffers from "frequency bias" for old popular items
+```
+
+```
+Use LRU when: recent access = relevant (browser cache)
+Use LFU when: frequency = relevant (CDN, music streaming)
+```
+
+
 ### The Code
 
 ```cpp
