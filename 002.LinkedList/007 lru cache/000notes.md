@@ -1,7 +1,10 @@
 # Notes
 ![alt text](<005 lru cache_240218_120443 (1).jpg>)
 
-![alt text](<005 lru cache_240218_120443 (1)(1).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(2).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(3).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(4).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(5).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(6).jpg>) 
+![alt text](<005 lru cache_240218_120443 (1)(1).jpg>) 
+![alt text](<005 lru cache_240218_120443 (1)(2).jpg>)
+ ![alt text](<005 lru cache_240218_120443 (1)(3).jpg>) 
+ ![alt text](<005 lru cache_240218_120443 (1)(4).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(5).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(6).jpg>) 
 
 ## LRU Cache — Complete Guide
 
@@ -48,6 +51,236 @@ Neither alone works. Together they do.Here is the internal structure first — h
 
 ![alt text](<005 lru cache_240218_120443 (1)(9).jpg>) 
 
+Great question — let me build the intuition from scratch.
+
+---
+
+### What Operations LRU Cache Needs
+
+```
+get(key)  → find value by key         must be O(1)
+            mark as recently used      must be O(1)
+
+put(key)  → insert or update           must be O(1)
+            evict LRU if full          must be O(1)
+```
+
+ALL four operations must be **O(1)**. This constraint drives everything.
+
+---
+
+### Try Each Structure Alone — See Why It Fails
+
+---
+
+#### Only HashMap
+
+```
+get(key) → O(1) ✅  perfect for lookup
+
+but...
+
+"mark as recently used" — how?
+"find least recently used" — how?
+
+HashMap has NO concept of order
+it's just key→value pairs
+no way to know which was used least recently ❌
+```
+
+---
+
+#### Only Array
+
+```
+idea: keep array sorted by usage
+most recent at front, LRU at back
+
+get(key):
+  scan array to find key → O(n) ❌ too slow
+
+evict LRU:
+  remove last element → O(1) ✅
+
+"mark recently used":
+  find element → O(n) ❌
+  move to front → O(n) shift ❌
+```
+
+---
+
+#### Only Linked List
+
+```
+get(key):
+  scan from head to find key → O(n) ❌
+
+evict LRU:
+  remove tail → O(1) ✅
+
+"mark recently used":
+  move node to head → O(1) IF you have the pointer ✅
+  but FINDING the node is O(n) ❌
+```
+
+---
+
+#### Only Queue / Stack
+
+```
+Queue naturally tracks order
+but no O(1) lookup by key ❌
+no O(1) removal from middle ❌
+```
+
+---
+
+### The Problem is Always Two Things
+
+```
+Every structure fails because the problem needs TWO things:
+
+1. FAST LOOKUP by key        → need key→value mapping
+2. FAST ORDER TRACKING       → need to know who was used least recently
+                               AND be able to move things around quickly
+```
+
+No single structure does both. So combine two.
+
+---
+
+### Why HashMap Specifically
+
+```
+HashMap gives:
+  key → node pointer         O(1) lookup ✅
+  key → node pointer         O(1) insert ✅
+  key → node pointer         O(1) delete ✅
+
+The VALUE stored is not just the cache value
+it's a POINTER to the node in the linked list
+
+so HashMap answers: "where is this key in the list?"
+in O(1) time
+```
+
+---
+
+### Why Doubly Linked List Specifically
+
+```
+Need to track ORDER of usage:
+  most recently used → head
+  least recently used → tail (evict from here)
+
+Need to MOVE a node to head when accessed:
+  this requires removing it from current position
+  and inserting at head
+
+Removing from middle of list needs:
+  pointer to prev node   ← why DOUBLY linked
+  pointer to next node   ← why DOUBLY linked
+
+  node.prev.next = node.next   // bypass node
+  node.next.prev = node.prev   // bypass node
+  → O(1) removal ✅
+
+Singly linked list CANNOT remove from middle in O(1)
+because you don't know the prev node ❌
+```
+
+---
+
+### Why Not Other Ordered Structures
+
+```
+TreeMap / Balanced BST:
+  ordered ✅
+  but O(log n) operations ❌  not fast enough
+
+Array with timestamps:
+  store last-used time with each entry
+  find minimum timestamp = O(n) ❌
+
+Deque:
+  O(1) at both ends ✅
+  but O(n) removal from middle ❌
+
+Doubly Linked List:
+  O(1) removal from middle ✅ (with pointer)
+  O(1) insert at head ✅
+  O(1) remove from tail ✅
+  maintains order ✅
+```
+
+---
+
+### How They Work Together
+
+```
+HashMap stores:      key → pointer to Node in list
+LinkedList stores:   Nodes in order of usage
+
+GET operation:
+  HashMap finds the node in O(1)     ← HashMap's job
+  LinkedList moves it to head O(1)   ← LinkedList's job
+
+PUT operation (new key):
+  Create node, add to head of list   ← LinkedList's job
+  Store key→node in HashMap          ← HashMap's job
+  If full: remove tail node          ← LinkedList's job
+           remove key from HashMap   ← HashMap's job
+
+Every single step = O(1) ✅
+```
+
+---
+
+### The Perfect Analogy
+
+Think of a **library with a special shelf:**
+
+```
+HashMap  =  card catalog
+            "which shelf position is this book?"
+            instant lookup by title
+
+Doubly Linked List  =  the shelf itself
+            books arranged by recently used
+            most recent at left end
+            least recent at right end
+            any book can be pulled out and
+            moved to left end instantly
+            (because each book knows its
+             left AND right neighbour)
+
+Together:
+  "get book X"  → catalog tells you exact position O(1)
+                → pull it out and put at left end  O(1)
+
+  "no space"    → throw out rightmost book         O(1)
+                → remove from catalog              O(1)
+```
+
+---
+
+### Summary
+
+| Need | Why | Structure |
+|---|---|---|
+| Find key instantly | scan would be O(n) | HashMap |
+| Track usage order | know who's LRU | Doubly Linked List |
+| Remove from middle | need prev AND next pointer | **Doubly** (not singly) linked |
+| Move to front | reorder after access | Linked List head insert |
+| Evict LRU | always remove oldest | Linked List tail remove |
+
+```
+HashMap alone     → fast lookup, no order      ❌
+LinkedList alone  → has order, slow lookup     ❌
+HashMap + DLL     → fast lookup + fast order   ✅ O(1) everything
+```
+
+The combination is not arbitrary — each structure covers **exactly the weakness** of the other.
 
 ## Rajneesh code
 ```java
@@ -295,6 +528,220 @@ private void removeNode(Node node){
 * **Hard to Read:** The logic is buried under validational checks.
 * **Slower (slightly):** CPU branch prediction hates excessive `if-else` chains.
 
+
+## LRU Cache — Two Implementations Compared
+
+### The Core Difference in One Line
+
+```
+Code 1 (yours):  uses DUMMY head and tail nodes
+Code 2:          uses REAL head and tail, handles edge cases manually
+```
+
+---
+
+### Side by Side Comparison
+
+#### Constructor
+
+**Code 1 — dummy nodes:**
+```java
+head = new Node(-1, -1);   // dummy head
+tail = new Node(-2, -2);   // dummy tail
+head.next = tail;
+tail.prev = head;
+```
+
+**Code 2 — no dummies:**
+```java
+// head and tail start as null
+// no pre-wiring needed
+```
+
+---
+
+#### removeNode
+
+**Code 1 — always clean, no edge cases:**
+```java
+private void removeNode(Node node) {
+    Node prevNode = node.prev;
+    Node nextNode = node.next;
+    prevNode.next = nextNode;    // always works — prev is at worst dummy head
+    nextNode.prev = prevNode;    // always works — next is at worst dummy tail
+    node.next = null;
+    node.prev = null;
+    llSize--;
+}
+```
+
+**Code 2 — must handle every edge case manually:**
+```java
+private void removeNode(Node node) {
+    if (this.linkedListSize == 1)           // only one node
+        this.head = this.tail = null;
+    else if (this.head == node) {           // removing head
+        Node prevNode = node.prev;
+        prevNode.next = node.prev = null;
+        this.head = prevNode;
+    } else if (this.tail == node) {         // removing tail
+        Node nextNode = node.next;
+        nextNode.prev = node.next = null;
+        this.tail = nextNode;
+    } else {                                // middle node
+        Node prevNode = node.prev;
+        Node nextNode = node.next;
+        prevNode.next = nextNode;
+        nextNode.prev = prevNode;
+        node.prev = node.next = null;
+    }
+    this.linkedListSize--;
+}
+```
+
+This is the **biggest difference**. Code 1 eliminates all 4 cases with dummy nodes.
+
+---
+
+#### addFirst
+
+**Code 1 — always clean:**
+```java
+private void addFirst(Node node) {
+    Node nextNode = head.next;    // head is always dummy, never null
+    node.prev = head;
+    node.next = nextNode;
+    nextNode.prev = node;
+    head.next = node;
+    llSize++;
+}
+```
+
+**Code 2 — must handle empty list:**
+```java
+private void addFirst(Node node) {
+    if (this.head == null)              // empty list edge case
+        this.head = this.tail = node;
+    else {
+        this.head.next = node;
+        node.prev = this.head;
+        this.head = node;
+    }
+    this.linkedListSize++;
+}
+```
+
+---
+
+#### put — eviction logic
+
+**Code 1:**
+```java
+if (mp.size() > this.cap) {
+    Node lruNode = this.tail.prev;   // tail.prev = LRU (tail is dummy)
+    removeNode(lruNode);
+    mp.remove(lruNode.key);
+}
+```
+
+**Code 2:**
+```java
+if (map.size() > this.capacity) {
+    Node tail = this.tail;           // tail itself = LRU (no dummy)
+    removeNode(tail);
+    map.remove(tail.key);
+}
+```
+
+---
+
+### Bug in Code 2 ⚠️
+
+```java
+// Code 2 addFirst — head points to MRU
+this.head.next = node;
+node.prev = this.head;
+this.head = node;
+```
+
+Wait — this means head = most recently used. But in removeNode:
+
+```java
+else if (this.head == node) {
+    Node prevNode = node.prev;      // head.prev — but head is MRU
+    prevNode.next = node.prev = null;
+    this.head = prevNode;
+}
+```
+
+The direction is **reversed from Code 1**. Code 2 uses:
+
+```
+head = MRU (most recent)
+tail = LRU (least recent, evict this)
+```
+
+Code 1 uses:
+
+```
+head.next = MRU  (dummy head → first real node = most recent)
+tail.prev = LRU  (last real node → dummy tail = least recent)
+```
+
+Both are valid — just opposite conventions. Easy to get confused when reading.
+
+---
+
+### Complete Comparison Table
+
+| Feature | Code 1 (dummy nodes) | Code 2 (real head/tail) |
+|---|---|---|
+| Dummy nodes | ✅ yes | ❌ no |
+| removeNode cases | 1 case always | 4 cases (empty/head/tail/middle) |
+| addFirst cases | 1 case always | 2 cases (empty/non-empty) |
+| Null pointer risk | ✅ none | ⚠️ must handle carefully |
+| Code length | shorter | longer |
+| Bug surface area | small | larger |
+| Interview preferred | ✅ yes | harder to get right |
+| Head = | dummy | MRU node |
+| Tail = | dummy | LRU node |
+| LRU node | `tail.prev` | `tail` |
+
+---
+
+### The Dummy Node Trick — Why It's Superior
+
+```
+Without dummies — 4 cases in removeNode:
+  1. list has 1 node
+  2. removing head
+  3. removing tail
+  4. removing middle
+
+With dummies — always 1 case:
+  every real node always has a valid prev (at worst = dummy head)
+  every real node always has a valid next (at worst = dummy tail)
+  no null checks ever needed
+
+This is a classic linked list trick worth memorising
+applies to any doubly linked list problem
+```
+
+---
+
+### Verdict
+
+```
+Code 1  →  cleaner, safer, interview recommended
+            dummy nodes eliminate all edge cases
+            removeNode is 6 lines vs 15 lines
+
+Code 2  →  more verbose, more bug-prone
+            valid but harder to write correctly under pressure
+            the 4-case removeNode is easy to mess up in interviews
+```
+
+> If you're ever implementing a doubly linked list from scratch — **always use dummy head and tail**. It makes every operation uniform and eliminates null checks entirely.
 
 # LFU cache
 
