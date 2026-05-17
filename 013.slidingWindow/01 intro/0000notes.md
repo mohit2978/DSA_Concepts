@@ -1,76 +1,409 @@
-# Sliding Window: The Accordion Logic
+## Sliding Window — Complete Pattern Guide
 
-The goal of a Sliding Window is to convert an **$O(N^2)$** "brute force" solution (checking all subarrays) into an **$O(N)$** "linear" solution.
+### The Two Types of Sliding Window
 
-### 1. The Two Main Types
-* **Fixed Window**: The size (K) is constant (e.g., "Find the max sum of any subarray of size 3"). 
-    * *Logic*: Just slide the window by adding the new element and removing the old one.
-* **Dynamic Window**: The size changes based on a condition (e.g., "Find the longest subarray with sum $\le K$").
-    * *Logic*: Expand `right` until the condition breaks, then shrink `left` until it's valid again.
+```
+Type 1 — FIXED size window
+  window size k is given
+  slide one step at a time
+  add right element, remove left element
 
-### 2. Why is it $O(N)$?
-Even though there is a `while` loop inside a `while` loop, each pointer (`left` and `right`) only moves from index `0` to `N` **exactly once**. 
-- Total operations $\approx 2N$, which is **$O(N)$**.
+Type 2 — VARIABLE size window
+  window size changes based on condition
+  expand right always
+  shrink left when condition violated or met
+```
 
-### 3. The "State" of the Window
-The window's "State" can be anything:
-- A `sum` (for numbers).
-- A `HashMap` or `Frequency Array` (for counting unique characters).
-- A `count` of zeros (for "Max consecutive ones" problems).
+---
 
+### The Fixed Window Template
 
-### statoc sliding window
 ```cpp
-long long slidingWindow(vector<int>& arr, int k) {
-    long long currentSum = 0;
-    long long maxSum = 0;
+// find something in every window of size k
+int l = 0;
+// build first window
+for (int r = 0; r < k; r++)
+    // add s[r] to window
 
-    // 1. "Build the Base" (Like pre-calculating base primes)
-    for(int i = 0; i < k; i++) {
-        currentSum += arr[i];
+for (int r = k; r < n; r++) {
+    // add s[r] (new right element)
+    // remove s[l] (old left element)
+    l++;
+    // update answer
+}
+```
+
+---
+
+### The Variable Window Template
+
+```cpp
+int l = 0;
+for (int r = 0; r < n; r++) {
+    // expand: add s[r] to window
+
+    // shrink: while condition violated
+    while (condition violated) {
+        // remove s[l] from window
+        l++;
     }
-    maxSum = currentSum;
+    // update answer (window is now valid)
+}
+```
 
-    // 2. "The Slide" (Like moving the segment from [L, R] to the next block)
-    for(int i = k; i < arr.size(); i++) {
-        // Add the "Entering" element (Right side of window)
-        // Subtract the "Exiting" element (Left side of window)
-        currentSum += arr[i] - arr[i - k];
-        
-        // 3. Update the Result
-        maxSum = max(maxSum, currentSum);
+---
+
+### All Common Patterns — One by One
+
+---
+
+#### Pattern 1 — Fixed Window Maximum/Minimum
+
+**Problem:** Maximum sum subarray of size k
+
+```
+Logic:
+  maintain running sum
+  add new right element
+  subtract old left element
+  track maximum
+```
+
+```cpp
+int maxSumSubarray(vector<int>& arr, int k) {
+    int n = arr.size();
+    int sum = 0, maxSum = 0;
+
+    // build first window
+    for (int i = 0; i < k; i++) sum += arr[i];
+    maxSum = sum;
+
+    for (int r = k; r < n; r++) {
+        sum += arr[r];          // add new right
+        sum -= arr[r - k];      // remove old left
+        maxSum = max(maxSum, sum);
     }
     return maxSum;
 }
 ```
 
-### Dynamic sliding window
+```
+arr = [2,1,5,1,3,2], k=3
+
+window [2,1,5] = 8
+window [1,5,1] = 7
+window [5,1,3] = 9  ← max
+window [1,3,2] = 6
+
+answer = 9
+```
+
+---
+
+#### Pattern 2 — Longest Window Satisfying Condition
+
+**Problem:** Longest substring without repeating characters
+
+```
+Logic:
+  expand right always
+  when duplicate found → shrink left until no duplicate
+  track maximum window size
+```
 
 ```cpp
+int lengthOfLongestSubstring(string s) {
+    unordered_map<char, int> freq;
+    int l = 0, maxLen = 0;
 
-int slidingWindow(vector<int>& nums, int k) {
-    int left = 0, right = 0;
-    int currentSum = 0;
-    int maxLength = 0;
+    for (int r = 0; r < s.size(); r++) {
+        freq[s[r]]++;
 
-    while (right < nums.size()) {
-        // 1. Expand the window
-        currentSum += nums[right];
-
-        // 2. Squeeze the window if it's invalid
-        while (currentSum > k) {
-            currentSum -= nums[left];
-            left++;
+        // shrink until no duplicate
+        while (freq[s[r]] > 1) {
+            freq[s[l]]--;
+            l++;
         }
-
-        // 3. Record the result (Window is now valid)
-        maxLength = max(maxLength, right - left + 1);
-
-        // 4. Move to the next element
-        right++;
+        maxLen = max(maxLen, r - l + 1);
     }
-    return maxLength;
+    return maxLen;
 }
+```
+
+```
+s = "abcabcbb"
+
+r=0: window="a"     valid, len=1
+r=1: window="ab"    valid, len=2
+r=2: window="abc"   valid, len=3
+r=3: window="abca"  'a' duplicate!
+     shrink → l=1, window="bca" valid, len=3
+r=4: window="bcab"  'b' duplicate!
+     shrink → l=2, window="cab" valid, len=3
+...
+answer = 3
+```
+
+---
+
+#### Pattern 3 — Count Windows Satisfying Condition
+
+**Problem:** Number of substrings with all 3 chars (previous problem)
+
+```
+Logic:
+  when window becomes valid
+  count += (n - r)  captures all valid extensions
+  then shrink to find more valid windows
+```
+
+```cpp
+// already covered — the key insight:
+while (valid) {
+    count += (n - r);   // all extensions of current window valid
+    shrink left;
+}
+```
+
+---
+
+#### Pattern 4 — Minimum Window Satisfying Condition
+
+**Problem:** Minimum window substring containing all chars of t
+
+```
+Logic:
+  expand right until window contains all of t
+  then shrink left as much as possible
+  track minimum window size
+```
+
+```cpp
+string minWindow(string s, string t) {
+    unordered_map<char,int> need, have;
+    for (char c : t) need[c]++;
+
+    int formed = 0, required = need.size();
+    int l = 0, minLen = INT_MAX, start = 0;
+
+    for (int r = 0; r < s.size(); r++) {
+        char c = s[r];
+        have[c]++;
+
+        // check if this char's freq matches requirement
+        if (need.count(c) && have[c] == need[c])
+            formed++;
+
+        // shrink while window satisfies condition
+        while (formed == required) {
+            // update minimum
+            if (r - l + 1 < minLen) {
+                minLen = r - l + 1;
+                start = l;
+            }
+            // shrink left
+            have[s[l]]--;
+            if (need.count(s[l]) && have[s[l]] < need[s[l]])
+                formed--;
+            l++;
+        }
+    }
+    return minLen == INT_MAX ? "" : s.substr(start, minLen);
+}
+```
+
+```
+s="ADOBECODEBANC", t="ABC"
+
+expand until "ADOBEC" → has A,B,C ✅
+shrink → "DOBEC" still has A? NO → stop, len=6
+expand → "DOBECODEBA" → has A,B,C ✅
+shrink → "OBECODEBA"→"BECODEBA"→"ECODEBA"→"CODEBA"→"ODEBA"→"DEBA"
+       → "EBA" no C → stop, smallest="BANC" len=4
+answer = "BANC"
+```
+
+---
+
+#### Pattern 5 — Exactly K Condition
+
+**Problem:** Subarrays with exactly k distinct characters
+
+```
+Logic:
+  "exactly k" is hard directly
+  use the trick:
+  exactly(k) = atMost(k) - atMost(k-1)
+```
+
+```cpp
+int atMost(string s, int k) {
+    unordered_map<char,int> freq;
+    int l = 0, count = 0;
+
+    for (int r = 0; r < s.size(); r++) {
+        freq[s[r]]++;
+
+        while (freq.size() > k) {   // more than k distinct
+            freq[s[l]]--;
+            if (freq[s[l]] == 0) freq.erase(s[l]);
+            l++;
+        }
+        count += r - l + 1;        // all windows ending at r
+    }
+    return count;
+}
+
+int exactlyK(string s, int k) {
+    return atMost(s, k) - atMost(s, k-1);
+}
+```
+
+```
+Why r-l+1?
+  window [l,r] valid
+  substrings ending at r: [l,r],[l+1,r],...[r,r]
+  = r-l+1 substrings all valid
+
+Why atMost(k) - atMost(k-1) = exactly(k)?
+  atMost(2) counts windows with 1 or 2 distinct
+  atMost(1) counts windows with exactly 1 distinct
+  difference = windows with exactly 2 distinct ✅
+```
+
+---
+
+#### Pattern 6 — Fixed Window with Sliding Maximum
+
+**Problem:** Maximum in every window of size k (sliding window maximum)
+
+```
+Logic:
+  use a DEQUE (monotonic decreasing)
+  front of deque = maximum of current window
+  remove elements outside window from front
+  remove smaller elements from back (they'll never be max)
+```
+
+```cpp
+vector<int> maxSlidingWindow(vector<int>& arr, int k) {
+    deque<int> dq;    // stores indices
+    vector<int> result;
+
+    for (int r = 0; r < arr.size(); r++) {
+        // remove elements outside window
+        if (!dq.empty() && dq.front() < r - k + 1)
+            dq.pop_front();
+
+        // remove smaller elements from back
+        while (!dq.empty() && arr[dq.back()] < arr[r])
+            dq.pop_back();
+
+        dq.push_back(r);
+
+        // window fully formed
+        if (r >= k - 1)
+            result.push_back(arr[dq.front()]);
+    }
+    return result;
+}
+```
+
+```
+arr=[1,3,-1,-3,5,3,6,7], k=3
+
+r=0: dq=[0]
+r=1: 3>1 → pop 0, dq=[1]
+r=2: dq=[1,2]  window formed → max=arr[1]=3
+r=3: dq=[1,2,3] → max=arr[1]=3
+r=4: 5>all → dq=[4] → max=5
+r=5: dq=[4,5] → max=5
+r=6: 6>all → dq=[6] → max=6
+r=7: 7>all → dq=[7] → max=7
+
+result=[3,3,5,5,6,7]
+```
+
+---
+
+### The Master Decision Table
+
+```
+Read the problem
+      ↓
+Fixed window size k?
+  YES → fixed template, maintain running state
+  NO  ↓
+Find LONGEST window?
+  YES → expand right, shrink when VIOLATED, ans=max(r-l+1)
+  NO  ↓
+Find SHORTEST window?
+  YES → expand until VALID, shrink while VALID, ans=min(r-l+1)
+  NO  ↓
+COUNT windows?
+  "at least" → shrink when valid, count+=(n-r) or count+=(r-l+1)
+  "exactly k" → atMost(k) - atMost(k-1)
+  "at most"  → count+=(r-l+1) directly
+```
+
+---
+
+### Signal Words in Problems
+
+| Problem says | Pattern |
+|---|---|
+| "maximum sum of size k" | fixed window |
+| "longest substring without..." | variable, shrink on violation |
+| "minimum window containing..." | variable, shrink on valid |
+| "number of subarrays with at least..." | count += (n-r) |
+| "number of subarrays with exactly k" | atMost(k)-atMost(k-1) |
+| "maximum in every window of size k" | monotonic deque |
+| "longest subarray with sum ≤ k" | variable, shrink on violation |
+
+---
+
+### The Count Formula Explained Once and For All
+
+```
+count += (r - l + 1)   →  count all windows ENDING at r
+count += (n - r)       →  count all windows STARTING at l
+
+When to use which?
+
+(r-l+1): when window is valid and you want
+          to count all valid substrings ending at r
+          [l..r], [l+1..r], ..., [r..r]
+
+(n-r):   when window is valid and you want
+          to count all valid substrings starting at l
+          [l..r], [l..r+1], ..., [l..n-1]
+
+Both count exactly the right things
+just from different perspectives
+```
+
+---
+
+### Common Mistakes
+
+```
+Mistake 1: updating answer inside while loop
+  wrong  → misses some windows
+  right  → update AFTER while loop (longest)
+           OR inside while loop (shortest/count)
+
+Mistake 2: wrong window size formula
+  size = r - l + 1   ← both endpoints inclusive ✅
+  size = r - l       ← off by one ❌
+
+Mistake 3: not restoring state when shrinking
+  always undo the effect of removing s[l]
+  freq[s[l]]--  before l++
+
+Mistake 4: using wrong condition
+  "at least 1" → shrink when valid (count extensions)
+  "at most k"  → shrink when violated (count current window)
+  easy to swap these ❌
 ```
 
 ![alt text](<012 ptr sliding window_250711_223007_1.jpg>) 
