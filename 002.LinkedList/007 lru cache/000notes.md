@@ -1365,4 +1365,384 @@ put(k,v)          → always insert/overwrite
 putIfAbsent(k,v)  → insert ONLY if key missing, skip if exists
 ```
 
+Yes! Very commonly asked. Here's the honest picture:
+
+---
+
+### Where They're Asked
+
+```
+LRU → extremely common
+LFU → less common but asked at top companies
+```
+
+---
+
+### Company-wise Reality
+
+| Company | LRU | LFU |
+|---|---|---|
+| Google | ✅ very common | ✅ asked |
+| Amazon | ✅ very common | rarely |
+| Microsoft | ✅ common | rarely |
+| Meta | ✅ common | ✅ asked |
+| Uber | ✅ common | rarely |
+| Startups | ✅ sometimes | almost never |
+
+---
+
+### How They're Asked
+
+```
+Level 1 — concept only (most common)
+  "explain how LRU cache works"
+  "what data structures would you use?"
+  "why HashMap + DLL?"
+
+Level 2 — code it (very common)
+  "implement get() and put() in O(1)"
+  usually LRU, sometimes LFU
+
+Level 3 — extend it (senior roles)
+  "how would you make it thread safe?"
+  "how would you distribute it across servers?"
+  "design a cache for 1 million users"
+```
+
+---
+
+### What Interviewers Actually Want to See
+
+```
+For LRU:
+  ✅ why HashMap + DLL (not just HashMap)
+  ✅ why DOUBLY linked (not singly)
+  ✅ why dummy nodes
+  ✅ O(1) for both get and put
+  ✅ clean working code
+
+For LFU:
+  ✅ understanding of 3 data structures
+  ✅ why minFreq is needed
+  ✅ why minFreq resets to 1 on new insert
+  ✅ tie-breaking within same frequency
+```
+
+---
+
+### Frequency of Being Asked
+
+```
+LRU — must know ⭐⭐⭐⭐⭐
+  asked in almost every company
+  one of the most classic DS design problems
+  if you can't do LRU → red flag for interviewers
+
+LFU — good to know ⭐⭐⭐
+  asked at FAANG and product companies
+  shows deeper understanding
+  often asked as follow-up to LRU
+  "now what if we use frequency instead of recency?"
+```
+
+---
+
+### The Typical Interview Flow
+
+```
+Interviewer: "Design a cache"
+You: clarify → "LRU or LFU?"
+Interviewer: "LRU first, then we'll see"
+
+You: explain HashMap + DLL concept
+You: code it up
+Interviewer: "what if two items have same frequency?"
+             → now leading into LFU discussion
+
+This is very common progression
+knowing LFU gives you an edge
+```
+
+---
+
+### Preparation Advice
+
+```
+Priority 1 — LRU (must):
+  understand WHY each structure is used
+  code it without looking
+  handle edge cases (capacity=1, same key put twice)
+
+Priority 2 — LFU (good to have):
+  understand the 3 data structures
+  understand minFreq logic
+  dry run at least once on paper
+
+Priority 3 — extensions (senior roles):
+  thread safety (ReentrantLock, ConcurrentHashMap)
+  distributed cache (Redis, consistent hashing)
+  TTL (time to live) on cache entries
+```
+
+---
+
+### One Honest Take
+
+```
+If you can:
+  explain LRU concept clearly     → clears most interviews
+  code LRU cleanly in O(1)        → clears FAANG interviews
+  explain LFU on top of that      → stands out from other candidates
+  discuss distributed caching     → senior/staff level conversations
+```
+
+LRU is **non-negotiable** for any SDE role at a product company. LFU is a differentiator.
+
+
+
+## Distributed Caching — Interview Guide
+
+### First — What Changes When Cache Goes Distributed?
+
+```
+Single machine LRU/LFU:
+  one box, one cache, one process
+  everything in memory
+  simple ✅
+
+Distributed cache:
+  millions of users
+  one machine = not enough memory
+  one machine = single point of failure
+  need multiple machines working together
+```
+
+---
+
+### The Core Problem — Where Does Key Go?
+
+```
+cache cluster = 5 machines (nodes)
+
+user requests key="user:123"
+which machine holds this key?
+
+you need a rule that:
+  always sends same key to same machine   → consistency
+  spreads keys evenly across machines     → load balance
+  works when machines are added/removed   → flexibility
+```
+
+---
+
+### Naive Solution — Simple Modulo Hashing
+
+```java
+int machineIndex = hash(key) % numberOfMachines;
+```
+
+```
+5 machines:
+  key="user:1"  → hash=101 → 101%5 = 1 → machine 1
+  key="user:2"  → hash=202 → 202%5 = 2 → machine 2
+  key="user:3"  → hash=303 → 303%5 = 3 → machine 3
+```
+
+**Works fine UNTIL a machine is added or removed:**
+
+```
+Machine crashes → now 4 machines
+  101 % 4 = 1  ✅ same
+  202 % 4 = 2  ✅ same
+  303 % 4 = 3  ✅ same
+  404 % 5 = 4 → 404 % 4 = 0  ❌ different machine!
+
+Almost EVERY key maps to a different machine
+→ massive cache miss
+→ all requests hit the database
+→ database crashes under load
+→ system goes down ❌
+```
+
+---
+
+### Real Solution — Consistent Hashing
+
+```
+Instead of hashing to a machine index
+hash to a point on a RING (0 to 2^32)
+
+Both keys AND machines are placed on this ring
+Each key is served by the NEAREST machine
+clockwise on the ring
+```
+
+---
+
+### Why Consistent Hashing Solves the Problem
+
+```
+Machine removed:
+  only keys that were on THAT machine
+  move to the next machine clockwise
+  all other keys unaffected
+
+5 machines, 1 removed:
+  Naive hashing:     ~80% keys remapped  ❌
+  Consistent hashing: ~20% keys remapped ✅
+```
+
+---
+
+### The Problems Consistent Hashing Solves
+
+```
+Problem 1 → Hot spots (one machine gets too many keys)
+Solution  → Virtual nodes
+
+Instead of placing each machine once on ring
+place it 100-200 times (virtual nodes)
+spreads load more evenly
+
+  M1 → M1_v1, M1_v2, M1_v3 ... M1_v100
+  M2 → M2_v1, M2_v2, M2_v3 ... M2_v100
+  M3 → M3_v1, M3_v2, M3_v3 ... M3_v100
+
+keys spread evenly across all virtual nodes
+which spread evenly across real machines
+```
+
+
+```
+Problem 2 → Machine goes down (cache miss flood)
+Solution  → Replication
+
+each key stored on N machines (N=3 typically)
+primary + 2 replicas
+
+if primary dies:
+  replica takes over immediately
+  no cache miss flood
+  database not hammered
+```
+
+```
+Problem 3 → Cache stampede
+           (cached item expires → 1000 requests
+            hit database simultaneously)
+Solution  → Mutex lock on first request
+           other requests wait
+           first request fetches from DB
+           populates cache
+           others read from cache
+```
+
+---
+
+### How LRU/LFU Fits Into This
+
+```
+Each machine in the cluster runs its OWN LRU/LFU cache
+
+Request comes in:
+  Step 1: consistent hashing → which machine?
+  Step 2: go to that machine
+  Step 3: machine runs LRU/LFU locally
+          hit  → return value
+          miss → fetch from DB, populate cache
+
+So LRU/LFU is the LOCAL eviction policy
+Consistent hashing is the ROUTING policy
+They work at different levels
+```
+
+---
+
+### Real World Systems
+
+```
+Redis:
+  most widely used distributed cache
+  uses consistent hashing for clustering
+  each node runs its own eviction (LRU/LFU/etc)
+  supports replication (primary + replicas)
+
+Memcached:
+  simpler than Redis
+  pure cache, no persistence
+  client-side consistent hashing
+  each node = LRU cache
+
+CDN (Cloudflare, Akamai):
+  geographic consistent hashing
+  route to nearest edge server
+  each edge = LRU cache for static assets
+```
+
+
+---
+
+### How to Answer in Interview
+
+**Interviewer:** "How would you scale this LRU cache to millions of users?"
+
+**You say:**
+
+```
+"Single machine won't work at scale for two reasons —
+ memory limit and single point of failure.
+
+ I'd distribute across a cluster using consistent hashing
+ so each key always routes to the same machine.
+ This avoids the massive remapping problem of modulo hashing
+ when machines are added or removed.
+
+ Each machine runs its own LRU cache locally.
+ For fault tolerance I'd replicate each key
+ across 3 machines — one primary, two replicas.
+
+ To handle hot keys I'd use virtual nodes
+ so load spreads evenly even if key distribution is skewed.
+
+ For cache stampede protection I'd add a mutex
+ so only one request fetches from DB on a miss
+ while others wait and read from the freshly populated cache.
+
+ In practice this is exactly what Redis cluster does."
+```
+
+
+### The Full Picture
+
+```
+                    Client Request
+                         ↓
+              Consistent Hashing Router
+              (which machine handles key?)
+                         ↓
+         ┌───────────────┼───────────────┐
+         ↓               ↓               ↓
+      Machine 1       Machine 2       Machine 3
+      LRU Cache       LRU Cache       LRU Cache
+         ↓               ↓               ↓
+      Replica         Replica         Replica
+         ↓               ↓               ↓
+                    Database
+                  (only on miss)
+```
+
+---
+
+### Interview Complexity Levels
+
+| Level | What they ask | What to say |
+|---|---|---|
+| Junior | implement LRU | HashMap + DLL, O(1) |
+| Mid | scale LRU | consistent hashing, replication |
+| Senior | design cache system | all above + stampede, TTL, monitoring |
+| Staff | trade-offs | Redis vs Memcached, CAP theorem, consistency models |
+
+The progression is natural — start with data structure, then scaling, then full system design.
+
+
 ![alt text](<005 lru cache_240218_120443 (1)(12).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(13).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(14).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(15).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(16).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(17).jpg>) ![alt text](<005 lru cache_240218_120443 (1)(18).jpg>)
