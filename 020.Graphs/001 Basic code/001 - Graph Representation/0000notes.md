@@ -1,6 +1,5 @@
 # Notes
 
-![alt text](<001 intro_231018_213446.jpg>)
 
 
 ![alt text](<001 intro_231018_213446(1).jpg>) ![alt text](<001 intro_231018_213446(2).jpg>) ![alt text](<001 intro_231018_213446(3).jpg>) ![alt text](<001 intro_231018_213446(4).jpg>) ![alt text](<001 intro_231018_213446(5).jpg>) ![alt text](<001 intro_231018_213446(6).jpg>) ![alt text](<001 intro_231018_213446(7).jpg>) ![alt text](<001 intro_231018_213446(8).jpg>) ![alt text](<001 intro_231018_213446(9).jpg>) ![alt text](<001 intro_231018_213446(10).jpg>) ![alt text](<001 intro_231018_213446(11).jpg>) ![alt text](<001 intro_231018_213446(12).jpg>) ![alt text](<001 intro_231018_213446(13).jpg>) ![alt text](<001 intro_231018_213446(14).jpg>) ![alt text](<001 intro_231018_213446(15).jpg>) ![alt text](<001 intro_231018_213446(16).jpg>) ![alt text](<001 intro_231018_213446(17).jpg>) ![alt text](<001 intro_231018_213446(18).jpg>) ![alt text](<001 intro_231018_213446(19).jpg>) ![alt text](<001 intro_231018_213446(20).jpg>)
@@ -163,6 +162,18 @@ Paris --> Delhi, New York,
 
 
 ```
+
+As graph as represented as adjajaency list then For traversal whether BFS or DFS it is `O(V+E)` because V size array each index store edges and we travel every vertex then every edge of that!!
+
+
+## Why not `O(VE)`?
+
+`VE` means for every vertex we are scannning whole edges in graph and thats not the case!!
+
+![alt text](image.png)
+
+
+
 #### Cpp
 
 ```cpp
