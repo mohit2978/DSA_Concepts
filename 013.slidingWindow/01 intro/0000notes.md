@@ -569,7 +569,107 @@ r=7: 7>all → dq=[7] → max=7
 
 result=[3,3,5,5,6,7]
 ```
+### `dq.front() < r - k + 1`
 
+This is the **window boundary check** in sliding window maximum.
+
+---
+
+### What dq Stores
+
+```cpp
+deque<int> dq;   // stores INDICES not values
+```
+
+---
+
+### What `r - k + 1` Means
+
+```
+current right pointer = r
+window size           = k
+window spans          = [r-k+1, r]
+
+r - k + 1  =  leftmost valid index of current window
+
+Example: r=5, k=3
+  window = [5-3+1, 5] = [3, 5]
+  leftmost valid index = 3
+  any index < 3 is OUTSIDE the window
+```
+
+---
+
+### What the Condition Means
+
+```cpp
+if (dq.front() < r - k + 1)
+    dq.pop_front();
+```
+
+```
+dq.front() = index of current maximum candidate
+
+if that index < leftmost valid index:
+  that element has SLID OUT of the window
+  it's no longer in range [r-k+1, r]
+  remove it from front of deque
+```
+
+---
+
+### Concrete Example
+
+```
+arr = [1, 3, -1, -3, 5, 3, 6, 7]
+k   = 3
+
+r=4 (arr[4]=5):
+  window = [4-3+1, 4] = [2, 4]
+  leftmost valid = 2
+
+  dq.front() = 1  (index of element 3)
+  1 < 2?  YES → element at index 1 is outside window
+  pop it ✅
+
+r=5 (arr[5]=3):
+  window = [5-3+1, 5] = [3, 5]
+  leftmost valid = 3
+
+  dq.front() = 2  (index of element -1)
+  2 < 3?  YES → outside window → pop ✅
+```
+
+---
+
+### Visualised
+
+```
+arr = 1  3  -1  -3  5  3  6  7
+idx = 0  1   2   3  4  5  6  7
+
+r=4, k=3, window=[2,4]:
+
+  outside  │  inside window
+  ─────────┼────────────────
+  0  1     │  2   3   4
+           │ -1  -3   5
+           ↑
+     r-k+1 = 2
+     anything left of here is expired
+```
+
+---
+
+### One Line Summary
+
+```
+r - k + 1  =  left boundary of current window
+
+dq.front() < r - k + 1
+           =  "is the maximum candidate outside the window?"
+           =  YES → expired → remove from deque
+```
 ---
 
 ### The Master Decision Table
@@ -652,8 +752,7 @@ Mistake 4: using wrong condition
   easy to swap these ❌
 ```
 
-![alt text](<012 ptr sliding window_250711_223007_1.jpg>) 
-![alt text](<012 ptr sliding window_250711_223007_2.jpg>) 
+
 
 # Sliding Window vs. Two Pointers (The Physical Difference)
 
@@ -747,109 +846,731 @@ In the classic Two-Pointer pattern, the pointers move **toward each other** from
   ![alt text](<012 ptr sliding window_250711_223007_6.jpg>) 
   ![alt text](<012 ptr sliding window_250711_223007_7.jpg>)
 
-  # The "Off-By-One" Cheat Sheet: Fencepost Logic
 
-This is the most common cause of errors in coding interviews. Think of it as the **"Fencepost Problem"**: if you have a 10-meter fence with a post every 1 meter, how many posts do you have? (Answer: 11).
 
-Here is the "Physics" of the three primary boundary formulas:
+## Complete Explanation of All 5 Images
 
 ---
 
-### 1. `right - left + 1` (The "Count" Formula)
-**When to use:** When you need the **total number of elements** inside the current window, including both the `left` and `right` indices.
+## Image 1 — Variable Window Algorithm
 
-* **Logic**: If `left = 2` and `right = 4`, your window contains indices `{2, 3, 4}`.
-* **Calculation**: $4 - 2 = 2$ (this represents the *gaps* between the posts), so you add $+1$ to count the posts (elements) themselves.
-* **Common in**: Sliding Window problems like "Find the length of the longest/shortest subarray."
+### The Problem
+```
+Find longest subarray with sum <= k
+```
 
-### 2. `right - left` (The "Distance" or "Exclusive" Formula)
-**When to use:** When you want the **distance** between two points, or when the `right` pointer is already pointing **one past** the end of your valid window.
+### Why We Need Left and Right Pointers
+```
+We need TWO pointers (left and right)
+otherwise we cannot:
+  expand the window (right moves)
+  shrink the window (left moves)
+  remove previous results
+```
 
-* **Logic A (Distance)**: How many steps do I take to get from `left` to `right`?
-* **Logic B (Half-Open Interval)**: In C++ STL (like `end() - begin()`), the `end` is exclusive. If `right` is the first *invalid* index, then `right - left` correctly counts the valid elements before it.
-* **Common in**: Finding the width of a gap or using a "Lead Scout" pointer that has already moved to the next element.
+### The Code Explained
 
-### 3. `right - left - 1` (The "Between" Formula)
-**When to use:** When you want to count only the elements **in between** two boundaries, excluding both the `left` and `right` posts.
+```java
+int largestSubarraySum(int[] arr, int k) {
+    int n = arr.length;
+    int l = 0;
+    int sum = 0;
+    int mxLength = 0;
 
-* **Logic**: You have two boundaries (like two walls), and you want to know how much empty space is in the middle.
-* **Calculation**: If `left = 2` and `right = 4`, the only element *between* them is index `{3}`. $4 - 2 - 1 = 1$.
-* **Common in**: Palindrome problems (expanding from center) or finding the length of a gap between two obstacles.
+    for (int r = 0; r < n; r++) {
+        sum += arr[r];              // EXPAND — add right element
 
----
+        while (sum > k) {           // condition VIOLATED
+            sum -= arr[l];          // SHRINK — remove left element
+            l++;                    // move left pointer right
+        }
 
-### Summary Table
+        if (sum <= k) {             // condition SATISFIED
+            mxLength = max(mxLength, r - l + 1);
+        }
+    }
+    return mxLength;
+}
+```
 
-| Formula | What it counts | Visual Example (L=2, R=5) | Result |
-| :--- | :--- | :--- | :--- |
-| **`R - L + 1`** | **Inclusive**: Both L and R are counted. | `[2, 3, 4, 5]` | 4 |
-| **`R - L`** | **Half-Open**: L is counted, R is not. | `[2, 3, 4] ... 5` | 3 |
-| **`R - L - 1`** | **Exclusive**: Neither L nor R are counted. | `2 ... [3, 4] ... 5` | 2 |
+### The Expansion and Contraction Model
 
-> **Pro-Tip for Interviews**: If you get confused under pressure, use a tiny test case. If your window is from index 0 to 0, how many elements are there? `0 - 0 + 1 = 1`. (Correct). If you used `R - L`, you'd get 0. This check saves you from failing the test cases!
+```
+Expand  → keep adding arr[r] until condition met
+Contract → remove arr[l] until condition is true again
 
-why middle space r-l-1 gives -1 when r =l=0 ,it should give 0 as no elements in between?
+This is the CORE of variable sliding window:
 
-# The "Middle Space" Safety Rule
+  r moves right ALWAYS   (expand)
+  l moves right ONLY when condition violated (contract)
 
-Formula: `R - L - 1`
+Example:
+arr = [1, 2, 3, 4, 5], k=7
 
-- **Condition**: Only use this when `R > L`. 
-- **The Logic**: If the indices are neighbors (e.g., 0 and 1), the result is `0`. 
-- **The Logic**: If the indices have a gap (e.g., 0 and 2), the result is `1`.
+r=0: sum=1  <=7 ✅  window=[0,0] len=1
+r=1: sum=3  <=7 ✅  window=[0,1] len=2
+r=2: sum=6  <=7 ✅  window=[0,2] len=3
+r=3: sum=10 >7  ❌  shrink:
+     remove arr[0]=1 → sum=9 >7 l=1
+     remove arr[1]=2 → sum=7 <=7 l=2 ✅
+     window=[2,3] len=2
+r=4: sum=12 >7  ❌  shrink:
+     remove arr[2]=3 → sum=9 >7 l=3
+     remove arr[3]=4 → sum=5 <=7 l=4 ✅
+     window=[4,4] len=1
 
-**Interview Hack**: 
-If you ever see a negative result using these formulas, it means your pointers have **crossed** or are **overlapping**, and the "window" or "gap" technically doesn't exist.
-
-# The "Train Station" Analogy for Index Math
-
-This analogy helps you visualize the physics of the three main boundary formulas without getting lost in the math. Imagine a train track with stations numbered **0, 1, 2, 3, 4, 5...**
-
----
-
-### 1. `R - L + 1` (The staion Count)
-**Scenario:** You are a ticket inspector. You want to know how many stations are in your zone from **Station 2** to **Station 5**.
-
-* **The Action:** You stand at Station 2 and count every station as the train passes: "Station 2, Station 3, Station 4, Station 5."
-* **The Result:** You counted **4** stations.
-* **The Formula:** $5 - 2 + 1 = 4$
-* **Key Idea:** **INCLUSIVE**. You count every "stop" where the train actually sits.
-* **Common Use:** Finding the length of a subarray or substring.
-
-### 2. `R - L` (The Fuel/Distance)
-**Scenario:** You are the train driver. You want to know how much fuel you need to get from **Station 2** to **Station 5**.
-
-* **The Action:** Fuel is burned for the **gaps** between stations, not for the stations themselves. You move from 2→3 (1 unit), 3→4 (1 unit), and 4→5 (1 unit).
-* **The Result:** You traveled **3** units of distance.
-* **The Formula:** $5 - 2 = 3$
-* **Key Idea:** **DISPLACEMENT**. You are counting the "jumps" or "steps" between the points.
-* **Common Use:** Finding the distance between elements or handling exclusive-end ranges.
-
-### 3. `R - L - 1` (The "In-Between" Tunnel)
-**Scenario:** There is a tunnel that starts **after** Station 2 and ends **before** Station 5. How many stations are **inside** the dark tunnel?
-
-* **The Action:** Station 2 is outside in the sun. Station 5 is outside in the sun. Only the stations strictly in the middle are in the tunnel.
-* **The Result:** Only Station 3 and Station 4 are in the tunnel. That's **2** stations.
-* **The Formula:** $5 - 2 - 1 = 2$
-* **Key Idea:** **EXCLUSIVE**. You remove both "end-posts" to see what is left in the center.
-* **Common Use:** Finding the number of elements between two boundaries (e.g., expanding from a center in palindromes).
+mxLength = 3 ✅
+```
 
 ---
 
-### Summary Table
+## Image 2 — Generic Variable Size Algorithm Template
 
-| Formula | Role | Mental Hack | Result (2 to 5) |
-| :--- | :--- | :--- | :--- |
-| **`R - L + 1`** | **The Station** | Count every stop. | 4 |
-| **`R - L`** | **The Driver** | Count the fuel/gaps. | 3 |
-| **`R - L - 1`** | **The Tunnel** | Count only what's between. | 2 |
+### The Template
 
-> **Emergency Mental Check**:
-> Test on 0 and 1:
-> * **Passenger**: "Station 0, Station 1" → **2** ($1-0+1$)
-> * **Driver**: "One jump from 0 to 1" → **1** ($1-0$)
-> * **Tunnel**: "Nothing between 0 and 1" → **0** ($1-0-1$)
+```java
+int varSizeAlgo(int[] arr) {
+    int some_property = 0;    // tracks window state
+    int n = arr.length;
+    int res = 0;
+    int l = 0;
 
+    for (int r = 0; r < n; r++) {
+        // STEP 1: Add arr[r] to res (expand)
+        Add arr[r] to res;
+
+        // STEP 2: Shrink while property not satisfied
+        while (some_property not satisfying condition) {
+            Remove arr[l] from res;   // undo left element
+            l++;                      // shrink window
+        }
+
+        // STEP 3: Compute result after valid window found
+        res = some computation on (r, l);
+    }
+
+    return res;
+}
+```
+
+### Complexity
+```
+Time:  O(n)  — each element added once, removed once
+Space: O(1)  — only pointers and sum
+```
+
+### Why Brute Force is O(n²)
+
+```
+Brute force for substring/subarray:
+  generate ALL subarrays → check condition
+
+for (int i = 0; i < n; i++)
+    for (int j = i+1; j < n; j++)
+        checkCondition(arr, i, j)
+
+Two nested loops = O(n²)
+
+Sliding window = O(n) by avoiding re-processing
+```
+
+---
+
+## Image 3 — Optimal Trick (while → if)
+
+### Brute Force O(n²)
+
+```
+for (int i = 0; i < n; i++)
+    for (int j = i+1; j < n; j++)
+        checkCondition(arr, i, j)
+```
+
+### Variable Length Sliding Window O(2n)
+
+```
+Two pointers = two passes at most
+  r does n steps    (expansion)
+  l does n steps    (contraction)
+total = n + n = 2n = O(n)
+```
+
+### The KEY Optimization — while → if
+
+This is the most important insight in image 3:
+
+```
+Standard approach uses WHILE loop:
+
+while (sum > k) {
+    sum -= arr[l];
+    l++;
+}
+
+This shrinks until condition is satisfied
+Window can shrink MULTIPLE times per step
+```
+
+```
+Optimal approach uses IF:
+
+if (sum > k) {
+    sum -= arr[l];
+    l++;
+}
+
+Only shrinks by ONE step per r increment
+```
+
+**Why is IF valid here?**
+
+```
+We want MAXIMUM length subarray
+Once we find a valid window of length 3:
+  we should NEVER shrink below length 3
+  because we're looking for LONGER windows
+
+So when sum > k:
+  shrink by exactly 1 (not more)
+  this maintains the current max length
+  and looks for longer windows
+
+"We set length 3, now we need max length
+ so we should NOT shrink to length 2"
+
+"Optimal is not to go beyond max length"
+
+"Instead of contracting by a while loop
+ we check by if() so that we check for
+ length > max length ONLY"
+```
+
+### Concrete Example
+
+```
+arr=[2,1,5,1,3,2], k=7
+Finding LONGEST subarray with sum <= k
+
+WITH WHILE (finds correct answer but shrinks unnecessarily):
+r=0: sum=2 window=[0,0] len=1
+r=1: sum=3 window=[0,1] len=2
+r=2: sum=8>7 → while: remove 2→sum=6 l=1
+     window=[1,2] len=2 mxLen=2
+r=3: sum=7 window=[1,3] len=3 mxLen=3
+r=4: sum=10>7 → while: remove 1→sum=9>7 l=2
+               remove 5→sum=4 l=3
+     window=[3,4] len=2  ← shrunk too much!
+r=5: sum=6 window=[3,5] len=3 mxLen=3
+
+WITH IF (optimal — never shrinks below max):
+r=0: sum=2 window=[0,0] len=1
+r=1: sum=3 window=[0,1] len=2
+r=2: sum=8>7 → if: remove 2→sum=6 l=1
+     window=[1,2] len=2 mxLen=2
+r=3: sum=7 window=[1,3] len=3 mxLen=3
+r=4: sum=10>7 → if: remove 1→sum=9 l=2
+     window=[2,4] len=3 mxLen=3  ← didn't shrink below 3!
+r=5: sum=11>7 → if: remove 5→sum=6 l=3
+     window=[3,5] len=3 mxLen=3
+
+Same answer, IF version never explores smaller windows
+→ strictly more efficient
+```
+
+---
+
+## Image 4 — The if vs while Decision
+
+### The Code with IF
+
+```java
+int largestSubarraySum(int[] arr, int k) {
+    int n = arr.length;
+    int l = 0;
+    int sum = 0;
+    int mxLength = 0;
+
+    for (int r = 0; r < n; r++) {
+        sum += arr[r];
+
+        if (sum > k) {              // ← IF not WHILE
+            sum -= arr[l];
+            l++;
+        }
+
+        if (sum <= k) {
+            mxLength = max(mxLength, r - l + 1);
+        }
+    }
+    return mxLength;
+}
+```
+
+### Time Complexity
+
+```
+O(n) — r moves from 0 to n-1 once
+       l moves at most n times total
+       = O(2n) = O(n)
+```
+
+### When to Use WHILE vs IF
+
+```
+USE WHILE when:
+  you need the ACTUAL subarray or its content
+  not just the length
+  you need to process every valid window fully
+  problem asks for minimum window
+
+  while (condition violated) {
+      shrink
+  }
+  → window is always valid after while loop
+
+USE IF when:
+  you only need MAXIMUM LENGTH
+  you never want to shrink below current max
+  saves time by skipping unnecessary shrinking
+
+  if (condition violated) {
+      shrink by 1
+  }
+  → window stays at max length or grows
+
+"We can do this while change to if, if
+ we need subarray not the length of
+ largest subarray. You need to think can
+ we use if or not"
+```
+
+---
+
+## Image 5 — Counting Subarrays (exactly = atMost trick)
+
+### The Problem
+
+```
+Count number of subarrays with sum = K
+```
+
+### Why Direct Sliding Window Fails for Exactly K
+
+```
+Sliding window easily handles:
+  sum <= k   (shrink when violated)
+  sum >= k   (shrink when satisfied)
+
+But for EXACTLY k:
+  if sum > k → shrink
+  if sum < k → can't shrink (makes it worse)
+  if sum = k → count it, but then what?
+  → can't directly apply sliding window
+```
+
+### The Trick — atMost Decomposition
+
+```
+number of subarrays with sum EXACTLY k
+=
+number of subarrays with sum <= k    (call this x)
+MINUS
+number of subarrays with sum <= k-1  (call this y)
+
+answer = x - y
+```
+
+**Why does this work?**
+
+```
+subarrays with sum <= k   includes:
+  sum = 0, 1, 2, ... k-1, k
+
+subarrays with sum <= k-1 includes:
+  sum = 0, 1, 2, ... k-1
+
+difference = subarrays with sum exactly k ✅
+```
+
+### The Code
+
+```cpp
+int atMost(vector<int>& arr, int k) {
+    if (k < 0) return 0;      // guard for negative k
+    int l = 0, sum = 0, count = 0;
+
+    for (int r = 0; r < arr.size(); r++) {
+        sum += arr[r];
+
+        while (sum > k) {
+            sum -= arr[l];
+            l++;
+        }
+        count += r - l + 1;   // all windows ending at r
+    }
+    return count;
+}
+
+int exactlyK(vector<int>& arr, int k) {
+    return atMost(arr, k) - atMost(arr, k-1);
+}
+```
+
+### Concrete Example
+
+```
+arr = [1, 2, 3], k = 3
+
+atMost(arr, 3):
+  r=0: sum=1<=3, count += 1 = 1   subarrays: [1]
+  r=1: sum=3<=3, count += 2 = 3   subarrays: [2],[1,2]
+  r=2: sum=6>3 → shrink:
+       remove 1→sum=5>3 l=1
+       remove 2→sum=3<=3 l=2
+       count += 1 = 4              subarrays: [3]
+  total x = 4
+
+atMost(arr, 2):
+  r=0: sum=1<=2, count += 1 = 1   subarrays: [1]
+  r=1: sum=3>2 → remove 1→sum=2 l=1
+       count += 1 = 2              subarrays: [2]
+  r=2: sum=5>2 → remove 2→sum=3>2 l=2
+       remove 3→sum=0? wait sum=3-2=... let me redo
+       sum=2+3=5>2 → remove arr[1]=2→sum=3>2 l=2
+       → remove arr[2]=3→sum=0 l=3
+       count += 0 = 2
+  total y = 2
+
+answer = x - y = 4 - 2 = 2
+
+Subarrays with sum exactly 3:
+  [1,2] = 3 ✅
+  [3]   = 3 ✅
+  count = 2 ✅
+```
+
+---
+
+## Summary of All 5 Images
+
+| Image | Topic | Key Takeaway |
+|---|---|---|
+| 1 | Variable window basics | Expand right always, shrink left when violated |
+| 2 | Generic template | while(not satisfied) shrink, then compute |
+| 3 | while vs if concept | Use if for max length — never shrink below max |
+| 4 | if version code | O(n) optimal, think whether if or while needed |
+| 5 | Counting exactly k | atMost(k) - atMost(k-1) = exactly k |
+
+```
+The progression across 5 images:
+
+Image 1,2 → learn the expansion/contraction model
+Image 3,4 → optimise it (while → if for max length)
+Image 5   → extend it (counting with atMost trick)
+
+These 5 images together cover
+90% of all sliding window interview problems
+```
+
+
+
+## While vs If — Complete Explanation
+
+### The Setup
+
+```
+arr = [1, 2, 1, 3, 2], k = 4
+Find LONGEST subarray with sum <= 4
+```
+
+---
+
+## WITH WHILE LOOP
+
+```cpp
+for (int r = 0; r < n; r++) {
+    sum += arr[r];
+
+    while (sum > k) {    // shrink as much as needed
+        sum -= arr[l];
+        l++;
+    }
+    mxLen = max(mxLen, r - l + 1);
+}
+```
+
+### Full Trace
+
+```
+arr = [1, 2, 1, 3, 2]
+       0  1  2  3  4     k=4, n=5
+
+l=0, sum=0, mxLen=0
+```
+
+```
+r=0: sum = 0+1 = 1
+     while 1>4? NO
+     window = [0,0] = "1"     len=1  mxLen=1
+
+r=1: sum = 1+2 = 3
+     while 3>4? NO
+     window = [0,1] = "1,2"   len=2  mxLen=2
+
+r=2: sum = 3+1 = 4
+     while 4>4? NO
+     window = [0,2] = "1,2,1" len=3  mxLen=3
+
+r=3: sum = 4+3 = 7
+     while 7>4? YES
+       remove arr[0]=1 → sum=6  l=1
+     while 6>4? YES
+       remove arr[1]=2 → sum=4  l=2
+     while 4>4? NO  → exit while
+     window = [2,3] = "1,3"    len=2  mxLen=3
+
+     ↑ window SHRUNK from size 3 to size 2
+       we already know mxLen=3
+       shrinking to 2 gives us NO new information
+       this work was WASTED ❌
+
+r=4: sum = 4+2 = 6
+     while 6>4? YES
+       remove arr[2]=1 → sum=5  l=3
+     while 5>4? YES
+       remove arr[3]=3 → sum=2  l=4
+     while 2>4? NO → exit while
+     window = [4,4] = "2"      len=1  mxLen=3
+
+     ↑ window shrunk to size 1
+       again wasted work ❌
+
+Final mxLen = 3 ✅
+```
+
+### What While Loop Does
+
+```
+arr =  1   2   1   3   2
+       ↑           ↑
+       l=0         r=3  sum=7 > 4
+
+while loop shrinks:
+  step 1: remove 1 → l=1  sum=6  still >4
+  step 2: remove 2 → l=2  sum=4  ok stop
+
+window went from size 4 → size 2
+           ┌─────────┐
+  1   2  [1   3]  2
+          l=2  r=3
+          size = 2
+
+We ALREADY had size 3 before
+Going to size 2 is going BACKWARDS
+This is wasted computation ❌
+```
+
+---
+
+## WITH IF
+
+```cpp
+for (int r = 0; r < n; r++) {
+    sum += arr[r];
+
+    if (sum > k) {      // shrink by EXACTLY ONE
+        sum -= arr[l];
+        l++;
+    }
+    mxLen = max(mxLen, r - l + 1);
+}
+```
+
+### Full Trace
+
+```
+arr = [1, 2, 1, 3, 2]
+       0  1  2  3  4     k=4, n=5
+
+l=0, sum=0, mxLen=0
+```
+
+```
+r=0: sum = 0+1 = 1
+     if 1>4? NO
+     window = [0,0] len=1  mxLen=1
+
+r=1: sum = 1+2 = 3
+     if 3>4? NO
+     window = [0,1] len=2  mxLen=2
+
+r=2: sum = 3+1 = 4
+     if 4>4? NO
+     window = [0,2] len=3  mxLen=3
+
+r=3: sum = 4+3 = 7
+     if 7>4? YES
+       remove arr[0]=1 → sum=6  l=1
+       ← only ONE removal, stop
+     window = [1,3] = "2,1,3"  len=3  mxLen=3
+
+     ↑ window stayed at size 3!
+       sum=6 > 4 but we don't care
+       we only need to find LONGER windows
+       size 3 is not longer than mxLen=3
+       so no point shrinking further ✅
+
+r=4: sum = 6+2 = 8
+     if 8>4? YES
+       remove arr[1]=2 → sum=6  l=2
+       ← only ONE removal, stop
+     window = [2,4] = "1,3,2"  len=3  mxLen=3
+
+     ↑ window still size 3
+       sum=6 > 4 still invalid
+       but window length = mxLen
+       we need LONGER to improve answer
+       so no benefit in shrinking more ✅
+
+Final mxLen = 3 ✅
+```
+
+---
+
+## Side by Side Comparison
+
+```
+arr = [1, 2, 1, 3, 2],  k=4
+
+WHILE loop windows:          IF loop windows:
+─────────────────────        ─────────────────
+r=0: [0,0] size=1            r=0: [0,0] size=1
+r=1: [0,1] size=2            r=1: [0,1] size=2
+r=2: [0,2] size=3 ← max      r=2: [0,2] size=3 ← max
+r=3: [2,3] size=2 ← SHRUNK   r=3: [1,3] size=3 ← STAYS
+r=4: [4,4] size=1 ← SHRUNK   r=4: [2,4] size=3 ← STAYS
+```
+
+```
+WHILE: window size goes 1→2→3→2→1
+                              ↑ ↑
+                        wasted shrinking
+
+IF:    window size goes 1→2→3→3→3
+                              ↑ ↑
+                        never goes back
+```
+
+---
+
+## The Key Insight Visualised
+
+```
+WHILE mindset:
+  "keep window VALID at all times"
+  "sum must always be <= k"
+
+  consequence:
+  window shrinks below current max
+  explores smaller windows unnecessarily
+
+IF mindset:
+  "only grow the window"
+  "shrink by 1 to maintain current size"
+  "never explore windows smaller than current max"
+
+  consequence:
+  window size is monotonically non-decreasing
+  never goes backwards
+  every step either grows or stays same
+```
+
+---
+
+## What IF Actually Does
+
+```
+IF guarantees:
+  window size at step r  >=  window size at step r-1
+
+Why?
+  r moves right → window expands by 1
+  if invalid → l moves right → window stays same size
+  if valid   → l stays       → window grows by 1
+
+So window size can only:
+  INCREASE by 1  (valid, l stays)
+  STAY SAME      (invalid, l moves once)
+  NEVER DECREASE ✅
+```
+
+---
+
+## Operations Count
+
+```
+arr = [1,2,1,3,2], k=4
+
+WHILE loop:
+  r=0: 0 shrinks
+  r=1: 0 shrinks
+  r=2: 0 shrinks
+  r=3: 2 shrinks  ← extra work
+  r=4: 2 shrinks  ← extra work
+  Total shrink ops = 4
+
+IF loop:
+  r=0: 0 shrinks
+  r=1: 0 shrinks
+  r=2: 0 shrinks
+  r=3: 1 shrink
+  r=4: 1 shrink
+  Total shrink ops = 2
+
+IF does HALF the work here ✅
+For larger inputs difference grows even more
+```
+
+---
+
+## When Each Should Be Used
+
+```
+USE WHILE when:
+  need actual valid window at each step
+  minimum window problem
+  need to process every valid state
+  sum/count must be correct after each r
+
+  Example: minimum window substring
+           need smallest valid window
+           must shrink as much as possible ✅
+
+USE IF when:
+  only need MAXIMUM LENGTH
+  don't need window to be valid at every step
+  just need to track if a longer window exists
+
+  Example: longest subarray sum <= k
+           once we find length 3
+           never need to go back to length 2 ✅
+```
+
+---
+
+## One Line Summary
+
+```
+WHILE  →  "keep window always valid"
+           can shrink multiple times
+           window size can decrease
+           needed when validity matters at each step
+
+IF     →  "never shrink below current max"
+           shrinks at most once per step
+           window size never decreases
+           optimal when only max length needed
+```
 
 
 # Q Maximum Points You Can Obtain from Cards
