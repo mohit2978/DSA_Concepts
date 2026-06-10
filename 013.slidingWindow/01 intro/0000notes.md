@@ -148,7 +148,7 @@ answer = 3
 
 #### Pattern 3 — Count Windows Satisfying Condition
 
-**Problem:** Number of substrings with all 3 chars (previous problem)
+**Problem:** Number of substrings with all 3 chars 
 
 ```
 Logic:
@@ -163,6 +163,112 @@ while (valid) {
     count += (n - r);   // all extensions of current window valid
     shrink left;
 }
+```
+
+### Why `count += (n - r)`
+
+---
+
+### The Core Insight
+
+```
+When window [l, r] contains all 3 chars:
+  extending it further RIGHT can only ADD more chars
+  it will NEVER become invalid by growing right
+
+So ALL substrings starting at l and ending at r, r+1, r+2...n-1
+are valid too!
+```
+
+---
+
+### Visualise It
+
+```
+s = "abcba",  n = 5
+window [l=0, r=2] = "abc" ← just became valid
+
+Extending right:
+  [0,2] = "abc"   ✅ valid
+  [0,3] = "abcb"  ✅ valid (still has a,b,c)
+  [0,4] = "abcba" ✅ valid (still has a,b,c)
+
+How many? = n - r = 5 - 2 = 3  ✅
+```
+
+---
+
+### The Count Visually
+
+```
+s = a b c b a
+    0 1 2 3 4
+
+l=0, r=2 window is valid:
+
+  [0,2]  "abc"   ← end at r
+  [0,3]  "abcb"  ← end at r+1
+  [0,4]  "abcba" ← end at r+2 = n-1
+
+count = n - r
+      = 5 - 2
+      = 3
+
+These are exactly the positions from r to n-1
+that's (n-1) - r + 1 = n - r positions ✅
+```
+
+---
+
+### Why Not `r - l + 1`
+
+```
+r - l + 1  counts substrings ENDING at r
+           starting from l, l+1, l+2...r
+
+n - r      counts substrings STARTING at l
+           ending at r, r+1, r+2...n-1
+
+Both count valid substrings but from DIFFERENT perspectives:
+
+r-l+1 → how many left endpoints give valid window ending HERE
+n-r   → how many right endpoints give valid window starting HERE
+```
+
+---
+
+### Concrete Trace
+
+```
+s = "abcba", n=5
+
+r=2, l=0, window="abc" valid:
+  count += n-r = 5-2 = 3
+  substrings: [0,2],[0,3],[0,4]
+  shrink: l=1, window="bc" → not valid, exit while
+
+r=3, l=1, window="bcb" → not valid
+
+r=4, l=1, window="bcba" valid:
+  count += 5-4 = 1  → [1,4]="bcba"
+  shrink: l=2, window="cba" still valid!
+  count += 5-4 = 1  → [2,4]="cba"
+  shrink: l=3, window="ba" → not valid
+
+Total = 3+1+1 = 5 ✅
+```
+
+---
+
+### One Line Summary
+
+```
+n - r  =  number of valid right endpoints
+           when left endpoint is fixed at l
+
+Because adding more chars to the right
+NEVER removes existing chars from the window
+so validity only grows → all extensions valid
 ```
 
 ---
@@ -499,8 +605,7 @@ In the classic Two-Pointer pattern, the pointers move **toward each other** from
  ![alt text](<012 ptr sliding window_250711_223007_4.jpg>) 
  ![alt text](<012 ptr sliding window_250711_223007_5.jpg>)
   ![alt text](<012 ptr sliding window_250711_223007_6.jpg>) 
-  ![alt text](<012 ptr sliding window_250711_223007_7.jpg>) 
-  ![alt text](<012 ptr sliding window_250711_223007_8.jpg>)
+  ![alt text](<012 ptr sliding window_250711_223007_7.jpg>)
 
   # The "Off-By-One" Cheat Sheet: Fencepost Logic
 
