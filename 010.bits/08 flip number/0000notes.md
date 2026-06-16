@@ -1,35 +1,6 @@
 # Notes
 
-![alt text](<004single number ques_240508_113639.jpg>)
- ![alt text](<004single number ques_240508_113639(1).jpg>) ![alt text](<004single number ques_240508_113639(2).jpg>) ![alt text](<004single number ques_240508_113639(3).jpg>) ![alt text](<004single number ques_240508_113639(4).jpg>) ![alt text](<004single number ques_240508_113639(5).jpg>) ![alt text](<004single number ques_240508_113639(6).jpg>) ![alt text](<004single number ques_240508_113639(7).jpg>) ![alt text](<004single number ques_240508_113639(8).jpg>) ![alt text](<004single number ques_240508_113639(9).jpg>) ![alt text](<004single number ques_240508_113639(10).jpg>) ![alt text](<004single number ques_240508_113639(11).jpg>) ![alt text](<004single number ques_240508_113639(12).jpg>) ![alt text](<004single number ques_240508_113639(13).jpg>) ![alt text](<004single number ques_240508_113639(14).jpg>) ![alt text](<004single number ques_240508_113639(15).jpg>) ![alt text](<004single number ques_240508_113639(16).jpg>) ![alt text](<004single number ques_240508_113639(17).jpg>) ![alt text](<004single number ques_240508_113639(18).jpg>) ![alt text](<004single number ques_240508_113639(19).jpg>) ![alt text](<004single number ques_240508_113639(20).jpg>) ![alt text](<004single number ques_240508_113639(21).jpg>) 
-
- So approach was to get all (3n+1) bits count
-
-```cpp
-class Solution {
-public:
-    int singleNumber(vector<int>& arr) {
-        int tn=-1;
-        int tnp1=0;
-        int tnp2=0;
-        for(int val:arr){
-            int cbtn = val & tn;
-            int cbtnp1 = val & tnp1;
-            int cbtnp2 = val & tnp2;
-            
-            tn=tn & ~cbtn;
-            tnp1=tnp1 & ~cbtnp1;
-            tnp2=tnp2 & ~cbtnp2;
-            
-            tn=tn | cbtnp2;
-            tnp1=tnp1 | cbtn;
-            tnp2=tnp2 | cbtnp1;
-        }
-        return tnp1;
-    }
-};
-
-```
+Single number 3 code but done in 02!!
 
 ![alt text](<004single number ques_240508_113639(22).jpg>) ![alt text](<004single number ques_240508_113639(23).jpg>) ![alt text](<004single number ques_240508_113639(24).jpg>) ![alt text](<004single number ques_240508_113639(25).jpg>) ![alt text](<004single number ques_240508_113639(26).jpg>) ![alt text](<004single number ques_240508_113639(27).jpg>) ![alt text](<004single number ques_240508_113639(28).jpg>) ![alt text](<004single number ques_240508_113639(29).jpg>) 
 
@@ -120,6 +91,83 @@ Code mentioned in image is better in counting ones
 
 
  ![alt text](<004single number ques_240508_113639(31).jpg>) ![alt text](<004single number ques_240508_113639(32).jpg>) ![alt text](<004single number ques_240508_113639(33).jpg>) 
+
+
+
+
+## Some extra 
+
+```cpp
+int getMSB(int n) {
+    if (n == 0) return 0;
+
+    n |= n >> 1;
+    n |= n >> 2;
+    n |= n >> 4;
+    n |= n >> 8;
+    n |= n >> 16; 
+    // Now n is of the form 00011111...
+    
+    // To get just the MSB:
+    return (n + 1) >> 1;
+}
+```
+we have number like `1...`
+
+`n|=n>>1` it copies MSB to 2nd MSB now number is `11...`
+
+`n|=n>>2` it copies MSB to 2nd MSB now number is `1111...`
+
+`n|=n>>4` it copies MSB to 2nd MSB now number is `11111111...`
+
+`n|=n>>8` it copies MSB to 2nd MSB now number is `1111111111111111...`
+
+if we do not have that much bits it will not do anything like number is `101010`
+
+`n|=n>>1` makes n=111111
+
+
+
+after all operations we get all 1's from MSB of number to LSB ,we know all 1's is $2^n$-1
+
+
+Now if we do `(n+1)` we get next power of 2 that is $2^n$
+
+now we do `(n+1)>>1` we get 2^(n-1)
+
+
+after bits operation n is one less than next power of 2
+
+so we add that one!!
+
+To get current power just shift by 1 bits to right!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

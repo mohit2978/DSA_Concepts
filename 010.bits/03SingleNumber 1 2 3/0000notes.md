@@ -69,7 +69,12 @@ You must implement a solution with a **linear runtime complexity** $O(n)$ and us
 * $-2^{31} \le \text{nums}[i] \le 2^{31} - 1$
 * Each element in `nums` appears exactly three times except for one element which appears once.
 
-This we have seen in 08 see their although see code here too but logic their its a good question
+![alt text](<004single number ques_240508_113639.jpg>)
+ ![alt text](<004single number ques_240508_113639(1).jpg>) ![alt text](<004single number ques_240508_113639(2).jpg>) ![alt text](<004single number ques_240508_113639(3).jpg>) ![alt text](<004single number ques_240508_113639(4).jpg>) ![alt text](<004single number ques_240508_113639(5).jpg>) ![alt text](<004single number ques_240508_113639(6).jpg>) ![alt text](<004single number ques_240508_113639(7).jpg>) ![alt text](<004single number ques_240508_113639(8).jpg>) ![alt text](<004single number ques_240508_113639(9).jpg>) ![alt text](<004single number ques_240508_113639(10).jpg>) ![alt text](<004single number ques_240508_113639(11).jpg>) ![alt text](<004single number ques_240508_113639(12).jpg>) ![alt text](<004single number ques_240508_113639(13).jpg>) ![alt text](<004single number ques_240508_113639(14).jpg>) ![alt text](<004single number ques_240508_113639(15).jpg>) ![alt text](<004single number ques_240508_113639(16).jpg>) ![alt text](<004single number ques_240508_113639(17).jpg>) ![alt text](<004single number ques_240508_113639(18).jpg>) ![alt text](<004single number ques_240508_113639(19).jpg>) ![alt text](<004single number ques_240508_113639(20).jpg>) ![alt text](<004single number ques_240508_113639(21).jpg>) 
+
+ So approach was to get all (3n+1) bits count
+
+
 
 ```cpp
 class Solution {
@@ -126,7 +131,8 @@ You can return the two numbers in **any order**.
 * $-2^{31} \le \text{nums}[i] \le 2^{31} - 1$
 * Every integer in the array appears twice except for two integers that appear only once.
 
-This logic is in 06 part
+![alt text](002_231018_213632(26).jpg) ![alt text](002_231018_213632(27).jpg) ![alt text](002_231018_213632(28).jpg) ![alt text](002_231018_213632(29).jpg) ![alt text](002_231018_213632(30).jpg) ![alt text](002_231018_213632(31).jpg) ![alt text](002_231018_213632(32).jpg) ![alt text](002_231018_213632(33).jpg)
+
 
 
 ```cpp
