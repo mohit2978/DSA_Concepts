@@ -9,7 +9,11 @@
 
 
 
-![alt text](<001 intro_231018_213446(21).jpg>) ![alt text](<001 intro_231018_213446(22).jpg>) ![alt text](<001 intro_231018_213446(23).jpg>) ![alt text](<001 intro_231018_213446(24).jpg>) ![alt text](<001 intro_231018_213446(25).jpg>) ![alt text](<001 intro_231018_213446(26).jpg>) ![alt text](<001 intro_231018_213446(27).jpg>) ![alt text](<001 intro_231018_213446(28).jpg>) ![alt text](<001 intro_231018_213446(29).jpg>) ![alt text](<001 intro_231018_213446(30).jpg>) ![alt text](<001 intro_231018_213446(31).jpg>) ![alt text](<001 intro_231018_213446(32).jpg>) ![alt text](<001 intro_231018_213446(33).jpg>) ![alt text](<001 intro_231018_213446(34).jpg>) ![alt text](<001 intro_231018_213446(35).jpg>) ![alt text](<001 intro_231018_213446(36).jpg>) ![alt text](<001 intro_231018_213446(37).jpg>) ![alt text](<001 intro_231018_213446(38).jpg>) ![alt text](<001 intro_231018_213446(39).jpg>) 
+![alt text](<001 intro_231018_213446(21).jpg>) ![alt text](<001 intro_231018_213446(22).jpg>) ![alt text](<001 intro_231018_213446(23).jpg>) ![alt text](<001 intro_231018_213446(24).jpg>) ![alt text](<001 intro_231018_213446(25).jpg>) ![alt text](<001 intro_231018_213446(26).jpg>) ![alt text](<001 intro_231018_213446(27).jpg>) 
+
+
+
+
 
 ### Representations
 #### Java
@@ -479,6 +483,25 @@ class Solution {
 
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+![alt text](<001 intro_231018_213446(28).jpg>) ![alt text](<001 intro_231018_213446(29).jpg>) ![alt text](<001 intro_231018_213446(30).jpg>) ![alt text](<001 intro_231018_213446(31).jpg>) ![alt text](<001 intro_231018_213446(32).jpg>) ![alt text](<001 intro_231018_213446(33).jpg>) ![alt text](<001 intro_231018_213446(34).jpg>) ![alt text](<001 intro_231018_213446(35).jpg>) ![alt text](<001 intro_231018_213446(36).jpg>) ![alt text](<001 intro_231018_213446(37).jpg>) ![alt text](<001 intro_231018_213446(38).jpg>) ![alt text](<001 intro_231018_213446(39).jpg>) 
 
 
 

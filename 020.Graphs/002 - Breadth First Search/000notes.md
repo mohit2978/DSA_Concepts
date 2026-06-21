@@ -1,5 +1,10 @@
 # Notes
 
+![alt text](<003 bfs_240306_014327.jpg>)
+![alt text](<003 bfs_240306_014327(1).jpg>) ![alt text](<003 bfs_240306_014327(2).jpg>) ![alt text](<003 bfs_240306_014327(3).jpg>) ![alt text](<003 bfs_240306_014327(4).jpg>) ![alt text](<003 bfs_240306_014327(5).jpg>) ![alt text](<003 bfs_240306_014327(6).jpg>) ![alt text](<003 bfs_240306_014327(7).jpg>) ![alt text](<003 bfs_240306_014327(8).jpg>) ![alt text](<003 bfs_240306_014327(9).jpg>) ![alt text](<003 bfs_240306_014327(10).jpg>) ![alt text](<003 bfs_240306_014327(11).jpg>) ![alt text](<003 bfs_240306_014327(12).jpg>) ![alt text](<003 bfs_240306_014327(13).jpg>) ![alt text](<003 bfs_240306_014327(14).jpg>) ![alt text](<003 bfs_240306_014327(15).jpg>) ![alt text](<003 bfs_240306_014327(16).jpg>) ![alt text](<003 bfs_240306_014327(17).jpg>) ![alt text](<003 bfs_240306_014327(18).jpg>) ![alt text](<003 bfs_240306_014327(19).jpg>) ![alt text](<003 bfs_240306_014327(20).jpg>) ![alt text](<003 bfs_240306_014327(21).jpg>) ![alt text](<003 bfs_240306_014327(22).jpg>) ![alt text](<003 bfs_240306_014327(23).jpg>) 
+
+
+
 
 ```cpp
 
@@ -73,8 +78,6 @@ int main(){
 
 
 ```
-![alt text](<003 bfs_240306_014327.jpg>)
-![alt text](<003 bfs_240306_014327(1).jpg>) ![alt text](<003 bfs_240306_014327(2).jpg>) ![alt text](<003 bfs_240306_014327(3).jpg>) ![alt text](<003 bfs_240306_014327(4).jpg>) ![alt text](<003 bfs_240306_014327(5).jpg>) ![alt text](<003 bfs_240306_014327(6).jpg>) ![alt text](<003 bfs_240306_014327(7).jpg>) ![alt text](<003 bfs_240306_014327(8).jpg>) ![alt text](<003 bfs_240306_014327(9).jpg>) ![alt text](<003 bfs_240306_014327(10).jpg>) ![alt text](<003 bfs_240306_014327(11).jpg>) ![alt text](<003 bfs_240306_014327(12).jpg>) ![alt text](<003 bfs_240306_014327(13).jpg>) ![alt text](<003 bfs_240306_014327(14).jpg>) ![alt text](<003 bfs_240306_014327(15).jpg>) ![alt text](<003 bfs_240306_014327(16).jpg>) ![alt text](<003 bfs_240306_014327(17).jpg>) ![alt text](<003 bfs_240306_014327(18).jpg>) ![alt text](<003 bfs_240306_014327(19).jpg>) ![alt text](<003 bfs_240306_014327(20).jpg>) ![alt text](<003 bfs_240306_014327(21).jpg>) ![alt text](<003 bfs_240306_014327(22).jpg>) ![alt text](<003 bfs_240306_014327(23).jpg>) 
 
 # Shortest Distance in a Binary Maze
 Given an n x m matrix grid where each cell contains either 0 or 1, determine the shortest distance between a source cell and a destination cell. You can move to an adjacent cell (up, down, left, or right) if that adjacent cell has a value of 1. The path can only be created out of cells containing 1. If the destination cell is not reachable from the source cell, return -1.
