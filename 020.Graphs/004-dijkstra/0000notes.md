@@ -366,39 +366,40 @@ This is the **entire correctness proof of Dijkstra** in one paragraph. The non-n
 ![alt text](image-16.png)
 ---
 
-### The Code
 
+## Relax edge code
 ```cpp
-#include <bits/stdc++.h>
-using namespace std;
 
-vector<int> dijkstra(int src, int n, vector<vector<pair<int,int>>>& adj) {
+class Solution {
+public:
+    vector<int> dijkstra(int V, vector<vector<vector<int>>> &adj, int S) {
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        vector<int> dist(V, 1e9);
 
-    vector<int> dist(n, INT_MAX);
-    dist[src] = 0;
+        dist[S] = 0;
+        pq.push({0, S});
 
-    // min heap {distance, node}
-    priority_queue<pair<int,int>,
-                   vector<pair<int,int>>,
-                   greater<>> pq;
-    pq.push({0, src});
+        while (!pq.empty()) {
+            int d = pq.top().first;
+            int node = pq.top().second;
+            pq.pop();
 
-    while (!pq.empty()) {
-        auto [d, u] = pq.top();
-        pq.pop();
+            if (d > dist[node]) continue;
 
-        // stale entry — already found better path
-        if (d > dist[u]) continue;
+            for (auto &it : adj[node]) {
+                int adjNode = it[0];
+                int edgeWeight = it[1];
 
-        for (auto [v, w] : adj[u]) {
-            if (dist[u] + w < dist[v]) {
-                dist[v] = dist[u] + w;
-                pq.push({dist[v], v});
+                if (d + edgeWeight < dist[adjNode]) {
+                    dist[adjNode] = d + edgeWeight;
+                    pq.push({dist[adjNode], adjNode});
+                }
             }
         }
+        return dist;
     }
-    return dist;
-}
+};
+
 ```
 
 ---
