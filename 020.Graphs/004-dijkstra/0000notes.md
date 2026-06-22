@@ -1,5 +1,74 @@
 # Dijkstra
 
+## Relax edge code
+```cpp
+
+class Solution {
+public:
+    vector<int> dijkstra(int V, vector<vector<vector<int>>> &adj, int S) {
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        vector<int> dist(V, 1e9);
+
+        dist[S] = 0;
+        pq.push({0, S});
+
+        while (!pq.empty()) {
+            int d = pq.top().first;
+            int node = pq.top().second;
+            pq.pop();
+
+            if (d > dist[node]) continue;
+
+            for (auto &it : adj[node]) {
+                int adjNode = it[0];
+                int edgeWeight = it[1];
+
+                if (d + edgeWeight < dist[adjNode]) {
+                    dist[adjNode] = d + edgeWeight;
+                    pq.push({dist[adjNode], adjNode});
+                }
+            }
+        }
+        return dist;
+    }
+};
+
+```
+
+## simple pq with vis code
+
+```cpp
+class Solution {
+public:
+    vector<int> dijkstra(int V, vector<vector<vector<int>>> &adj, int S) {
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, S});
+        
+        vector<int> res(V, 1e9);
+        vector<bool> vis(V, false);
+        
+        while(!pq.empty()) {
+            int wt = pq.top().first;
+            int v = pq.top().second;
+            pq.pop();
+            
+            if(vis[v]) continue;
+            vis[v] = true;
+            res[v] = wt;
+            
+            for(auto &it : adj[v]) {
+                int nbr = it[0];
+                int w = it[1];
+                if(!vis[nbr]) {
+                    pq.push({wt + w, nbr});
+                }
+            }
+        }
+        return res;
+    }
+};
+```
+
 ![alt text](<004dijsktra bipartite_240205_000336(18).jpg>) ![alt text](<004dijsktra bipartite_240205_000336(19).jpg>) ![alt text](<004dijsktra bipartite_240205_000336(20).jpg>) ![alt text](<004dijsktra bipartite_240205_000336(21).jpg>) ![alt text](<004dijsktra bipartite_240205_000336(22).jpg>) ![alt text](<004dijsktra bipartite_240205_000336(23).jpg>) ![alt text](<004dijsktra bipartite_240205_000336(24).jpg>)
 
 ```java
