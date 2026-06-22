@@ -1,8 +1,67 @@
 # Notes
 
+## DSU code
 
+```cpp
+class DisjointSet {
+    vector<int>par;
+    vector<int>rank;
+    vector<int> sz;
+public:
+    DisjointSet(int n) {
+     par.resize(n);
+     rank.resize(n,0);
+     sz.resize(n,1);
+     for(int i=0;i<n;i++) par[i]=i;
+    }
+    int findPar(int x){
+           if(x==par[x]) return x;
+           int parent= findPar(par[x]);
+           if(par[x]!=parent) par[x]=parent;//for compression
+           return parent;
+       }
 
+    bool find(int u, int v) {
+        return (findPar(u) == findPar(v));
+    }
 
+    void unionByRank(int u, int v) {
+        int x=findPar(u);
+        int y=findPar(v);
+        if(x==y) return;
+        if(rank[x]==rank[y]){
+               par[x]=y;
+               rank[y]++;
+           }
+           else if(rank[x]<rank[y]){
+               par[x]=y;
+           }
+           else if(rank[x]>rank[y]){
+               par[y]=x;
+           }
+    }
+
+    void unionBySize(int u, int v) {
+       
+       int x = findPar(u);
+       int y = findPar(v);
+       if (x == y) return;
+    
+       if (sz[x] < sz[y]) {
+           par[x] = y;
+           sz[y] += sz[x];
+       }
+       else {
+           par[y] = x;
+           sz[x] += sz[y];
+           
+       }
+    }
+};
+
+```
+
+>Note: use union by size in OA and interview rounds!!as more intuitive
 
 ![alt text](<006 dsu intro_240113_013159.jpg>)
 
@@ -89,7 +148,7 @@ public:
            return parent;
        }
 
-    bool isConnected(int u, int v) {
+    bool find(int u, int v) {
         return (findPar(u) == findPar(v));
     }
 
@@ -111,21 +170,22 @@ public:
 
     void unionBySize(int u, int v) {
        
-       int ulp_u = findPar(u);
-       int ulp_v = findPar(v);
-       if (ulp_u == ulp_v) return;
+       int x = findPar(u);
+       int y = findPar(v);
+       if (x == y) return;
     
-       if (sz[ulp_u] < sz[ulp_v]) {
-           par[ulp_u] = ulp_v;
-           sz[ulp_v] += sz[ulp_u];
+       if (sz[x] < sz[y]) {
+           par[x] = y;
+           sz[y] += sz[x];
        }
        else {
-           par[ulp_v] = ulp_u;
-           sz[ulp_u] += sz[ulp_v];
+           par[y] = x;
+           sz[x] += sz[y];
            
        }
     }
 };
+
 
 ```
 ### The Logic of Union by Rank
