@@ -679,6 +679,15 @@ public:
         for (int j = wt[0]; j <= W; j++) {
             dp[0][j] = val[0];
         }
+        /*
+In the DP table, dp[i][j] means: "What is the max value I can get using items from index 0 up to index i."
+
+When we are at dp[0][j] (the base case), i is exactly 0.
+
+This means we are telling the algorithm: "Pretend the rest of the items don't even exist. You are ONLY allowed to look at the very first item on the table."
+
+Since we are strictly isolating the 0th item, we only care about its specific weight (wt[0]) and its specific value (val[0]).
+        */
 
         // Fill the rest of the table
         for (int i = 1; i < n; i++) {
