@@ -732,6 +732,57 @@ int knapsack01Optimized(vector<int>& wt, vector<int>& val, int n, int W) {
     return prev[W];
 }
 ```
+## We have extra base cases but to avoid that we use (n+1)(W+1) dp array 
+
+This is much intuitive
+
+```cpp
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Solution {
+public:
+    int knapsack01(vector<int>& wt, vector<int>& val, int n, int W) {
+        
+        // STEP 1: Pad the DP table with an extra row (n + 1).
+        // dp[0][...] naturally represents 0 items = 0 value.
+        vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));
+
+        // NO MANUAL BASE CASE NEEDED!
+        
+        // STEP 2: Start our item loop from 1. 
+        // 'i' represents the number of items we are allowed to consider.
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= W; j++) {
+                
+                // Option 1: Exclude the current item
+                int exclude = dp[i - 1][j];
+
+                // Option 2: Include the current item
+                int include = 0;
+                
+                // STEP 3: Adjust the index for wt and val arrays to 'i - 1'.
+                if (j >= wt[i - 1]) {
+                    // THE ONLY DIFFERENCE FROM UNBOUNDED KNAPSACK:
+                    // We look back at dp[i - 1] instead of dp[i] because we 
+                    // only have ONE copy of this item. Once we take it, 
+                    // we must move to the previous subset of items.
+                    include = val[i - 1] + dp[i - 1][j - wt[i - 1]];
+                }
+
+                dp[i][j] = max(include, exclude);
+            }
+        }
+
+        // Return the bottom-right corner of the padded table
+        return dp[n][W]; 
+    }
+};
+```
+
+
 # Handling Large Capacities in Knapsack Tabulation
 
 When $W = 1000$, your DP table column size is determined by the total capacity, not the number of items.
@@ -892,6 +943,7 @@ You should only use a map when the state space is **extremely sparse and large**
 
 ![alt text](<009 target set_231121_163402(21).jpg>) ![alt text](<009 target set_231121_163402(22).jpg>)
 
+## Memoization
 
 ```cpp
 class Solution
@@ -921,7 +973,43 @@ class Solution
  bs jha select kia hai vha bhi aage mt bdna!!
 
 
- ![alt text](<009 target set_231121_163402(23).jpg>) ![alt text](<009 target set_231121_163402(24).jpg>) ![alt text](<009 target set_231121_163402(25).jpg>) ![alt text](<009 target set_231121_163402(26).jpg>) ![alt text](<009 target set_231121_163402(27).jpg>) ![alt text](<009 target set_231121_163402(28).jpg>) ![alt text](<009 target set_231121_163402(29).jpg>) ![alt text](<009 target set_231121_163402(30).jpg>) ![alt text](<009 target set_231121_163402(31).jpg>)
+## Tabulation
+
+This tbaulation has nothing to do with above memoized approach!! 
+This is just change made in 0-1 KS (n+1)(W+1) tabualtion approach!!
+
+```cpp
+class Solution {
+	public:
+	int knapSack(vector<int>& val, vector<int>& wt, int W) {
+		int n = wt.size();
+		vector<vector<int>> dp(n + 1, vector<int>(W + 1, 0));
+		
+		// Fill the rest of the table
+		for (int i = 1; i <= n; i++) {
+			for (int j = 0; j <= W; j++) {
+				
+				// Option 1: Not taking the current item
+				int exclude = dp[i - 1][j];
+				
+				// Option 2: Taking the current item (if capacity allows)
+				int include = 0;
+				if (j >= wt[i - 1]) {
+					include = val[i - 1] + dp[i][j - wt[i - 1]];
+				}
+				
+				dp[i][j] = max(include, exclude);
+			}
+		}
+		
+		return dp[n][W];
+		
+	}
+};
+```
+
+
+ ![alt text](<009 target set_231121_163402(25).jpg>) ![alt text](<009 target set_231121_163402(26).jpg>) ![alt text](<009 target set_231121_163402(27).jpg>) ![alt text](<009 target set_231121_163402(28).jpg>) ![alt text](<009 target set_231121_163402(29).jpg>) ![alt text](<009 target set_231121_163402(30).jpg>) ![alt text](<009 target set_231121_163402(31).jpg>)
 
 
 ```java
