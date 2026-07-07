@@ -1,4 +1,5 @@
-/*
+
+## Q1 Single element in sorted array
 Given an array nums sorted in non-decreasing order. Every number in the array except one appears twice. Find the single number in the array.
 
 
@@ -18,7 +19,66 @@ Explanation: Only the number 3 appears once in the array.
 Brute - Search whole array ->O(n)
 Better - Xor solution ->O(n)
 Optimal-> as this is sorted so can use BS!! ->O(log n)
-*/
+
+### Brute
+
+```cpp
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+  
+    int singleNonDuplicate(vector<int>& nums) {
+        int n = nums.size(); 
+        
+  
+        if (n == 1) return nums[0];
+
+
+        for (int i = 0; i < n; i++) {
+          
+            if (i == 0) {
+                if (nums[i] != nums[i + 1])
+                    return nums[i];
+            }
+    
+            else if (i == n - 1) {
+                if (nums[i] != nums[i - 1])
+                    return nums[i];
+            }
+      
+            else {
+                if (nums[i] != nums[i - 1] && nums[i] != nums[i + 1])
+                    return nums[i];
+            }
+        }
+
+     
+        return -1;
+    }
+};
+
+int main() {
+    vector<int> nums = {1, 1, 2, 2, 3, 3, 4};
+    
+    // Create an object of the Solution class.
+    Solution sol;
+    
+    int ans = sol.singleNonDuplicate(nums);
+    
+    // Print the result.
+    cout << "The single element is: " << ans << "\n";
+    
+    return 0;
+}
+
+```
+## Optimal
+
+```java
+
+
 
 public class Solution {
    private int  findByBs( int[] arr,int si,int ei,int n){
@@ -51,3 +111,4 @@ public class Solution {
 Output:
 The single element is: 4
 */
+```
