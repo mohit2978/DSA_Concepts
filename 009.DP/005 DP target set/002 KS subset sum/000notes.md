@@ -66,77 +66,9 @@ public:
 
 };
 ```
-### tabulation
 
-```cpp
 
-#include <bits/stdc++.h>
-using namespace std;
 
-class Solution {
-public:
-    int knapsack01(vector<int>& wt, vector<int>& val, int n, int W) {
-        // Initialize DP table with 0
-        // dp[i][w] = max value using items up to index i and capacity w
-        vector<vector<int>> dp(n, vector<int>(W + 1, 0));
-
-        // Base Case: Fill the first row (item index 0)
-        for (int j = wt[0]; j <= W; j++) {
-            dp[0][j] = val[0];
-        }
-        /*
-In the DP table, dp[i][j] means: "What is the max value I can get using items from index 0 up to index i."
-
-When we are at dp[0][j] (the base case), i is exactly 0.
-
-This means we are telling the algorithm: "Pretend the rest of the items don't even exist. You are ONLY allowed to look at the very first item on the table."
-
-Since we are strictly isolating the 0th item, we only care about its specific weight (wt[0]) and its specific value (val[0]).
-        */
-
-        // Fill the rest of the table
-        for (int i = 1; i < n; i++) {
-            for (int j = 0; j <= W; j++) {
-                // Option 1: Not taking the current item
-                int exclude = dp[i - 1][j];
-
-                // Option 2: Taking the current item (if capacity allows)
-                int include = 0;
-                if (j >= wt[i]) {
-                    include = val[i] + dp[i - 1][j - wt[i]];
-                }
-
-                dp[i][j] = max(include, exclude);
-            }
-        }
-
-        return dp[n - 1][W];
-    }
-};
-
-```
-
-### Space optimized
-
-Since each row only depends on the row directly above it, we can optimize the space from $O(N \times W)$ to $O(W)$ using a single 1D array.Crucial Note: When using a 1D array, we must iterate through weights backwards (from W down to wt[i]). This prevents us from using the same item multiple times in the same capacity (which would turn it into an Unbounded Knapsack problem).
-
-```cpp
-
-int knapsack01Optimized(vector<int>& wt, vector<int>& val, int n, int W) {
-    vector<int> prev(W + 1, 0);
-
-    // Initial base case for first item
-    for (int j = wt[0]; j <= W; j++) prev[j] = val[0];
-
-    for (int i = 1; i < n; i++) {
-        // Iterate backwards to preserve values from the previous 'row'
-        for (int j = W; j >= wt[i]; j--) {
-            prev[j] = max(prev[j], val[i] + prev[j - wt[i]]);
-        }
-    }
-    return prev[W];
-}
-```
 ## We have extra base cases but to avoid that we use (n+1)(W+1) dp array 
 
 This is much intuitive
@@ -188,163 +120,333 @@ public:
 ```
 
 
-# Handling Large Capacities in Knapsack Tabulation
+## Space Optimization — 0/1 Knapsack
 
-When $W = 1000$, your DP table column size is determined by the total capacity, not the number of items.
+### Why Space Can Be Optimized
 
-## 1. The "Blank" Space Reality
-If you have a capacity of **1000** but your only item has a weight of **500**:
-- Indices `0` to `499` will stay `0` (you can't fit the item).
-- Indices `500` to `1000` will all store the same value (the value of that one item).
-
-In tabulation, we fill every single "blank" because the algorithm doesn't know which weights are reachable until it calculates them. This is the main difference between **Memoization** and **Tabulation**:
-
-| Feature | Memoization (Top-Down) | Tabulation (Bottom-Up) |
-| :--- | :--- | :--- |
-| **Efficiency** | Only computes states that are actually reachable. | Computes **every** state from $0$ to $W$. |
-| **Sparse Weights** | Better if $W$ is huge but weights are sparse. | Inefficient if $W$ is much larger than the sum of weights. |
-
----
-
-## 2. When does this become a problem? (Complexity)
-The complexity is $O(N \times W)$. 
-- If $W = 1000$, it's fine.
-- If $W = 10^6$, a 2D array `dp[N][10^6]` will likely cause a **Memory Limit Exceeded (MLE)** error.
-
-
-
----
-
-## 3. How to fix "Blank" Space issues
-
-### A. Space Optimization (1D Array)
-As shown before, you should use a 1D array to save memory. Instead of `1000 * N` integers, you only store `1000` integers.
-
-```cpp
-vector<int> dp(W + 1, 0); // Only 1001 integers in memory
 ```
-When the capacity $W$ is extremely large (e.g., $10^9$), a standard array or vector will cause a Memory Limit Exceeded (MLE) error. In such cases, you can use a Map-based Memoization approach. This ensures you only store values for the specific capacities actually reached during recursion, effectively ignoring the "blank" spaces.
+dp[i][j] only depends on:
+  dp[i-1][j]         ← directly above
+  dp[i-1][j-wt[i-1]] ← above and to the left
 
-
-```cpp
-
-#include <iostream>
-#include <vector>
-#include <map>
-#include <algorithm>
-
-using namespace std;
-
-class Solution {
-    // We use a map where the key is a pair of (current index, remaining capacity)
-    // This only stores states that are actually visited.
-    map<pair<int, int>, int> dp;
-
-    int solve(vector<int>& wt, vector<int>& val, int i, int W) {
-        // Base Case: No items left or no capacity left
-        if (i < 0 || W <= 0) {
-            return 0;
-        }
-
-        // Check if the state (i, W) has already been computed
-        if (dp.find({i, W}) != dp.end()) {
-            return dp[{i, W}];
-        }
-
-        // Option 1: Exclude the current item
-        int exclude = solve(wt, val, i - 1, W);
-
-        // Option 2: Include the current item (if capacity allows)
-        int include = 0;
-        if (W >= wt[i]) {
-            include = val[i] + solve(wt, val, i - 1, W - wt[i]);
-        }
-
-        // Store and return the result for this specific state
-        return dp[{i, W}] = max(include, exclude);
-    }
-
-public:
-    int knapsackLargeW(vector<int>& wt, vector<int>& val, int n, int W) {
-        dp.clear();
-        return solve(wt, val, n - 1, W);
-    }
-};
+We only ever look at the PREVIOUS row
+Current row never looks at itself
+→ we don't need the entire 2D table
+→ just keep ONE row (previous row)
 ```
 
-###  Why this solves the "Blank Space" problem
-Memory Efficiency:
+---
 
- Instead of allocating $1000 \times N$ integers, the map only stores entries for $(i, W)$ pairs that the recursion actually touches.Handling Sparsity: If you have a capacity of $10^9$ but only 5 items, the recursion depth is small ($N=5$), and the number of entries in the map will be very low compared to a billion-sized array.
+### The Key Insight
 
-### Map-Based Knapsack (Sparse DP)
-For cases where $W$ is very large (e.g., $10^9$), use a `map<pair<int, int>, int>` to avoid $O(W)$ space.
+```
+2D table:
+      0    1    2    3    4    5   (capacity j)
+i=0 [ 0    0    0    0    0    0 ]  ← previous row
+i=1 [ 0    ?    ?    ?    ?    ? ]  ← current row
+      ↑              ↑
+   dp[i][j]     uses dp[i-1][j]
+                and  dp[i-1][j-wt]
 
-1. **State Storage:** Instead of `dp[N][W]`, we use `map.find({index, capacity})`.
-2. **Selective Computation:** This avoids calculating every capacity from $0$ to $1000$ if those specific weights are never reached.
-3. **Overhead:** Note that `std::map` has a $O(\log N)$ lookup overhead compared to $O(1)$ for an array, so only use this if $W$ exceeds memory limits.
-
-
-
-# Why You Should Avoid Using Maps for DP (Unless Necessary)
-
-While a `std::map` or `unordered_map` is useful for handling massive, sparse state spaces, it is generally considered inferior to arrays or vectors for standard Competitive Programming and interview problems.
+After filling row i=1:
+  row i=0 is NEVER needed again
+  throw it away, reuse the space
+```
 
 ---
 
-## 1. Time Complexity & Constant Factors
-The most immediate reason is the performance hit taken during lookups.
+### Naive 1D Attempt — Why Forward Loop Fails
 
-* **Array/Vector Access ($O(1)$):** Accessing `dp[i][j]` is a single memory offset calculation. It is incredibly fast.
-* **`std::map` Access ($O(\log N)$):** Maps are typically balanced Red-Black Trees. Every time you check a state, the CPU must traverse multiple nodes, performing comparisons at each level.
-* **`std::unordered_map` Access ($O(1)$ Average):** While theoretically $O(1)$, the overhead of computing a **hash function** for a `pair<int, int>` is much slower than simple array indexing. In the worst case (hash collisions), it can degrade to $O(N)$.
+```cpp
+// WRONG for 0/1 knapsack
+for (int i = 1; i <= n; i++) {
+    for (int j = 0; j <= W; j++) {   // ← forward loop WRONG
+        if (j >= wt[i-1])
+            dp[j] = max(dp[j], val[i-1] + dp[j - wt[i-1]]);
+    }
+}
+```
 
-[Image of a comparison chart between array access time and tree-based map lookup time]
+```
+Problem:
+  when we compute dp[j]
+  dp[j - wt[i-1]] might already be UPDATED in this iteration
+  meaning we used item i TWICE → unbounded knapsack behavior ❌
 
----
+Example:
+  wt=[2], val=[3], W=4
 
-## 2. Memory Overhead per Entry
-Maps are "heavy" data structures. An array is just a contiguous block of values, but a map stores a lot of metadata for every single state.
+  Forward loop:
+  j=2: dp[2] = max(0, 3+dp[0]) = 3   ← item 0 used once
+  j=4: dp[4] = max(0, 3+dp[2]) = 6   ← dp[2] already updated!
+                                         item 0 used TWICE ❌
 
-| Feature | Array/Vector | `std::map` (Red-Black Tree) |
-| :--- | :--- | :--- |
-| **Data Stored** | Just the value (e.g., 4 bytes for an `int`). | Key + Value + 3 Pointers (Left, Right, Parent) + Color bit. |
-| **Total Memory** | ~4 bytes per entry. | ~32-48 bytes per entry. |
-
-**The Result:** Even if you have fewer states in a map, each state consumes **8 to 12 times more memory** than an array entry. If your DP table is relatively dense, a map will cause a **Memory Limit Exceeded (MLE)** much faster than an array.
-
----
-
-## 3. CPU Cache Locality (The "Hidden" Speed Killer)
-Modern CPUs are designed to be fast when data is **contiguous** (next to each other in memory).
-
-* **Arrays:** Because they are contiguous, the CPU can "prefetch" the next values into the L1/L2 cache before you even ask for them.
-* **Maps:** Nodes are scattered all over the heap memory. Every time you follow a pointer to a new map node, you likely trigger a **"Cache Miss,"** forcing the CPU to wait for data to arrive from the much slower RAM.
-
-[Image of a diagram showing cache locality in a contiguous array vs. scattered memory nodes in a map]
+  Correct answer = 3 (can only use item once)
+```
 
 ---
 
-## 4. When is a Map Actually Better?
-You should only use a map when the state space is **extremely sparse and large**.
+### Fix — Reverse Loop
 
-> **Example:** You have a capacity $W = 10^9$, but you only have $N = 20$ items. 
-> - An array of $10^9$ is impossible (it would take ~4GB).
-> - The total number of reachable states $(i, W)$ is likely only a few thousand. 
-> - In this specific case, the memory savings of the map outweigh the speed penalties.
+```cpp
+// CORRECT for 0/1 knapsack
+for (int i = 1; i <= n; i++) {
+    for (int j = W; j >= wt[i-1]; j--) {   // ← reverse loop ✅
+        dp[j] = max(dp[j], val[i-1] + dp[j - wt[i-1]]);
+    }
+}
+```
+
+```
+Why reverse works:
+  when we compute dp[j]
+  dp[j - wt[i-1]] has NOT been updated yet in this iteration
+  (we're going right to left, j-wt is always to the LEFT)
+  so we're reading from PREVIOUS iteration = previous row ✅
+
+Example:
+  wt=[2], val=[3], W=4
+
+  Reverse loop:
+  j=4: dp[4] = max(0, 3+dp[2]) = 3   ← dp[2] still 0 (old) ✅
+  j=3: dp[3] = max(0, 3+dp[1]) = 3   ← dp[1] still 0 (old) ✅
+  j=2: dp[2] = max(0, 3+dp[0]) = 3   ← dp[0] still 0 (old) ✅
+
+  Correct answer = 3 ✅
+```
 
 ---
 
-## Summary Table
+### The Optimized Code
 
-| Requirement | Use Array/Vector | Use Map/Unordered_Map |
-| :--- | :--- | :--- |
-| **Speed** | ⭐⭐⭐⭐⭐ (Fastest) | ⭐⭐ (Slower) |
-| **Memory** | Efficient for dense data | Efficient for sparse data |
-| **Implementation** | Simple indexing | Requires custom hash for pairs |
-| **Standard Choice** | **Always Start Here** | **Only use as a last resort** |
+```cpp
+int knapsack01(vector<int>& wt, vector<int>& val, int n, int W) {
 
-[Image of a decision tree for choosing between array-based DP and map-based DP based on constraints]
+    // single 1D array instead of 2D
+    vector<int> dp(W + 1, 0);
+
+    for (int i = 1; i <= n; i++) {
+        // traverse RIGHT TO LEFT — critical for 0/1 knapsack
+        for (int j = W; j >= wt[i-1]; j--) {
+            int exclude = dp[j];                          // don't take item i
+            int include = val[i-1] + dp[j - wt[i-1]];   // take item i
+            dp[j] = max(exclude, include);
+        }
+    }
+
+    return dp[W];
+}
+```
+
+
+---
+
+### 2D vs 1D Comparison
+
+```
+items: wt=[1,3,4,5], val=[1,4,5,7], W=7
+
+2D table:
+      0  1  2  3  4  5  6  7
+i=0 [ 0  0  0  0  0  0  0  0 ]
+i=1 [ 0  1  1  1  1  1  1  1 ]
+i=2 [ 0  1  1  4  5  5  5  5 ]
+i=3 [ 0  1  1  4  5  6  6  9 ]
+i=4 [ 0  1  1  4  5  7  8  9 ]
+
+1D array progression:
+init: [0  0  0  0  0  0  0  0]
+i=1:  [0  1  1  1  1  1  1  1]
+i=2:  [0  1  1  4  5  5  5  5]
+i=3:  [0  1  1  4  5  6  6  9]
+i=4:  [0  1  1  4  5  7  8  9]
+
+IDENTICAL row by row ✅
+```
+
+---
+
+### 0/1 vs Unbounded — The One Difference
+
+```
+0/1 Knapsack:       Unbounded Knapsack:
+  each item once      each item unlimited times
+
+for(j = W to wt):   for(j = wt to W):
+  REVERSE loop          FORWARD loop
+
+Reverse → reads old values → item used once   ✅
+Forward → reads new values → item used again  ✅
+```
+
+---
+
+
+Great observation! Let me explain clearly.
+
+---
+
+### What Unbounded Knapsack Means
+
+```
+0/1 Knapsack:      each item can be used AT MOST ONCE
+Unbounded Knapsack: each item can be used ANY NUMBER of times
+```
+
+---
+
+### The Forward Loop Accidentally Does Unbounded
+
+```
+wt=[2], val=[3], W=4
+
+dp = [0, 0, 0, 0, 0]   initially
+
+i=1 (wt=2, val=3), FORWARD loop j=2 to 4:
+
+j=2: dp[2] = max(dp[2], val + dp[2-2])
+           = max(0,     3   + dp[0])
+           = max(0,     3   + 0)
+           = 3
+     dp = [0, 0, 3, 0, 0]
+
+j=3: dp[3] = max(dp[3], val + dp[3-2])
+           = max(0,     3   + dp[1])
+           = max(0,     3   + 0)
+           = 3
+     dp = [0, 0, 3, 3, 0]
+
+j=4: dp[4] = max(dp[4], val + dp[4-2])
+           = max(0,     3   + dp[2])
+           = max(0,     3   + 3)     ← dp[2]=3 ALREADY UPDATED!
+           = 6
+     dp = [0, 0, 3, 3, 6]
+```
+
+**What just happened?**
+
+```
+dp[2] = 3 means "used item once at capacity 2"
+dp[4] used dp[2] which was UPDATED in THIS iteration
+     = "used item once at cap 2" + "use item again at cap 4"
+     = item used TWICE ❌
+
+This is EXACTLY unbounded knapsack behavior:
+  "I can use same item again and again"
+  dp[4] = 6 = using wt=2,val=3 item TWICE
+```
+
+---
+
+### Unbounded Knapsack Intentionally Does This
+
+```cpp
+// Unbounded Knapsack — FORWARD loop intentional
+for (int j = wt; j <= W; j++) {
+    dp[j] = max(dp[j], val + dp[j - wt]);
+}
+
+// reading UPDATED values = reusing same item ✅ for unbounded
+```
+
+```
+j=2: dp[2] = 3    (used item once)
+j=4: dp[4] = 6    (used item twice) ← CORRECT for unbounded!
+j=6: dp[6] = 9    (used item three times) ← CORRECT for unbounded!
+```
+
+---
+
+### Reverse Loop Prevents This
+
+```
+wt=[2], val=[3], W=4
+
+REVERSE loop j=4 to 2:
+
+j=4: dp[4] = max(dp[4], val + dp[4-2])
+           = max(0,     3   + dp[2])
+           = max(0,     3   + 0)     ← dp[2] NOT YET updated ✅
+           = 3
+
+j=3: dp[3] = max(dp[3], val + dp[3-2])
+           = max(0,     3   + dp[1])
+           = max(0,     3   + 0)
+           = 3
+
+j=2: dp[2] = max(dp[2], val + dp[2-2])
+           = max(0,     3   + dp[0])
+           = max(0,     3   + 0)
+           = 3
+
+dp = [0, 0, 3, 3, 3]
+
+answer = dp[4] = 3 ✅ item used only once
+```
+
+---
+
+### Side by Side
+
+```
+Same item: wt=2, val=3, W=4
+
+FORWARD (unbounded behavior):        REVERSE (0/1 behavior):
+j=2: dp[2] = 3  (used once)         j=4: dp[4] = 3  (reads old dp[2]=0)
+j=4: dp[4] = 6  (used TWICE ❌)     j=2: dp[2] = 3  (reads old dp[0]=0)
+
+reads NEW dp[2]=3                    reads OLD dp[2]=0
+= current row value                  = previous row value
+= item reused ❌                     = item used once ✅
+```
+
+---
+
+### The Core Reason
+
+```
+FORWARD loop:
+  when computing dp[j]
+  dp[j-wt] is to the LEFT
+  already computed in THIS iteration
+  = CURRENT row value
+  = same item already counted
+  = unbounded behavior ❌
+
+REVERSE loop:
+  when computing dp[j]
+  dp[j-wt] is to the LEFT
+  NOT yet computed in THIS iteration
+  = PREVIOUS row value (old value)
+  = same item NOT yet counted
+  = 0/1 behavior ✅
+```
+
+---
+
+### One Line Summary
+
+```
+Forward → reads updated values → item counted again → unbounded
+Reverse → reads old values     → item counted once  → 0/1
+
+The ONLY difference between 0/1 and unbounded
+1D space optimized versions is:
+  j from W  downto wt  → 0/1 knapsack
+  j from wt upto   W   → unbounded knapsack
+```
+
+### Complexity
+
+| | 2D Version | 1D Optimized |
+|---|---|---|
+| Time | O(n × W) | O(n × W) |
+| Space | O(n × W) | O(W) |
+
+Space reduced from O(n×W) to O(W) — same time complexity.
+
+
+
 
 ![alt text](<009 target set_231121_163402(21).jpg>) ![alt text](<009 target set_231121_163402(22).jpg>)
 
@@ -413,11 +515,9 @@ class Solution {
 };
 ```
 
-
+## Subset sum
 
 ![alt text](<009 target set_231121_163402.jpg>)
-![alt text](<009 target set_231121_163402(1).jpg>) 
-![alt text](<009 target set_231121_163402(2).jpg>) 
 
 ### Recursion
 ```cpp
@@ -532,6 +632,42 @@ int main() {
 ```
 Remember tabulation of this problem it can be used in many other problems!!
 
+
+## Tabulation using 0-1 KS approach
+
+```cpp
+class Solution {
+  public:
+    bool isSubsetSum(vector<int>& arr, int sum) {
+        int n = arr.size();
+		vector<vector<bool>> dp(n + 1, vector<bool>(sum + 1, false));
+		
+		//base case as can make zero sum without selecting any elemeny
+		for(int i=0;i<=n;i++) dp[i][0]=true;
+		
+
+		for (int i = 1; i <= n; i++) {
+			for (int j = 0; j <= sum; j++) {
+				
+				// Option 1: Not taking the current item
+				bool exclude = dp[i - 1][j];
+				
+				// Option 2: Taking the current item (if capacity allows)
+				int include = 0;
+				if (j >= arr[i - 1]) {
+					include =  dp[i-1][j - arr[i - 1]];
+				}
+				
+				dp[i][j] = include| exclude;
+			}
+		}
+		
+		return dp[n][sum];
+        
+    }
+};
+```
+
 ## Count subset with sum K
 
 ```cpp
@@ -561,7 +697,9 @@ class Solution{
 
 
 
-![alt text](<009 target set_231121_163402(3).jpg>) ![alt text](<009 target set_231121_163402(4).jpg>) ![alt text](<009 target set_231121_163402(5).jpg>) ![alt text](<009 target set_231121_163402(6).jpg>) ![alt text](<009 target set_231121_163402(7).jpg>) ![alt text](<009 target set_231121_163402(8).jpg>) 
+
+
+![alt text](<009 target set_231121_163402(7).jpg>) ![alt text](<009 target set_231121_163402(8).jpg>) 
 
 
 ```cpp
@@ -984,8 +1122,13 @@ class Solution {
 ```
 
 
- ![alt text](<009 target set_231121_163402(25).jpg>) ![alt text](<009 target set_231121_163402(26).jpg>) ![alt text](<009 target set_231121_163402(27).jpg>) ![alt text](<009 target set_231121_163402(28).jpg>) ![alt text](<009 target set_231121_163402(29).jpg>) ![alt text](<009 target set_231121_163402(30).jpg>) ![alt text](<009 target set_231121_163402(31).jpg>)
+ ![alt text](<009 target set_231121_163402(25).jpg>) ![alt text](<009 target set_231121_163402(26).jpg>) ![alt text](<009 target set_231121_163402(27).jpg>) ![alt text](<009 target set_231121_163402(28).jpg>) ![alt text](<009 target set_231121_163402(29).jpg>) 
+ 
+ ## Rod cutting
 
+ ![alt text](<009 target set_231121_163402(30).jpg>)
+
+Here cust have vlaue like KS unbounded !! We need to fill N but cust value !!! price[0] has cut value 1!! We need to tell maximum price we can get!!!
 
 ```java
 class Solution {
@@ -1019,41 +1162,36 @@ class Solution {
 }
 
 ```
-# Rod Cutting: From Unbounded Knapsack to Optimal DP
 
-This is a solid implementation of the **Rod Cutting** problem, mapped directly onto the **Unbounded Knapsack** pattern. You've correctly identified that because you can use the same cut length multiple times, it’s "unbounded."
+Above we have made a cuts[i] array but thta can be reduced if we we (n+1)(W+1) KS type!! as there index will denoted the cut[i] value!!
 
-Here is the "Senior Engineer" code review. You’ve got the logic right, but we can clean up the "plumbing" to make it more efficient.
-
-### 1. The Logic Breakdown
-**The "Stay or Go" Choice:**
-* In your `if` block, you call `ks_memo` with `n - cuts[size - 1]` but keep the same `size`. This is the key to Unbounded Knapsack. It says: *"I used this cut, but I’m allowed to use it again."*
-* In the second `max` call, you use `size - 1`. This says: *"I’m done with this cut size forever."*
-* **Verdict:** This is exactly correct.
-
-### 2. The "Off-By-One" & Indexing Review
-Let's look at your boundaries using our rules:
-* Your DP table is `[n + 1][size + 1]`.
-* In your recursive calls, `size` represents the number of available cut options (1 to $n$).
-* When you access `cuts[size - 1]`, you are correctly shifting from "1-based count" to "0-based index."
-* **The "Extremes" Test:** If `size = 1`, `cuts[1-1]` is `cuts[0]`, which is the first cut. **Correct.**
-
-### 3. Senior Engineer Optimization: "Do we need the `cuts` array?"
-In the Rod Cutting problem, the length of the cut at `price[i]` is usually just `i + 1`. 
-You spent $O(N)$ time and space creating a `cuts` array that just contains `[1, 2, 3... n]`. You can eliminate this entirely:
-* `cuts[size - 1]` is literally just `size`.
-* **Revised logic:** `n - size >= 0` instead of `n - cuts[size - 1] >= 0`.
-
-### 4. Transition to Tabulation (Using the "Smallest Problem" Rule)
-Since we just discussed how to convert Memoization to Tabulation, let's look at your code:
-* **Base Case:** `if (n == 0 || size == 0) return 0;` $\to$ `dp[0][any] = 0` and `dp[any][0] = 0`.
-* **Recursive Calls:**
-    * You call `n - cuts[size - 1]` (Smallest $n$ is 0). Loop for `n`: `0 -> N`.
-    * You call `size - 1` (Smallest `size` is 0). Loop for `size`: `0 -> N`.
-
-**Wait!** Rod Cutting is famous for being solvable in **1D DP**.
-Because the "size" of the rod and the "index" of the price are often tied, you can simply track the max profit for every rod length from 1 to $N$.
-
-
-
-
+ When i submitted again size was also not given as parameter!!!
+```cpp
+class Solution {
+  public:
+    int cutRod(vector<int> &price) {
+        int n = price.size();
+		vector<vector<int>> dp(n + 1, vector<int>(n + 1, 0));
+		
+		// Fill the rest of the table
+		for (int i = 1; i <= n; i++) {
+			for (int j = 0; j <= n; j++) {
+				
+				// Option 1: Not taking the current item
+				int exclude = dp[i - 1][j];
+				
+				// Option 2: Taking the current item (if capacity allows)
+				int include = 0;
+				if (j >= i) {
+					include = price[i - 1] + dp[i][j - i];
+				}
+				
+				dp[i][j] = max(include, exclude);
+			}
+		}
+		
+		return dp[n][n];
+        
+    }
+};
+```
