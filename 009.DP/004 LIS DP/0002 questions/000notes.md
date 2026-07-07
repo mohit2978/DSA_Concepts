@@ -3,6 +3,79 @@
 ![alt text](<007 LIS_231121_163402.jpg>)
 ![alt text](<007 LIS_231121_163402(1).jpg>) ![alt text](<007 LIS_231121_163402(2).jpg>) ![alt text](<007 LIS_231121_163402(3).jpg>) ![alt text](<007 LIS_231121_163402(4).jpg>) ![alt text](<007 LIS_231121_163402(5).jpg>) ![alt text](<007 LIS_231121_163402(6).jpg>)
 
+
+## Number of LIS 
+
+
+```cpp
+
+class Solution {
+public:
+    int numberOfLIS(vector<int> nums) {
+        int n=nums.size();
+        int res=1;
+        vector<int> dp(n,1);
+        vector<int>num(n,1);
+        for(int i=1;i<n;i++){
+
+            for(int j=i-1;j>=0;j--){
+                if(nums[i]>nums[j]){
+                    if(dp[j]+1>dp[i]){
+                        dp[i]=dp[j]+1;
+                        num[i]=num[j];
+                    }else if(dp[j]+1==dp[i]){
+                        num[i]+=num[j];
+                    }
+                }
+            }
+
+            res=max(dp[i],res);
+        }
+        int ans=0;
+        for(int i=0;i<n;i++){
+            if(dp[i]==res) ans+=num[i];
+        }
+        return ans;
+    }
+};
+
+```
+or
+
+```cpp
+class Solution {
+public:
+    int numberOfLIS(vector<int> nums) {
+        int n=nums.size();
+        int res=1;
+        vector<int> dp(n,1);
+        vector<int>num(n,1);
+        for(int i=1;i<n;i++){
+
+            for(int j=0;j<i;j++){
+                if(nums[i]>nums[j]){
+                    if(dp[j]+1>dp[i]){
+                        dp[i]=dp[j]+1;
+                        num[i]=num[j];
+                    }else if(dp[j]+1==dp[i]){
+                        num[i]+=num[j];
+                    }
+                }
+            }
+
+            res=max(dp[i],res);
+        }
+        int ans=0;
+        for(int i=0;i<n;i++){
+            if(dp[i]==res) ans+=num[i];
+        }
+        return ans;
+    }
+};
+
+```
+
+
 ![alt text](<007 LIS_231121_163402(7).jpg>) ![alt text](<007 LIS_231121_163402(8).jpg>) ![alt text](<007 LIS_231121_163402(9).jpg>) ![alt text](<007 LIS_231121_163402(10).jpg>) ![alt text](<007 LIS_231121_163402(11).jpg>) ![alt text](<007 LIS_231121_163402(12).jpg>) ![alt text](<007 LIS_231121_163402(13).jpg>) ![alt text](<007 LIS_231121_163402(14).jpg>) ![alt text](<007 LIS_231121_163402(15).jpg>)
 
 
