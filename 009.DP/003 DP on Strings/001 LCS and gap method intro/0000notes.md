@@ -103,85 +103,7 @@ for (int gap = 0; gap < n; gap++) {             // Gap size increases (0, 1, 2..
     }
 }
 ```
-# Matrix Chain Multiplication (MCM) using the Gap Method
 
-In **Matrix Chain Multiplication (MCM)**, the goal is to find the most efficient way to multiply a sequence of matrices. The "Gap Method" is the ideal approach because you cannot determine the cost of multiplying a large chain until you know the minimum cost of all its smaller sub-chains.
-
----
-
-### 1. The Core Philosophy
-Suppose you have a chain of matrices $A, B, C, D$. To find the optimal way to multiply the entire set $(ABCD)$, you must evaluate every possible "split" point $k$:
-* $(A)(BCD)$
-* $(AB)(CD)$
-* $(ABC)(D)$
-
-To solve for the **Gap of 3** (from $A$ to $D$), you must have already calculated the results for:
-* **Gap 0:** Individual matrices $(A, B, C, D)$
-* **Gap 1:** Pairs $(AB, BC, CD)$
-* **Gap 2:** Triples $(ABC, BCD)$
-
-
-
----
-
-### 2. Filling the DP Table (Diagonal by Diagonal)
-
-In the DP table `dp[i][j]`, the value represents the minimum scalar multiplications needed to multiply matrices from index $i$ to $j$.
-
-#### **Step 1: Gap 0 (Length 1) — `dp[i][i]`**
-A single matrix cannot be multiplied by itself. The cost is **0**.
-* `dp[0][0] = 0, dp[1][1] = 0, dp[2][2] = 0...`
-* This fills the **main diagonal** of your matrix.
-
-#### **Step 2: Gap 1 (Length 2) — `dp[i][i+1]`**
-The cost to multiply two adjacent matrices $A_i$ and $A_{i+1}$.
-* There is only one way to multiply them: $(A_i \times A_{i+1})$.
-* This fills the diagonal immediately above the main one.
-
-#### **Step 3: Gap 2 (Length 3) — `dp[i][i+2]`**
-Now we look at three matrices (e.g., $ABC$). We check two split positions:
-1. $(A)(BC) \rightarrow$ `dp[i][i] + dp[i+1][i+2] + combine_cost`
-2. $(AB)(C) \rightarrow$ `dp[i][i+1] + dp[i+2][i+2] + combine_cost`
-* We store the **minimum** of these two.
-
-
-
----
-
-### 3. Visualizing the Dependency
-The Gap Method ensures that by the time you reach a larger gap, the required smaller gaps are already solved and stored.
-
-| $i \setminus j$ | 0 (A) | 1 (B) | 2 (C) | 3 (D) |
-| :--- | :---: | :---: | :---: | :---: |
-| **0 (A)** | **Gap 0** | Gap 1 | Gap 2 | **Gap 3 (Final)** |
-| **1 (B)** | - | **Gap 0** | Gap 1 | Gap 2 |
-| **2 (C)** | - | - | **Gap 0** | Gap 1 |
-| **3 (D)** | - | - | - | **Gap 0** |
-
----
-
-### 4. Implementation Logic
-Here is the standard C++ structure for the MCM Gap Method:
-
-```cpp
-// p[] contains dimensions: Matrix i is p[i-1] x p[i]
-for (int gap = 1; gap < n; gap++) { 
-    for (int i = 1; i < n - gap; i++) {
-        int j = i + gap;
-        dp[i][j] = INT_MAX;
-        
-        // k is the split point
-        for (int k = i; k < j; k++) {
-            int q = dp[i][k] + dp[k+1][j] + (p[i-1] * p[k] * p[j]);
-            if (q < dp[i][j]) {
-                dp[i][j] = q;
-            }
-        }
-    }
-}
-```
-Why "Gap" is essential here:
-If you tried to fill this matrix row-by-row (left-to-right), the calculation for dp[1][4] would require dp[2][4]. Since Row 2 comes after Row 1, the value wouldn't be ready yet.
 
 # Understanding Range-Based (Interval) DP
 
@@ -340,17 +262,13 @@ class Solution {
 ```
 ![alt text](<004 dp on string_231121_163402(3).jpg>) 
 ![alt text](<004 dp on string_231121_163402(4).jpg>) 
-![alt text](<004 dp on string_231121_163402(5).jpg>)
- ![alt text](<004 dp on string_231121_163402(6).jpg>) 
- ![alt text](<004 dp on string_231121_163402(7).jpg>) 
-
  # Longest Common Subsequence (LCS) Formula
 
 The **Longest Common Subsequence** of two strings is calculated using a 2D Dynamic Programming table. For two strings $S1$ (length $n$) and $S2$ (length $m$), the value $dp[i][j]$ represents the length of the LCS of the prefix $S1[0 \dots i-1]$ and $S2[0 \dots j-1]$.
 
----
 
-### 1. The Mathematical Formula
+
+
 
 The recurrence relation is defined as follows:
 
@@ -365,24 +283,7 @@ $$
 
 ---
 
-### 2. Logic Breakdown
 
-#### **Base Case (Initialization)**
-When $i=0$ or $j=0$, one of the strings is empty. An empty string has no characters in common with any other string, so:
-* `dp[0][j] = 0` for all $j$
-* `dp[i][0] = 0` for all $i$
-
-#### **Case 1: Characters Match ($S1[i-1] == S2[j-1]$)**
-If the characters at the current indices match, they contribute to the common subsequence. We take the result from the prefixes *excluding* these characters (the diagonal cell) and add 1.
-
-
-
-#### **Case 2: Characters Do Not Match ($S1[i-1] \neq S2[j-1]$)**
-If the characters don't match, the current LCS length is the best we could do by either:
-1.  Ignoring the current character of $S1$ (`dp[i-1][j]`)
-2.  Ignoring the current character of $S2$ (`dp[i][j-1]`)
-
-We take the **maximum** of these two. 
 
 > **Note on Redundancy:** We do not include $dp[i-1][j-1]$ in the `max()` because $dp[i-1][j]$ and $dp[i][j-1]$ already consider that diagonal value in their own calculations. Thus, $dp[i-1][j-1]$ is already "covered."
 
@@ -390,31 +291,13 @@ We take the **maximum** of these two.
 
 ---
 
-### 3. Complexity Analysis
+### Complexity Analysis
 * **Time Complexity:** $O(n \times m)$ — Every cell in the matrix is computed once.
 * **Space Complexity:** $O(n \times m)$ — A 2D array is used to store all states.
 
 ---
 
-### 4. Summary Table of Dependencies
 
-| Scenario | Dependency | Direction |
-| :--- | :--- | :--- |
-| **Match** | $1 + dp[i-1][j-1]$ | Diagonal Up-Left |
-| **No Match** | $\max(dp[i-1][j], dp[i][j-1])$ | Top or Left |
-
-### Why is $dp[i-1][j-1]$ ignored when characters don't match?
-
-When $S1[i-1] \neq S2[j-1]$, the formula is:
-$$dp[i][j] = \max(dp[i-1][j], dp[i][j-1])$$
-
-We do **not** need to include $dp[i-1][j-1]$ because it is **redundant**. 
-
-**The Proof:**
-1. $dp[i-1][j]$ is calculated as $\max(dp[i-2][j], dp[i-1][j-1])$. Thus, $dp[i-1][j] \ge dp[i-1][j-1]$.
-2. $dp[i][j-1]$ is calculated as $\max(dp[i-1][j-1], dp[i][j-2])$. Thus, $dp[i][j-1] \ge dp[i-1][j-1]$.
-
-Since both neighbors are already at least as large as the diagonal value, the diagonal value can never be the "maximum" in a way that changes the result.
 
 ##  LCS Memoization
 
@@ -553,6 +436,216 @@ class Solution {
  ![alt text](<004 dp on string_231121_163402(11).jpg>) 
  ![alt text](<004 dp on string_231121_163402(12).jpg>) 
 
+## Intermediate i and j Example
+
+### Setup
+
+```
+s1 = "abcd"
+s2 = "aec"
+
+converting s1 → s2
+```
+
+**Build the table first:**
+
+```
+      ""   a    e    c
+""  [  0    1    2    3 ]
+a   [  1    ?    ?    ?  ]
+b   [  2    ?    ?    ?  ]
+c   [  3    ?    ?    ?  ]
+d   [  4    ?    ?    ?  ]
+```
+
+**Fill known cells:**
+
+```
+      ""   a    e    c
+""  [  0    1    2    3 ]
+a   [  1    0    1    2 ]   a==a → dp[1][1]=dp[0][0]=0
+b   [  2    1    1    2 ]
+c   [  3    2    2    1 ]
+d   [  4    3    3    2 ]
+```
+
+---
+
+### Focus on i=2, j=2 — `s1[1]='b'` vs `s2[1]='e'`
+
+```
+s1 processed so far = "ab"  (i=2)
+s2 processed so far = "ae"  (j=2)
+
+s1[i-1] = s1[1] = 'b'
+s2[j-1] = s2[1] = 'e'
+
+'b' != 'e' → mismatch → use the formula
+```
+
+---
+
+### What Each Cell Around (i=2,j=2) Contains
+
+```
+      ""   a    e    c
+""  [  0    1    2    3 ]
+a   [  1    0    1    2 ]
+b   [  2    1   (?)   ? ]
+              ↑
+         we are filling this
+
+neighbours:
+  dp[i-1][j-1] = dp[1][1] = 0   ← diagonal (REPLACE)
+  dp[i-1][j]   = dp[1][2] = 1   ← above    (DELETE)
+  dp[i][j-1]   = dp[2][1] = 1   ← left     (INSERT)
+```
+
+---
+
+### REPLACE — `dp[i-1][j-1] + 1 = 0 + 1 = 1`
+
+```
+dp[1][1] = 0 means:
+  "ab" prefix → "a" prefix
+  converting "a" to "a" costs 0 ✅
+
+Now we are at:
+  s1[1] = 'b'
+  s2[1] = 'e'
+
+REPLACE 'b' WITH 'e':
+  s1 = "a b c d"
+           ↑
+           replace 'b' with 'e'
+  s1 becomes "a e c d"
+              ↑ ↑
+              now "ae" matches "ae" ✅
+
+cost = dp[1][1] + 1
+     = 0        + 1
+     = 1
+
+Meaning:
+  it took 0 ops to match "a"→"a"
+  + 1 op to replace 'b' with 'e'
+  = 1 total op to match "ab"→"ae"
+```
+
+---
+
+### DELETE — `dp[i-1][j] + 1 = 1 + 1 = 2`
+
+```
+dp[1][2] = 1 means:
+  converting "a" to "ae" costs 1
+  (insert 'e' into "a" → "ae")
+
+Now DELETE s1[1] = 'b':
+  s1 = "a b c d"
+           ↑
+           delete 'b'
+  s1 becomes "a c d"
+
+  'b' was useless — didn't help match "ae"
+  throw it away
+
+cost = dp[1][2] + 1
+     = 1        + 1
+     = 2
+
+Meaning:
+  it took 1 op to match "a"→"ae"
+  + 1 op to delete 'b' from s1
+  = 2 total ops to match "ab"→"ae"
+
+Why expensive here?
+  deleting 'b' doesn't help
+  we still need the 'e' from s2
+  so we paid for BOTH insert 'e' AND delete 'b'
+```
+
+---
+
+### INSERT — `dp[i][j-1] + 1 = 1 + 1 = 2`
+
+```
+dp[2][1] = 1 means:
+  converting "ab" to "a" costs 1
+  (delete 'b' from "ab" → "a")
+
+Now INSERT s2[1] = 'e' into s1:
+  s1 = "a b c d"
+         ↑
+         insert 'e' here
+  s1 becomes "a e b c d"
+              ↑ ↑
+              now "ae" matches s2's "ae" ✅
+
+cost = dp[2][1] + 1
+     = 1        + 1
+     = 2
+
+Meaning:
+  it took 1 op to match "ab"→"a"
+  + 1 op to insert 'e' into s1
+  = 2 total ops to match "ab"→"ae"
+```
+
+---
+
+### Decision at (i=2, j=2)
+
+```
+REPLACE: 0 + 1 = 1  ← MINIMUM ✅
+DELETE:  1 + 1 = 2
+INSERT:  1 + 1 = 2
+
+dp[2][2] = 1
+
+Operation chosen: REPLACE 'b' with 'e'
+```
+
+---
+
+### All Three Visualised Together
+
+```
+s1 = "a b c d"
+s2 = "a e c"
+
+at i=2 (processed "ab"), j=2 (need "ae"):
+
+REPLACE 'b'→'e':          DELETE 'b':            INSERT 'e':
+─────────────────          ────────────────        ──────────────────
+"a b" → "a e"             "a b" → "a"            "a b" → "a e b"
+    ↑       ↑                  ↑                         ↑
+  swap b    to e            remove b              insert e between a and b
+
+already matched "a"→"a"   already matched "a"→"ae"  already matched "ab"→"a"
+cost so far = 0            cost so far = 1            cost so far = 1
++ 1 replace = 1 ✅         + 1 delete  = 2 ❌         + 1 insert  = 2 ❌
+```
+
+---
+
+### Summary for This Cell
+
+```
+i=2, j=2
+s1[1]='b', s2[1]='e'  → mismatch
+
+                 came from        meaning
+                 ──────────────────────────────────────
+REPLACE (+1):   dp[1][1]=0  →  "a"→"a" then replace b→e   = 1
+DELETE  (+1):   dp[1][2]=1  →  "a"→"ae" then delete b      = 2
+INSERT  (+1):   dp[2][1]=1  →  "ab"→"a" then insert e      = 2
+
+minimum = 1 → REPLACE wins
+dp[2][2] = 1 ✅
+```
+
+
 ```cpp
 class Solution {
     int func(string& s1, string& s2, int N, int M, vector<vector<int>>& dp) {
@@ -585,7 +678,11 @@ class Solution {
 
 ```
 
- ![alt text](<004 dp on string_231121_163402(13).jpg>) ![alt text](<004 dp on string_231121_163402(14).jpg>) ![alt text](<004 dp on string_231121_163402(15).jpg>) ![alt text](<004 dp on string_231121_163402(16).jpg>) ![alt text](<004 dp on string_231121_163402(17).jpg>) ![alt text](<004 dp on string_231121_163402(18).jpg>) ![alt text](<004 dp on string_231121_163402(19).jpg>) 
+ ![alt text](<004 dp on string_231121_163402(13).jpg>) 
+ 
+ 
+ 
+ ![alt text](<004 dp on string_231121_163402(15).jpg>) ![alt text](<004 dp on string_231121_163402(16).jpg>) ![alt text](<004 dp on string_231121_163402(17).jpg>) ![alt text](<004 dp on string_231121_163402(18).jpg>) ![alt text](<004 dp on string_231121_163402(19).jpg>) 
 
 ## Tabulation
 
