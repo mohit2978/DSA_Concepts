@@ -1,7 +1,249 @@
-# Notes
+##  Binary Search Tree Fundamentals
 
-![alt text](001_bst231018_213407.jpg) ![alt text](001_bst231018_213407(1).jpg) ![alt text](001_bst231018_213407(2).jpg) ![alt text](001_bst231018_213407(3).jpg)
-![alt text](001_bst231018_213407(4).jpg) ![alt text](001_bst231018_213407(5).jpg) ![alt text](001_bst231018_213407(6).jpg) ![alt text](001_bst231018_213407(7).jpg) ![alt text](001_bst231018_213407(8).jpg) ![alt text](001_bst231018_213407(9).jpg) ![alt text](001_bst231018_213407(10).jpg) ![alt text](001_bst231018_213407(11).jpg) ![alt text](001_bst231018_213407(12).jpg) ![alt text](001_bst231018_213407(13).jpg) ![alt text](001_bst231018_213407(14).jpg) ![alt text](001_bst231018_213407(15).jpg) ![alt text](001_bst231018_213407(16).jpg) ![alt text](001_bst231018_213407(17).jpg) ![alt text](001_bst231018_213407(18).jpg) ![alt text](001_bst231018_213407(19).jpg) ![alt text](001_bst231018_213407(20).jpg) ![alt text](001_bst231018_213407(21).jpg) ![alt text](001_bst231018_213407(22).jpg) ![alt text](001_bst231018_213407(23).jpg) ![alt text](001_bst231018_213407(24).jpg) ![alt text](001_bst231018_213407(25).jpg) ![alt text](001_bst231018_213407(26).jpg) ![alt text](001_bst231018_213407(27).jpg) ![alt text](001_bst231018_213407(28).jpg) ![alt text](001_bst231018_213407(29).jpg) ![alt text](001_bst231018_213407(30).jpg) 
+### BST property
+
+For every node:
+
+```text
+All values in the left subtree  < node.val
+All values in the right subtree > node.val
+```
+
+This ordering allows search-related operations to discard one entire subtree at every step.
+
+### Height terminology
+
+The lecture uses height measured in edges:
+
+```java
+height(null) = -1
+height(leaf) = 0
+```
+
+If height is measured in nodes instead, use `height(null) = 0`.
+
+---
+
+## Size and Height
+
+The BST property does not make size or height calculation faster because every node may need to be visited.
+
+```java
+static int size(TreeNode root) {
+    if (root == null) {
+        return 0;
+    }
+
+    return size(root.left) + size(root.right) + 1;
+}
+
+static int height(TreeNode root) {
+    if (root == null) {
+        return -1;
+    }
+
+    return Math.max(
+            height(root.left),
+            height(root.right)) + 1;
+}
+```
+
+### Complexity
+
+- Time: `O(n)`
+- Recursion space: `O(h)`
+
+---
+
+## Minimum and Maximum in a BST
+
+The minimum is the leftmost value.  
+The maximum is the rightmost value.
+
+```java
+static int minimum(TreeNode root) {
+    if (root == null) {
+        throw new IllegalArgumentException("Tree is empty");
+    }
+
+    TreeNode current = root;
+
+    while (current.left != null) {
+        current = current.left;
+    }
+
+    return current.val;
+}
+
+static int maximum(TreeNode root) {
+    if (root == null) {
+        throw new IllegalArgumentException("Tree is empty");
+    }
+
+    TreeNode current = root;
+
+    while (current.right != null) {
+        current = current.right;
+    }
+
+    return current.val;
+}
+```
+
+### Complexity
+
+- Time: `O(h)`
+- Iterative auxiliary space: `O(1)`
+
+---
+
+## Find a Value in a BST
+
+At each node:
+
+- equal: value found;
+- target is larger: go right;
+- target is smaller: go left.
+
+```java
+static boolean find(TreeNode root, int target) {
+    TreeNode current = root;
+
+    while (current != null) {
+        if (current.val == target) {
+            return true;
+        } else if (current.val < target) {
+            current = current.right;
+        } else {
+            current = current.left;
+        }
+    }
+
+    return false;
+}
+```
+
+### Complexity
+
+- Balanced BST: `O(log n)`
+- Skewed BST: `O(n)`
+- In general: `O(h)`
+
+---
+
+## Root-to-Node Path in a BST
+
+Unlike a general binary tree, there is no need to explore both subtrees.
+
+```java
+static List<TreeNode> rootToNodePath(
+        TreeNode root,
+        int target) {
+
+    List<TreeNode> path = new ArrayList<>();
+    TreeNode current = root;
+
+    while (current != null) {
+        path.add(current);
+
+        if (current.val == target) {
+            return path;
+        } else if (current.val < target) {
+            current = current.right;
+        } else {
+            current = current.left;
+        }
+    }
+
+    // Target is absent, so do not return a partial path.
+    path.clear();
+    return path;
+}
+```
+
+### Complexity
+
+- Time: `O(h)`
+- Path space: `O(h)`
+
+---
+
+## Lowest Common Ancestor in a BST
+
+### Key observation
+
+At the current node:
+
+- if both targets are smaller, the LCA lies on the left;
+- if both targets are larger, the LCA lies on the right;
+- otherwise, the paths split and the current node is the LCA.
+
+### Iterative solution
+
+```java
+static TreeNode lowestCommonAncestorBST(
+        TreeNode root,
+        TreeNode p,
+        TreeNode q) {
+
+    TreeNode current = root;
+
+    while (current != null) {
+        if (current.val < p.val && current.val < q.val) {
+            current = current.right;
+        } else if (current.val > p.val
+                && current.val > q.val) {
+            current = current.left;
+        } else {
+            return current;
+        }
+    }
+
+    return null;
+}
+```
+
+### When node existence is not guaranteed
+
+The split point is only a valid answer if both values actually exist in its subtree:
+
+```java
+static TreeNode lowestCommonAncestorBSTChecked(
+        TreeNode root,
+        TreeNode p,
+        TreeNode q) {
+
+    TreeNode lca = lowestCommonAncestorBST(root, p, q);
+
+    if (lca == null
+            || !find(lca, p.val)
+            || !find(lca, q.val)) {
+        return null;
+    }
+
+    return lca;
+}
+```
+
+LeetCode's standard BST LCA problem normally guarantees that both nodes exist, so this validation is not required there.
+
+### Complexity
+
+- Time: `O(h)`
+- Iterative auxiliary space: `O(1)`
+- Balanced BST: `O(log n)`
+- Skewed BST: `O(n)`
+
+---
+
+## Binary Tree LCA vs BST LCA
+
+| Property | General Binary Tree | Binary Search Tree |
+|---|---|---|
+| Ordering available | No | Yes |
+| Need to inspect both subtrees | Possibly | No |
+| Typical time | `O(n)` | `O(h)` |
+| Main idea | Find targets using traversal | Find their split point |
 
 # Q BST Iterator
 
