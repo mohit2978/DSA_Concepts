@@ -151,7 +151,7 @@ public:
 };
 ```
 
-Q--> why here we start from souce but in rotting oranges problem we start from destination??
+Q--> why here we start from source but in rotting oranges problem we start from destination??
 
 
 ### Why Single-Source and Multi-Source BFS Differ
@@ -182,10 +182,76 @@ This is a fantastic conceptual question! It touches on the core difference betwe
 
 ---
 
+# Shortest distance simple code
+
+## Approach 1 — DFS/backtracking
+
+Try every simple path and retain the smallest length.
+
+- It can be correct with careful visited/backtracking logic.
+- It may explore exponentially many paths.
+- DFS does not naturally visit paths in increasing length.
+
+## Approach 2 — BFS
+
+BFS processes distance layers in order. Therefore the first time the destination is removed from the queue, its distance is minimum.
+
+```java
+record Cell(int row, int col, int distance) {}
+
+static int shortestPath(
+        int[][] grid,
+        int sourceRow, int sourceCol,
+        int targetRow, int targetCol) {
+
+    int rows = grid.length, cols = grid[0].length;
+    if (grid[sourceRow][sourceCol] == 0 || grid[targetRow][targetCol] == 0) {
+        return -1;
+    }
+
+    int[] dr = {-1, 1, 0, 0};
+    int[] dc = {0, 0, -1, 1};
+    boolean[][] visited = new boolean[rows][cols];
+    Queue<Cell> queue = new ArrayDeque<>();
+
+    visited[sourceRow][sourceCol] = true;
+    queue.offer(new Cell(sourceRow, sourceCol, 0));
+
+    while (!queue.isEmpty()) {
+        Cell current = queue.poll();
+        if (current.row() == targetRow && current.col() == targetCol) {
+            return current.distance();
+        }
+
+        for (int k = 0; k < 4; k++) {
+            int nr = current.row() + dr[k];
+            int nc = current.col() + dc[k];
+            if (nr >= 0 && nr < rows && nc >= 0 && nc < cols
+                    && grid[nr][nc] == 1 && !visited[nr][nc]) {
+                visited[nr][nc] = true;
+                queue.offer(new Cell(nr, nc, current.distance() + 1));
+            }
+        }
+    }
+    return -1;
+}
+```
+
+- Time: $O(RC)$
+- Space: $O(RC)$
+
+## Edge cases
+
+- Source equals destination → distance `0`, provided the cell is legal.
+- Blocked source/destination → no path.
+- Mark when enqueuing, not when dequeuing.
+- Return `-1` if the queue empties before the destination is reached.
+
+
+
 ### Summary
 In a **Multi-Source BFS**, you load the queue with every starting point at `time = 0`. This ensures that when the "waves" of BFS meet, the distance recorded at any node is the absolute shortest possible distance from *any* of the original sources.
 
-**Would you like to see how to modify a standard BFS template to handle multiple sources efficiently?**
 
 
 

@@ -505,6 +505,239 @@ class Solution {
 
 
 
+# Question 1 — What Basic Graph and Tree Terminology Is Used?
+
+
+
+A graph is a pair
+
+$$
+G=(V,E),
+$$
+
+where $V$ is the set of vertices and $E$ is the set of edges.
+
+```text
+Undirected edge:  A — B       Directed edge:  A → B
+
+Self-loop:        A ↺         Parallel edges:  A ═ B
+```
+
+- A **simple graph** has neither self-loops nor multiple edges between the same pair.
+- A **multigraph** may contain parallel edges.
+- A **path** is a sequence of vertices in which consecutive vertices are joined by an edge.
+- A **cycle** is a path that returns to its starting vertex.
+- The **degree** of an undirected vertex is the number of incident edges. A self-loop contributes two.
+
+For a rooted tree:
+
+```text
+             A                 level 0, depth 0
+           /   \
+          B     C              level 1
+         / \     \
+        D   E     F            level 2
+
+parent of D = B
+children of A = {B, C}
+leaves = {D, E, F}
+height of the tree = 2 edges
+```
+
+A tree with $N$ vertices has exactly
+
+$$
+N-1
+$$
+
+edges. It is connected and contains no cycle.
+
+## Common mistakes
+
+- A vertex's **depth** is measured from the root; its **height** is measured down to its deepest leaf.
+- A path need not contain every vertex.
+- The number of edges, not vertices, normally defines path length in an unweighted graph.
+
+---
+
+# Question 2 — How Can We Represent a Graph in Memory?
+
+
+
+Assume $V$ vertices and $E$ edges.
+
+## Approach 1 — Edge list
+
+Store every edge as a pair, or as a triple when weights are present.
+
+```text
+Unweighted: (A,B), (A,C), (B,D)
+Weighted:   (A,B,7), (A,C,2), (B,D,5)
+```
+
+This is compact and convenient when an algorithm processes all edges, but testing whether one particular edge exists takes $O(E)$.
+
+- Space: $O(E)$
+- Enumerate all edges: $O(E)$
+- Test adjacency: $O(E)$
+
+## Approach 2 — Adjacency matrix
+
+Create a $V\times V$ matrix:
+
+$$
+M[u][v]=
+\begin{cases}
+1, & \text{if }(u,v)\in E,\\
+0, & \text{otherwise.}
+\end{cases}
+$$
+
+For a weighted graph, store the weight instead of `1`, with a separate sentinel for “no edge.”
+
+```text
+      A B C D
+  A [ 0 1 1 0 ]
+  B [ 1 0 0 1 ]
+  C [ 1 0 0 0 ]
+  D [ 0 1 0 0 ]
+```
+
+An undirected graph gives a symmetric matrix because $M[u][v]=M[v][u]$. A directed graph need not be symmetric.
+
+- Space: $O(V^2)$
+- Add, remove or test one edge: $O(1)$
+- Enumerate neighbours of one vertex: $O(V)$
+
+Use it when the graph is dense or constant-time edge lookup matters.
+
+## Approach 3 — Adjacency list
+
+Each vertex stores only its actual neighbours.
+
+```text
+A → B, C
+B → A, D
+C → A
+D → B
+```
+
+For a weighted graph:
+
+```text
+A → (B,7), (C,2)
+B → (A,7), (D,5)
+```
+
+- Space: $O(V+E)$
+- Enumerate neighbours of $u$: $O(\deg(u))$
+- Traverse the complete graph: $O(V+E)$
+- Edge lookup: $O(\deg(u))$ with a list, expected $O(1)$ with a hash map
+
+## Which representation should be chosen?
+
+| Need | Best default |
+|---|---|
+| Iterate through all edges | Edge list |
+| Dense graph or very fast edge lookup | Adjacency matrix |
+| Sparse graph and graph traversal | Adjacency list |
+| Weighted adjacency with updates | Map of neighbour → weight |
+
+The central idea is that a representation is chosen by the operations an algorithm performs—not by memorising one “best” structure.
+
+---
+
+# Question 3 — How Do We Implement a Weighted Undirected Graph in Java?
+
+
+The lecture represents every vertex by a name. Its neighbour map stores both adjacency and edge weight:
+
+```text
+vertices
+  "A" → { "B": 7, "C": 2 }
+  "B" → { "A": 7, "D": 5 }
+```
+
+An undirected edge must be written in **both** neighbour maps.
+
+```java
+import java.util.*;
+
+final class WeightedGraph {
+    private final Map<String, Map<String, Integer>> graph = new HashMap<>();
+
+    void addVertex(String name) {
+        graph.putIfAbsent(name, new HashMap<>());
+    }
+
+    void addEdge(String u, String v, int weight) {
+        addVertex(u);
+        addVertex(v);
+        graph.get(u).put(v, weight);
+        graph.get(v).put(u, weight);       // omit for a directed graph
+    }
+
+    boolean containsEdge(String u, String v) {
+        return graph.containsKey(u) && graph.get(u).containsKey(v);
+    }
+
+    void removeEdge(String u, String v) {
+        if (graph.containsKey(u)) graph.get(u).remove(v);
+        if (graph.containsKey(v)) graph.get(v).remove(u);
+    }
+
+    void removeVertex(String vertex) {
+        if (!graph.containsKey(vertex)) return;
+        for (String neighbour : new ArrayList<>(graph.get(vertex).keySet())) {
+            graph.get(neighbour).remove(vertex);
+        }
+        graph.remove(vertex);
+    }
+
+    int numberOfEdges() {
+        int degreeSum = 0;
+        for (Map<String, Integer> neighbours : graph.values()) {
+            degreeSum += neighbours.size();
+        }
+        return degreeSum / 2;
+    }
+
+    void display() {
+        for (var entry : graph.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue());
+        }
+    }
+}
+```
+
+## Why divide the degree sum by two?
+
+Every undirected edge $(u,v)$ appears once in $u$'s map and once in $v$'s map. Therefore:
+
+$$
+\sum_{v\in V}\deg(v)=2E
+\quad\Longrightarrow\quad
+E=\frac{1}{2}\sum_{v\in V}\deg(v).
+$$
+
+## Complexity
+
+With hash maps, expected costs are:
+
+- Add vertex: $O(1)$
+- Add, remove or test an edge: $O(1)$
+- Remove vertex $u$: $O(\deg(u))$
+- Display the graph: $O(V+E)$
+- Space: $O(V+E)$
+
+## Implementation traps
+
+- Update both directions for an undirected edge.
+- When deleting a vertex, first delete its name from every neighbour.
+- Do not use `0` as “no edge” if a valid edge may have weight zero.
+- Parallel edges need a list of weights; a simple map keeps only one weight per neighbour.
+
+
 
 
 

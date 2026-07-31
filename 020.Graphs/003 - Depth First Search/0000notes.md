@@ -4,65 +4,135 @@
 
  ![alt text](<002 dfs_240306_011019(1).jpg>) ![alt text](<002 dfs_240306_011019(2).jpg>) ![alt text](<002 dfs_240306_011019(3).jpg>) ![alt text](<002 dfs_240306_011019(4).jpg>) ![alt text](<002 dfs_240306_011019(5).jpg>) ![alt text](<002 dfs_240306_011019(6).jpg>)
  
- ```cpp
-#include<iostream>
-#include<list>
-#include<queue>
-using namespace std;
+
+ ## BFS way
+
+```java
+static List<List<Integer>> components(List<List<Integer>> graph) {
+    boolean[] visited = new boolean[graph.size()];
+    List<List<Integer>> answer = new ArrayList<>();
+
+    for (int start = 0; start < graph.size(); start++) {
+        if (visited[start]) continue;
+
+        List<Integer> component = new ArrayList<>();
+        Queue<Integer> queue = new ArrayDeque<>();
+        visited[start] = true;
+        queue.offer(start);
+
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
+            component.add(u);
+            for (int v : graph.get(u)) {
+                if (!visited[v]) {
+                    visited[v] = true;
+                    queue.offer(v);
+                }
+            }
+        }
+        answer.add(component);
+    }
+    return answer;
+}
+```
+
+Example:
+
+```text
+[[0, 1, 2, 3], [5, 6], [7, 8, 9]]
+```
+
+- Number of components: `answer.size()`
+- Time: $O(V+E)$
+- Space: $O(V)$ excluding the returned output
 
 
-class Graph{
 
-	int V;
-	list<int> *l;
+#  Count Islands in a Binary Grid
 
-public:
-	Graph(int v){
-		V = v;
-		l = new list<int>[V];
-	}
 
-	void addEdge(int i,int j,bool undir=true){
-		l[i].push_back(j);
-		if(undir){
-			l[j].push_back(i);
-		}
-	}
-	void dfsHelper(int node,bool *visited){
-		visited[node] = true;
-		cout<<node<<",";
 
-		//make a dfs call on all its unvisited neighbours
-		for(int nbr : l[node]){
-			if(!visited[nbr]){
-				dfsHelper(nbr,visited);
-			}
-		}
-		return;
+A cell containing `1` is land and `0` is water. Connected land cells form one island.
 
-	}
+```text
+1 1 0 0 0
+0 1 0 0 1
+1 0 0 1 1
+0 0 0 0 0
+```
 
-	void dfs(int source){
-		bool *visited = new bool[V]{0};
-		dfsHelper(source,visited);
-	}
-};
+The instructor's key conversion is:
 
-int main(){
-	Graph g(7);
-	g.addEdge(0,1);
-	g.addEdge(1,2);
-	g.addEdge(2,3);
-	g.addEdge(3,5);
-	g.addEdge(5,6);
-	g.addEdge(4,5);
-	g.addEdge(0,4);
-	g.addEdge(3,4);
-	g.dfs(1);
-	return 0;
+```text
+land cell       → graph vertex
+allowed move    → graph edge
+island          → connected component
+```
+
+Now the familiar connected-components pattern applies: scan every cell; whenever an unvisited land cell is found, increment the answer and traverse its complete component.
+
+## Approach 1 — DFS
+
+The lecture implementation explores all eight surrounding positions. If a problem specifies only horizontal/vertical adjacency, replace the direction arrays with the four cardinal moves.
+
+```java
+static final int[] DR = {-1,-1,-1, 0,0, 1,1,1};
+static final int[] DC = {-1, 0, 1,-1,1,-1,0,1};
+
+static int countIslands(int[][] grid) {
+    int rows = grid.length;
+    int cols = grid[0].length;
+    boolean[][] visited = new boolean[rows][cols];
+    int islands = 0;
+
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            if (grid[r][c] == 1 && !visited[r][c]) {
+                islands++;
+                dfs(grid, r, c, visited);
+            }
+        }
+    }
+    return islands;
 }
 
- ```
+static void dfs(int[][] grid, int r, int c, boolean[][] visited) {
+    visited[r][c] = true;
+
+    for (int k = 0; k < DR.length; k++) {
+        int nr = r + DR[k];
+        int nc = c + DC[k];
+        if (inside(grid, nr, nc)
+                && grid[nr][nc] == 1
+                && !visited[nr][nc]) {
+            dfs(grid, nr, nc, visited);
+        }
+    }
+}
+
+static boolean inside(int[][] grid, int r, int c) {
+    return r >= 0 && r < grid.length && c >= 0 && c < grid[0].length;
+}
+```
+
+## Approach 2 — BFS
+
+Use a queue instead of recursion. This has the same asymptotic complexity and avoids a stack overflow on a very large island.
+
+- Time: $O(RC)$
+- Space: $O(RC)$ in the worst case
+
+## Important modelling decision
+
+Always read the adjacency rule:
+
+- 4-direction: up, down, left, right
+- 8-direction: also includes diagonals
+
+The same matrix can have a different island count under these two definitions.
+
+---
+
  
   ![alt text](<002 dfs_240306_011019(7).jpg>) ![alt text](<002 dfs_240306_011019(8).jpg>) ![alt text](<002 dfs_240306_011019(9).jpg>) ![alt text](<002 dfs_240306_011019(10).jpg>) ![alt text](<002 dfs_240306_011019(11).jpg>) ![alt text](<002 dfs_240306_011019(12).jpg>) ![alt text](<002 dfs_240306_011019(13).jpg>) ![alt text](<002 dfs_240306_011019(14).jpg>) ![alt text](<002 dfs_240306_011019(15).jpg>) ![alt text](<002 dfs_240306_011019(16).jpg>)
 
@@ -256,118 +326,6 @@ int main() {
 }
 
 ```
-#### Java
-```java
-import java.util.*;
-
-class BFSsolution {
-    /* Function to determine if the cell
-     is valid (within grid's boundaries) */
-    private boolean isValid(int i, int j, 
-                            int n, int m) {
-                                
-        if (i < 0 || i >= n) return false;
-        if (j < 0 || j >= m) return false;
-        
-        // Return true if cell is valid
-        return true;
-    }
-    
-    private void bfs(int i, int j, boolean[][] vis, 
-                     char[][] grid) {
-                         
-        // mark it visited
-        vis[i][j] = true;
-        
-        // Queue required for BFS traversal
-        Queue<int[]> q = new LinkedList<>();
-        
-        // push the node in queue
-        q.add(new int[]{i, j}); 
-        
-        // Dimensions of grid
-        int n = grid.length; 
-        int m = grid[0].length; 
-      
-        // Until the queue becomes empty
-        while (!q.isEmpty()) {
-            // Get the cell from queue
-            int[] cell = q.poll();
-            
-            // Determine it's row & column
-            int row = cell[0];
-            int col = cell[1];
-            
-            // Traverse the 8 neighbours
-            for (int delRow = -1; delRow <= 1; delRow++) {
-                for (int delCol = -1; delCol <= 1; delCol++) {
-                    // Coordinates of new cell
-                    int newRow = row + delRow;
-                    int newCol = col + delCol;
-                    
-                    /* Check if the new cell is valid, 
-                    unvisited, and a land cell */
-                    if (isValid(newRow, newCol, n, m) 
-                        && grid[newRow][newCol] == '1' 
-                        && !vis[newRow][newCol]) {
-                            
-                        // Mark the node as visited
-                        vis[newRow][newCol] = true;
-                        
-                        // Push new cell in queue
-                        q.add(new int[]{newRow, newCol});
-                    }
-                }
-            }
-        }
-    }
-    
-    // Function to find the number of islands in given grid
-    public int numIslands(char[][] grid) {
-        // Size of the grid
-        int n = grid.length;
-        int m = grid[0].length;
-        
-        // Visited array
-        boolean[][] vis = new boolean[n][m];
-        
-        // To store the count of islands
-        int count = 0;
-        
-        // Traverse the grid
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                /* If not visited and is a land, 
-                start a new traversal */
-                if (!vis[i][j] && grid[i][j] == '1') {
-                    count++; 
-                    bfs(i, j, vis, grid);        
-                }
-            }
-        }
-        
-        return count;
-    }
-
-    public static void main(String[] args) {
-        char[][] grid = {
-            {'1', '1', '1', '0', '1'},
-            {'1', '0', '0', '0', '0'},
-            {'1', '1', '1', '0', '1'},
-            {'0', '0', '0', '1', '1'}
-        };
-        
-        // Creating an instance of Solution class
-        Solution sol = new Solution();
-        
-        /* Function call to find the
-        number of islands in given grid */
-        int ans = sol.numIslands(grid);
-        
-        System.out.println("The total islands in given grids are: " + ans);
-    }
-}
-```
 
 
 ## BFS and DFS
@@ -530,93 +488,6 @@ int main() {
 }
 ```
 
-### java
-```java
-
-import java.util.*;
-
-class Solution {
-
-    private void dfs(int node, List<List<Integer>> adj, boolean[] vis, List<Integer> ans) {
-        vis[node] = true;
-        ans.add(node);
-
-        for (int neighbor : adj.get(node)) {
-            if (!vis[neighbor]) {
-                dfs(neighbor, adj, vis, ans);
-            }
-        }
-    }
-
-    public List<Integer> dfsOfGraph(int V, List<List<Integer>> adj) {
-        boolean[] vis = new boolean[V];
-        List<Integer> ans = new ArrayList<>();
-
-        for (int i = 0; i < V; i++) {
-            if (!vis[i]) {
-                dfs(i, adj, vis, ans);
-            }
-        }
-
-        return ans;
-    }
-
-    private void bfs(int node, List<List<Integer>> adj, boolean[] vis, List<Integer> ans) {
-        Queue<Integer> q = new LinkedList<>();
-        q.add(node);
-        vis[node] = true;
-
-        while (!q.isEmpty()) {
-            int current = q.poll();
-            ans.add(current);
-
-            for (int neighbor : adj.get(current)) {
-                if (!vis[neighbor]) {
-                    vis[neighbor] = true;
-                    q.add(neighbor);
-                }
-            }
-        }
-    }
-
-    public List<Integer> bfsOfGraph(int V, List<List<Integer>> adj) {
-        boolean[] vis = new boolean[V];
-        List<Integer> ans = new ArrayList<>();
-
-        for (int i = 0; i < V; i++) {
-            if (!vis[i]) {
-                bfs(i, adj, vis, ans);
-            }
-        }
-
-        return ans;
-    }
-}
-
-class Main {
-    public static void main(String[] args) {
-        int V = 5;
-        List<List<Integer>> adj = new ArrayList<>();
-        for (int i = 0; i < V; i++) {
-            adj.add(new ArrayList<>());
-        }
-        adj.get(0).addAll(Arrays.asList(2, 3, 1));
-        adj.get(1).add(0);
-        adj.get(2).addAll(Arrays.asList(0, 4));
-        adj.get(3).add(0);
-        adj.get(4).add(2);
-
-        Solution sol = new Solution();
-
-        List<Integer> bfs = sol.bfsOfGraph(V, adj);
-        List<Integer> dfs = sol.dfsOfGraph(V, adj);
-
-        System.out.println("The BFS traversal of the given graph is: " + bfs);
-        System.out.println("The DFS traversal of the given graph is: " + dfs);
-    }
-}
-
-```
 # Time Complexity: $O(V + E)$ Explained
 
 The complexity $O(V + E)$ is common for both **Breadth-First Search (BFS)** and **Depth-First Search (DFS)** when using an **Adjacency List**.
@@ -663,4 +534,228 @@ Imagine a party where **Vertices ($V$)** are people and **Edges ($E$)** are the 
 
 ### Summary for Interviews
 > "The complexity is $O(V + E)$ because we visit every vertex exactly once and, for each vertex, we iterate over all its outgoing edges. Summing these up across the entire graph gives us total work proportional to the number of vertices plus the number of edges."
+
+## Iterative DFS with an explicit stack
+
+```java
+static List<Integer> dfsIterative(int start, List<List<Integer>> graph) {
+    boolean[] visited = new boolean[graph.size()];
+    Deque<Integer> stack = new ArrayDeque<>();
+    List<Integer> order = new ArrayList<>();
+    stack.push(start);
+
+    while (!stack.isEmpty()) {
+        int u = stack.pop();
+        if (visited[u]) continue;
+
+        visited[u] = true;
+        order.add(u);
+
+        // Reverse iteration preserves the recursive order for this list.
+        List<Integer> neighbours = graph.get(u);
+        for (int i = neighbours.size() - 1; i >= 0; i--) {
+            int v = neighbours.get(i);
+            if (!visited[v]) stack.push(v);
+        }
+    }
+    return order;
+}
+```
+
+For both approaches:
+
+- Time: $O(V+E)$
+- Visited array: $O(V)$
+- Recursion/stack: up to $O(V)$
+
+Use iterative DFS when recursion depth could overflow Java's call stack.
+
+
+#  Capture Regions Surrounded by `X`
+
+
+Change an `O` to `X` only if its entire `O` component is surrounded by `X`.
+
+```text
+Before             After
+X X X X            X X X X
+X O O X            X X X X
+X X O X            X X X X
+X O X X            X O X X  ← boundary-connected, so it survives
+```
+
+Only `O` surrounded by `X` needs to be chnaged to `X`
+
+## Approach 1 — Explore every `O` component separately
+
+For each component, collect all cells and remember whether any touches the border. Flip the collected cells only if none touches the border.
+
+- Correct, but requires repeated bookkeeping for every component.
+- Time: $O(RC)$
+- Space: $O(RC)$
+
+## Approach 2 — Reverse the question
+
+Instead of proving which cells are surrounded, find the cells that **cannot** be surrounded:
+
+1. Start DFS/BFS from every boundary `O`.
+2. Mark every `O` reachable from them as safe.
+3. Scan the board:
+   - unmarked `O` → `X`
+   - marked safe cell → `O`
+
+```java
+static void capture(char[][] board) {
+    int rows = board.length;
+    int cols = board[0].length;
+
+    for (int r = 0; r < rows; r++) {
+        markSafe(board, r, 0);
+        markSafe(board, r, cols - 1);
+    }
+    for (int c = 0; c < cols; c++) {
+        markSafe(board, 0, c);
+        markSafe(board, rows - 1, c);
+    }
+
+    for (int r = 0; r < rows; r++) {
+        for (int c = 0; c < cols; c++) {
+            if (board[r][c] == 'O') board[r][c] = 'X';
+            else if (board[r][c] == '#') board[r][c] = 'O';
+        }
+    }
+}
+
+static void markSafe(char[][] board, int r, int c) {
+    if (r < 0 || r == board.length || c < 0 || c == board[0].length
+            || board[r][c] != 'O') {
+        return;
+    }
+    board[r][c] = '#';
+    markSafe(board, r - 1, c);
+    markSafe(board, r + 1, c);
+    markSafe(board, r, c - 1);
+    markSafe(board, r, c + 1);
+}
+```
+
+- Time: $O(RC)$
+- Recursion/queue space: $O(RC)$ worst case
+
+The logic works because a region is uncapturable **if and only if** it is connected to a boundary `O`.
+
+
+
+#  How Can We Tell Whether an Undirected Graph Is a Tree?
+
+
+
+An undirected graph is a tree exactly when it is:
+
+1. connected, and
+2. acyclic.
+
+Equivalent tests for a graph with $V$ vertices include:
+
+$$
+\text{connected and }E=V-1.
+$$
+
+## Approach 1 — DFS connectivity plus cycle detection
+
+Run DFS from one vertex, reject a back edge to a non-parent, then ensure every vertex was visited.
+
+## Approach 2 — Edge count plus connectivity
+
+If $E\ne V-1$, immediately return false. Then one BFS/DFS is enough to test connectivity.
+
+```java
+static boolean isTree(List<List<Integer>> graph, int undirectedEdges) {
+    int n = graph.size();
+    if (n == 0 || undirectedEdges != n - 1) return false;
+
+    boolean[] visited = new boolean[n];
+    Queue<Integer> queue = new ArrayDeque<>();
+    visited[0] = true;
+    queue.offer(0);
+    int seen = 0;
+
+    while (!queue.isEmpty()) {
+        int u = queue.poll();
+        seen++;
+        for (int v : graph.get(u)) {
+            if (!visited[v]) {
+                visited[v] = true;
+                queue.offer(v);
+            }
+        }
+    }
+    return seen == n;
+}
+```
+
+- Time: $O(V+E)$
+- Space: $O(V)$
+
+
+
+#  How Do We Detect a Cycle in an Undirected Graph?
+
+
+
+In an undirected graph, every edge is stored twice. While DFS goes from `u` to `v`, the adjacency list of `v` naturally contains `u`. That immediate return edge is not a cycle, so DFS remembers the parent.
+
+```text
+        0
+       / \
+      1 — 2
+
+DFS path 0 → 1 → 2
+At 2, neighbour 0 is visited and is not parent 1 ⇒ cycle.
+parent means immediate parent,
+
+else if some other alrady visited node is visted again then its cycle
+```
+
+```java
+static boolean hasUndirectedCycle(List<List<Integer>> graph) {
+    boolean[] visited = new boolean[graph.size()];
+    for (int u = 0; u < graph.size(); u++) {
+        if (!visited[u] && dfsCycle(u, -1, graph, visited)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+static boolean dfsCycle(
+        int u, int parent,
+        List<List<Integer>> graph,
+        boolean[] visited) {
+
+    visited[u] = true;
+    for (int v : graph.get(u)) {
+        if (!visited[v]) {
+            if (dfsCycle(v, u, graph, visited)) return true;
+        } else if (v != parent) {
+            return true;
+        }
+    }
+    return false;
+}
+```
+
+- Time: $O(V+E)$
+- Space: $O(V)$
+
+## Why this test is different for directed graphs
+
+In a directed graph, an edge to any previously visited vertex is not automatically a cycle. Directed DFS needs three states—or a recursion-stack flag—to distinguish an ancestor from a vertex whose exploration has already finished.
+
+## Common mistakes
+
+- Check every component, not only vertex `0`.
+- Pass the current vertex as the child's parent.
+- Do not apply the parent-only rule to directed graphs.
+- Parallel edges require care: two edges between the same vertices form a length-two cycle in a multigraph.
 
