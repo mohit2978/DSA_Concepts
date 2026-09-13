@@ -1,0 +1,29 @@
+<svg viewBox="0 0 800 260" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="16">
+  <rect x="0" y="0" width="800" height="260" fill="#1e1e1e"/>
+  <text x="25" y="28" fill="#e0e0e0" font-size="15" font-weight="bold">Dutch National Flag &#8212; 4 regions maintained by i, j, k</text>
+  <line x1="25" y1="38" x2="775" y2="38" stroke="#333333" stroke-width="1"/>
+
+  <rect x="40" y="70" width="140" height="50" fill="#3a331f" stroke="#f2c14e" stroke-width="1.5"/>
+  <text x="110" y="100" fill="#f2c14e" text-anchor="middle" font-family="monospace">0's</text>
+  <text x="110" y="135" fill="#9aa0a6" text-anchor="middle" font-size="12">[0, j-1]</text>
+
+  <rect x="180" y="70" width="200" height="50" fill="#1f3a2e" stroke="#56c98d" stroke-width="1.5"/>
+  <text x="280" y="100" fill="#56c98d" text-anchor="middle" font-family="monospace">1's</text>
+  <text x="280" y="135" fill="#9aa0a6" text-anchor="middle" font-size="12">[j, i-1]</text>
+
+  <rect x="380" y="70" width="220" height="50" fill="#2b2b2b" stroke="#9aa0a6" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="490" y="100" fill="#d4d4d4" text-anchor="middle" font-family="monospace">Unknown</text>
+  <text x="490" y="135" fill="#9aa0a6" text-anchor="middle" font-size="12">[i, k]</text>
+
+  <rect x="600" y="70" width="160" height="50" fill="#3a1f24" stroke="#e06c75" stroke-width="1.5"/>
+  <text x="680" y="100" fill="#e06c75" text-anchor="middle" font-family="monospace">2's</text>
+  <text x="680" y="135" fill="#9aa0a6" text-anchor="middle" font-size="12">[k+1, n-1]</text>
+
+  <text x="110" y="165" fill="#9aa0a6" text-anchor="middle" font-size="12">j starts at 0</text>
+  <text x="380" y="165" fill="#9aa0a6" text-anchor="middle" font-size="12">i starts at 0</text>
+  <text x="680" y="165" fill="#9aa0a6" text-anchor="middle" font-size="12">k starts at n-1</text>
+
+  <rect x="25" y="190" width="750" height="55" fill="#252525" stroke="#3a3a3a" stroke-width="1" rx="6"/>
+  <text x="40" y="214" fill="#d4d4d4" font-size="12.5">i and k are moved only once we're sure what they hold; j is confirmed to always be a 1 (or the very next slot to fill).</text>
+  <text x="40" y="234" fill="#d4d4d4" font-size="12.5">The "Unknown" region shrinks every iteration until it disappears &#8212; that's the loop's terminating condition (i &lt;= k).</text>
+</svg>

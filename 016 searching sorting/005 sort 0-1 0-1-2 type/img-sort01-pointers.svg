@@ -1,0 +1,16 @@
+<svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="16">
+  <rect x="0" y="0" width="800" height="300" fill="#1e1e1e"/>
+  <text x="25" y="28" fill="#e0e0e0" font-size="15" font-weight="bold">Sort 0-1 &#8212; two pointers i (scanner) and j (0-boundary)</text>
+  <line x1="25" y1="38" x2="775" y2="38" stroke="#333333" stroke-width="1"/>
+
+  <g font-family="monospace" font-size="14">
+    <text x="40" y="90" fill="#d4d4d4">arr[i] == 0  &#8594;  swap(arr[i], arr[j]);  i++;  j++;</text>
+    <text x="40" y="120" fill="#d4d4d4">arr[i] == 1  &#8594;  i++;                          (j stays put)</text>
+  </g>
+
+  <rect x="25" y="150" width="750" height="120" fill="#252525" stroke="#3a3a3a" stroke-width="1" rx="6"/>
+  <text x="40" y="174" fill="#f2c14e" font-size="13" font-weight="bold">Invariant while the loop runs</text>
+  <text x="40" y="198" fill="#56c98d" font-size="13" font-family="monospace">[0 .. j-1]  =  all 0's (finished region)</text>
+  <text x="40" y="220" fill="#5b9bd5" font-size="13" font-family="monospace">[j .. i-1]  =  all 1's seen so far</text>
+  <text x="40" y="242" fill="#9aa0a6" font-size="13" font-family="monospace">[i .. n-1]  =  unexplored</text>
+</svg>

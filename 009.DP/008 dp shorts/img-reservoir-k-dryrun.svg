@@ -1,0 +1,31 @@
+<svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="16">
+  <rect x="0" y="0" width="800" height="380" fill="#1e1e1e"/>
+  <text x="25" y="28" fill="#e0e0e0" font-size="15" font-weight="bold">k-size Reservoir Sampling &#8212; stream 5,3,7,8,2,4,9,1 with k=3</text>
+  <line x1="25" y1="38" x2="775" y2="38" stroke="#333333" stroke-width="1"/>
+
+  <text x="40" y="65" fill="#9aa0a6" font-size="13">Step 1: copy the first k=3 elements directly into the reservoir.</text>
+  <g font-family="monospace" font-size="15">
+    <rect x="40" y="75" width="240" height="34" fill="#252525" stroke="#3a3a3a"/>
+    <text x="55" y="98" fill="#56c98d">5 | 3 | 7</text>
+  </g>
+
+  <text x="40" y="135" fill="#9aa0a6" font-size="13">i=3, val=8: rand(0,3)=1 (&lt;k) &#8594; reservoir[1] = 8</text>
+  <g font-family="monospace" font-size="15">
+    <rect x="40" y="145" width="240" height="34" fill="#252525" stroke="#3a3a3a"/>
+    <text x="55" y="168" fill="#56c98d">5 | 8 | 7</text>
+  </g>
+
+  <text x="40" y="205" fill="#9aa0a6" font-size="13">i=4, val=2: rand(0,4)=3 (&gt;=k) &#8594; out of range, do nothing</text>
+
+  <text x="40" y="245" fill="#9aa0a6" font-size="13">i=5, val=4: rand(0,5)=2 (&lt;k) &#8594; reservoir[2] = 4</text>
+  <g font-family="monospace" font-size="15">
+    <rect x="40" y="255" width="240" height="34" fill="#252525" stroke="#3a3a3a"/>
+    <text x="55" y="278" fill="#56c98d">5 | 8 | 4</text>
+  </g>
+
+  <text x="40" y="315" fill="#9aa0a6" font-size="13">i=6, val=9: rand(0,6)=5 (&gt;=k) &#8594; nothing.  i=7, val=1: rand(0,7)=0 (&lt;k) &#8594; reservoir[0] = 1</text>
+  <g font-family="monospace" font-size="15">
+    <rect x="40" y="325" width="240" height="34" fill="#3a331f" stroke="#f2c14e"/>
+    <text x="55" y="348" fill="#f2c14e">1 | 8 | 4</text>
+  </g>
+</svg>

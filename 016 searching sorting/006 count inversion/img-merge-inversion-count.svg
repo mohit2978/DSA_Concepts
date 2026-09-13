@@ -1,0 +1,22 @@
+<svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg" font-family="sans-serif" font-size="16">
+  <rect x="0" y="0" width="800" height="300" fill="#1e1e1e"/>
+  <text x="25" y="28" fill="#e0e0e0" font-size="15" font-weight="bold">Why merging two SORTED halves lets us count inversions in bulk</text>
+  <line x1="25" y1="38" x2="775" y2="38" stroke="#333333" stroke-width="1"/>
+
+  <text x="40" y="70" fill="#9aa0a6" font-size="13">Left half (sorted)</text>
+  <g font-family="monospace" font-size="15">
+    <rect x="40" y="80" width="340" height="36" fill="#252525" stroke="#3a3a3a"/>
+    <text x="55" y="104" fill="#d4d4d4">... , 4 , 8 , 12 , 21 , ...</text>
+  </g>
+  <text x="440" y="70" fill="#9aa0a6" font-size="13">Right half (sorted)</text>
+  <g font-family="monospace" font-size="15">
+    <rect x="440" y="80" width="320" height="36" fill="#252525" stroke="#3a3a3a"/>
+    <text x="455" y="104" fill="#d4d4d4">7 , 22 , 28 , ...</text>
+  </g>
+
+  <rect x="25" y="140" width="750" height="120" fill="#252525" stroke="#3a3a3a" stroke-width="1" rx="6"/>
+  <text x="40" y="164" fill="#f2c14e" font-size="13" font-weight="bold">left[i] = 8 &gt; right[j] = 7  &#8594;  this is one inversion...</text>
+  <text x="40" y="188" fill="#56c98d" font-size="13">...but since the left half is already sorted ascending, EVERY element from</text>
+  <text x="40" y="210" fill="#56c98d" font-size="13">left[i] onward (8, 12, 21, ...) is also &gt; 7 &#8212; all of them form inversions with 7 too.</text>
+  <text x="40" y="238" fill="#e06c75" font-size="13" font-weight="bold">So count += (mid - i + 1) in one shot, instead of checking each one individually.</text>
+</svg>
