@@ -1,16 +1,96 @@
-# Notes
+## Q1. Number of Provinces (too easy)
 
-##  Number of Provinces (too easy)
+**Problem:** Given an undirected graph with `V` vertices. Two vertices `u` and `v` belong to a single province if there is a path from `u` to `v` or `v` to `u`. Find the number of **provinces**. The graph is given as an `n x n` matrix `adj` where `adj[i][j] = 1` if the `i`th city and the `j`th city are directly connected, and `adj[i][j] = 0` otherwise.
 
-![alt text](image.png)
+A province is a group of directly or indirectly connected cities and no other cities outside of the group.
 
-![alt text](image-1.png)
+**Example 1:**
+```
+Input: adj = [[1,0,0,1],[0,1,1,0],[0,1,1,0],[1,0,0,1]]
+Output: 2
+Explanation: In this graph, there are two provinces: [1,4] and [2,3]. City 1
+and city 4 have a path between them, and city 2 and city 3 also have a
+path between them. There is no path between any city in province 1 and
+any city in province 2.
+```
 
-![alt text](image-2.png)
+**Example 2:**
+```
+Input: adj = [[1,0,1],[0,1,0],[1,0,1]]
+Output: 2
+Explanation: The graph clearly has 2 Provinces [1,3] and [2]. As city 1 and
+city 3 has a path between them they belong to a single province. City 2
+has no path to city 1 or city 3 hence it belongs to another province.
+```
+
+**Example 3:**
+```
+Input: adj = [[1,1],[1,1]]
+Output: 1
+```
+
+**Constraints:**
+- `1 <= V <= 300`
+- `V == adj.length`
+- `V == adj[i].length`
+- `adj[i][j]` is `1` or `0`.
+- `adj[i][i] == 1`
+- `a[i][j] == adj[j][i]`
+
+**Approach:** First build an adjacency list from the matrix. Since the matrix is symmetric (`adj[i][j] == adj[j][i]`) and the diagonal is always `1` (a city is trivially "connected" to itself, which isn't a real edge), only scan **one triangle** of the matrix (e.g. `j < i`) while building the list — for each `1` found there, add the edge in both directions. Then run a standard connected-components count: for every unvisited city, do a DFS/BFS marking its whole province as visited, and increment the province count.
 
 ![alt text](Scanned_20250916-1535-01.jpg)
 
 ![alt text](Scanned_20250916-1535-02.jpg)
+
+**Dry run** on `adj = [[1,0,0,1],[0,1,1,0],[0,1,1,0],[1,0,0,1]]`: scanning only the lower-left triangle (`j < i`) finds `adj[2][1] = 1` (cities `2` and `1` connected) and `adj[3][0] = 1` (cities `3` and `0` connected). The resulting graph has edges `1-2` and `0-3`. DFS from city `0` visits `{0, 3}` (province 1), then DFS from city `1` visits `{1, 2}` (province 2). **Total: 2 provinces**, matching the expected output.
+
+**Java** (same logic as the existing C++ below, added since only C++ existed):
+```java
+class Solution {
+    private void dfs(boolean[] vis, int v, List<Integer>[] graph) {
+        vis[v] = true;
+        for (int nbr : graph[v]) {
+            if (!vis[nbr]) {
+                dfs(vis, nbr, graph);
+            }
+        }
+    }
+
+    public int numProvinces(List<List<Integer>> adj, int n) {
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; i++) graph[i] = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (adj.get(i).get(j) == 1) {
+                    graph[i].add(j);
+                    graph[j].add(i);
+                }
+            }
+        }
+
+        boolean[] vis = new boolean[n];
+        int cnt = 0;
+        for (int i = 0; i < n; i++) {
+            if (!vis[i]) {
+                dfs(vis, i, graph);
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+}
+```
+
+**Complexity Analysis:**
+
+**Time Complexity: `O(V + E)`** — converting the adjacency matrix to a list takes `O(V^2)` time (equivalent to `O(E)` here, since `E` can be up to `O(V^2)`); overall, every node is visited through the traversal exactly once, which takes `O(V + E)` time in total.
+**Space Complexity: `O(V + E)`** — storing the adjacency list takes `O(E)` space; any traversal technique (the `vis` array plus recursion/queue) takes `O(V)` extra space.
+
+
+
+
+
 ### Code
 
 ```cpp
@@ -52,12 +132,18 @@ public:
 };
 
 ```
-![alt text](image-3.png)
+
 
 
 ---
 
-## 2.connected components
+## Q2.connected components
+
+**Problem:** Given `V` vertices (numbered `0` to `V-1`) and a list of undirected `edges`, find the number of connected components in the graph.
+
+**Approach:** Build an adjacency list from the edge list, then repeatedly pick any unvisited vertex, traverse its whole component (via BFS or DFS — either works, since only reachability matters, not order), mark every visited node, and increment a counter. Both a BFS and a DFS version are given below (only one is actually called; the other is left as a ready-to-use alternative).
+
+**Time Complexity: `O(V + E)`** — the adjacency list is built in `O(E)`, and the traversal visits every vertex and edge at most once. **Space Complexity: `O(V + E)`** — `O(E)` for the adjacency list, `O(V)` for the `vis` array and the BFS queue / DFS recursion stack.
 
 ### java
 
@@ -274,7 +360,8 @@ int main() {
 
 
 
-## Flood fill 
+## Q3. Flood fill 
+
 An image is represented by a 2-D array of integers, each integer representing 
 the pixel value of the image. Given a coordinate (sr, sc) representing the starting pixel (row and column)
  of the flood fill, and a pixel value newColor, "flood fill" the image.
@@ -365,42 +452,251 @@ int main() {
 }
 ```
 
-
-
-
-
-
-![alt text](<001easy ques_240117_182923.jpg>)
-
-
-![alt text](<001easy ques_240117_182923(1).jpg>) ![alt text](<001easy ques_240117_182923(2).jpg>) ![alt text](<001easy ques_240117_182923(3).jpg>) ![alt text](<001easy ques_240117_182923(4).jpg>) ![alt text](<001easy ques_240117_182923(5).jpg>) ![alt text](<001easy ques_240117_182923(6).jpg>) ![alt text](<001easy ques_240117_182923(7).jpg>) ![alt text](<001easy ques_240117_182923(8).jpg>) 
-
+**Java** (same logic, added since only C++ existed):
 ```java
 class Solution {
-    int helper(int i,int j,int [][] grid,int[][] dir){
-        if(grid[i][j]==0) return 0;
-        if(i==0||j==0||i==grid.length-1||j==grid[0].length-1) return -1;
-         grid[i][j]=0;
-        int res=1;
-        for(int d=0;d<4;d++){
-            int newi=i+dir[d][0];
-            int newj=j+dir[d][1];
-            int tres=helper(newi,newj,grid,dir);
-            if(tres==-1) res=-1;// do not chnage to return as need to visit all other connected to this
-            else if(res!=-1 )res+=tres; // do not remove if as then res will be added when res=-1 which we do not want
-        }
-         
-        return  res;
+    boolean canVisit(int[][] grid, boolean[][] vis, int i, int j, int oc) {
+        int n = grid.length;
+        int m = grid[0].length;
+        if (i >= 0 && i < n && j >= 0 && j < m && vis[i][j] == false && grid[i][j] == oc) return true;
+        return false;
     }
+
+    void solve(int[][] dir, int[][] grid, boolean[][] vis, int i, int j, int oc, int nc) {
+        vis[i][j] = true;
+        grid[i][j] = nc;
+        for (int k = 0; k < dir.length; k++) {
+            int newi = i + dir[k][0];
+            int newj = j + dir[k][1];
+            if (canVisit(grid, vis, newi, newj, oc) == true) {
+                solve(dir, grid, vis, newi, newj, oc, nc);
+            }
+        }
+    }
+
+    public int[][] floodFill(int[][] img, int sr, int sc, int newColor) {
+        int[][] dir = {{-1, 0}, {1, 0}, {0, 1}, {0, -1}};
+        boolean[][] vis = new boolean[img.length][img[0].length];
+        int oc = img[sr][sc];
+        solve(dir, img, vis, sr, sc, oc, newColor);
+        return img;
+    }
+}
+```
+
+**Time Complexity: `O(n * m)`** — in the worst case, every cell shares the starting color and gets visited once. **Space Complexity: `O(n * m)`** — for the `vis` array, plus `O(n * m)` recursion stack in the worst case (a grid that's entirely one color, forming one long recursive chain).
+
+## Q4. Number of Islands (LeetCode 200)
+
+**Problem:** Given an `m x n` 2D binary grid `grid` which represents a map of `'1'`s (land) and `'0'`s (water), return *the number of islands*.
+
+An **island** is surrounded by water and is formed by connecting adjacent lands horizontally or vertically. You may assume all four edges of the grid are all surrounded by water.
+
+**Example 1:**
+```
+Input: grid = [
+  ["1","1","1","1","0"],
+  ["1","1","0","1","0"],
+  ["1","1","0","0","0"],
+  ["0","0","0","0","0"]
+]
+Output: 1
+```
+
+**Example 2:**
+```
+Input: grid = [
+  ["1","1","0","0","0"],
+  ["1","1","0","0","0"],
+  ["0","0","1","0","0"],
+  ["0","0","0","1","1"]
+]
+Output: 3
+```
+
+**Constraints:**
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 300`
+- `grid[i][j]` is `'0'` or `'1'`.
+
+This is the same style of problem as Q2's connected components, just with the graph implicitly represented as a grid: each cell is a vertex, and the 4 directions from a cell are its edges.
+
+**Approach 1 — DFS, marking visited cells in-place (no extra `visited` array needed):** since sinking a visited land cell to `'0'` has the same effect as marking it visited (it will never be treated as land again), the whole extra 2D `visited` array can be skipped entirely, saving `O(n*m)` space.
+
+**Java:**
+```java
+class Solution {
+    void helper(int i, int j, char[][] grid) {
+        if (i < 0 || j < 0 || i >= grid.length || j >= grid[0].length || grid[i][j] == '0') return;
+        grid[i][j] = '0';
+        helper(i + 1, j, grid);
+        helper(i, j + 1, grid);
+        helper(i - 1, j, grid);
+        helper(i, j - 1, grid);
+    }
+
+    public int numIslands(char[][] grid) {
+        int island = 0;
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == '1') {
+                    helper(i, j, grid);
+                    island++;
+                }
+            }
+        }
+        return island;
+    }
+}
+```
+
+**C++:**
+```cpp
+class Solution {
+    void helper(int i, int j, vector<vector<char>>& grid) {
+        if (i < 0 || j < 0 || i >= (int)grid.size() || j >= (int)grid[0].size() || grid[i][j] == '0') return;
+        grid[i][j] = '0';
+        helper(i + 1, j, grid);
+        helper(i, j + 1, grid);
+        helper(i - 1, j, grid);
+        helper(i, j - 1, grid);
+    }
+
+public:
+    int numIslands(vector<vector<char>>& grid) {
+        int island = 0;
+        for (int i = 0; i < (int)grid.size(); i++) {
+            for (int j = 0; j < (int)grid[0].size(); j++) {
+                if (grid[i][j] == '1') {
+                    helper(i, j, grid);
+                    island++;
+                }
+            }
+        }
+        return island;
+    }
+};
+```
+
+**Dry run** on Example 1: starting the DFS at `(0,0)` sinks the entire connected block of `1`s spanning the top-left (all cells reachable from `(0,0)` via 4-directional `1`s) — since every remaining `1` in the grid is 4-directionally connected to that same block, the whole grid collapses into a single island. **Output: 1**, matching expected.
+
+**Approach 2 — BFS (equally valid; useful when recursion depth on a huge grid is a concern):**
+
+**Java:**
+```java
+class Solution {
+    public int numIslands(char[][] grid) {
+        if (grid.length == 0) {
+            return 0;
+        }
+
+        int m = grid.length, n = grid[0].length;
+        boolean[][] visited = new boolean[m][n];
+        Queue<int[]> queue = new LinkedList<>();
+        int count = 0;
+        int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == '1' && !visited[i][j]) {
+                    queue.offer(new int[]{i, j});
+                    visited[i][j] = true;
+                    bfs(grid, queue, visited);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    private void bfs(char[][] grid, Queue<int[]> queue, boolean[][] visited) {
+        int[][] dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+        int m = grid.length, n = grid[0].length;
+        while (!queue.isEmpty()) {
+            int[] curr = queue.poll();
+            for (int[] dir : dirs) {
+                int x = curr[0] + dir[0];
+                int y = curr[1] + dir[1];
+                if (x < 0 || x >= m || y < 0 || y >= n || visited[x][y] || grid[x][y] == '0')
+                    continue;
+                visited[x][y] = true;
+                queue.offer(new int[]{x, y});
+            }
+        }
+    }
+}
+```
+
+**Time Complexity: `O(V + E)`**, where `V = n*m` (every cell) and `E = 4*n*m` (every cell has up to 4 edges), giving `O(5*n*m) = O(n*m)` overall.
+**Space Complexity: `O(n*m)`** worst case — for Approach 1, the recursion stack in the worst case (a grid that's a single giant island); for Approach 2, the `visited` array plus the BFS queue.
+
+
+
+
+
+## Q5. Number of Enclaves (LeetCode 1020)
+
+Read Flood Fill (Q3) before this — that same "sink connected same-value cells" concept helps directly here.
+
+**Problem:** You are given an `m x n` binary matrix `grid`, where `0` represents a sea cell and `1` represents a land cell.
+
+A **move** consists of walking from one land cell to another adjacent (4-directionally) land cell or walking off the boundary of the `grid`.
+
+Return *the number of land cells in* `grid` *for which we cannot walk off the boundary of the grid in any number of moves*.
+
+**Example 1:**
+```
+Input: grid = [[0,0,0,0],[1,0,1,0],[0,1,1,0],[0,0,0,0]]
+Output: 3
+Explanation: There are three 1s that are enclosed by 0s, and one 1 that
+is not enclosed because its on the boundary.
+```
+
+**Example 2:**
+```
+Input: grid = [[0,1,1,0],[0,0,1,0],[0,0,1,0],[0,0,0,0]]
+Output: 0
+Explanation: All 1s are either on the boundary or can reach the
+boundary.
+```
+
+**Constraints:**
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 500`
+- `grid[i][j]` is either `0` or `1`.
+
+**Approach:** For every unvisited land cell, DFS through its whole connected island, counting its cells — but if that DFS ever reaches the boundary of the grid (row/column `0` or the last row/column), the entire island can "walk off" the grid, so it must **not** be counted. A clean way to signal that: have the DFS helper return the island's cell count normally, but return `-1` the moment any cell in it touches the boundary, and propagate that `-1` all the way back up (so the caller adds `0`, not a partial count, for that island).
+
+**Dry run** on `grid = [[0,0,0,0],[1,0,1,0],[0,1,1,0],[0,0,0,0]]`: the land cell at `(1,0)` is on the boundary (row 1, column 0 — the leftmost column) — its DFS immediately signals `-1`, so it contributes `0`. The land cells at `(1,2), (2,1), (2,2)` form a connected island entirely in the interior, touching no boundary — DFS returns their count, `3`. **Total: 3**, matching the expected output (the fourth `1`, at the boundary, is excluded).
+
+**Java:**
+```java
+class Solution {
+    int helper(int i, int j, int[][] grid, int[][] dir) {
+        if (grid[i][j] == 0) return 0;
+        if (i == 0 || j == 0 || i == grid.length - 1 || j == grid[0].length - 1) return -1;
+        grid[i][j] = 0;
+        int res = 1;
+        for (int d = 0; d < 4; d++) {
+            int newi = i + dir[d][0];
+            int newj = j + dir[d][1];
+            int tres = helper(newi, newj, grid, dir);
+            if (tres == -1) res = -1; // do not change to return as need to visit all other connected to this
+            else if (res != -1) res += tres; // do not remove if as then res will be added when res=-1 which we do not want
+        }
+        return res;
+    }
+
     public int numberOfEnclaves(int[][] grid) {
-        int enclaves=0;
-        int [][]dir={{0,-1},{0,1},{1,0},{-1,0}};
-        for(int i=0;i<grid.length;i++)
-        {
-            for(int j=0;j<grid[0].length;j++){
-                    if(grid[i][j]==1){
-                    int tres=helper(i,j,grid,dir);
-                    enclaves+=(tres==-1)?0:tres;
+        int enclaves = 0;
+        int[][] dir = {{0, -1}, {0, 1}, {1, 0}, {-1, 0}};
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] == 1) {
+                    int tres = helper(i, j, grid, dir);
+                    enclaves += (tres == -1) ? 0 : tres;
                 }
             }
         }
@@ -408,6 +704,46 @@ class Solution {
     }
 }
 ```
+
+**C++** (same logic, added since only Java existed):
+```cpp
+class Solution {
+    int helper(int i, int j, vector<vector<int>>& grid, vector<vector<int>>& dir) {
+        if (grid[i][j] == 0) return 0;
+        if (i == 0 || j == 0 || i == (int)grid.size() - 1 || j == (int)grid[0].size() - 1) return -1;
+        grid[i][j] = 0;
+        int res = 1;
+        for (int d = 0; d < 4; d++) {
+            int newi = i + dir[d][0];
+            int newj = j + dir[d][1];
+            int tres = helper(newi, newj, grid, dir);
+            if (tres == -1) res = -1;
+            else if (res != -1) res += tres;
+        }
+        return res;
+    }
+
+public:
+    int numberOfEnclaves(vector<vector<int>>& grid) {
+        int enclaves = 0;
+        vector<vector<int>> dir = {{0, -1}, {0, 1}, {1, 0}, {-1, 0}};
+        for (int i = 0; i < (int)grid.size(); i++) {
+            for (int j = 0; j < (int)grid[0].size(); j++) {
+                if (grid[i][j] == 1) {
+                    int tres = helper(i, j, grid, dir);
+                    enclaves += (tres == -1) ? 0 : tres;
+                }
+            }
+        }
+        return enclaves;
+    }
+};
+```
+
+A few equally-valid alternative structurings of this same idea were also explored (a version using an explicit `visited` array with a class-level `flag`/`len` pair, and a "flood fill from every boundary cell first, then count what's left" version — the latter is shown separately near the end of these notes, since it also directly solves this problem). All of them reduce to the same core insight: an island only survives the count if none of its cells touch the border.
+
+ ![alt text](<001easy ques_240117_182923(11).jpg>) 
+
 ### BFS solution
 
 ```java
@@ -545,9 +881,54 @@ class Solution {
 
 ```
 
-![alt text](<001easy ques_240117_182923(9).jpg>) ![alt text](<001easy ques_240117_182923(10).jpg>) ![alt text](<001easy ques_240117_182923(11).jpg>) ![alt text](<001easy ques_240117_182923(12).jpg>) ![alt text](<001easy ques_240117_182923(13).jpg>) ![alt text](<001easy ques_240117_182923(14).jpg>) ![alt text](<001easy ques_240117_182923(15).jpg>)
 
-![alt text](<001easy ques_240117_182923(16).jpg>) ![alt text](<001easy ques_240117_182923(17).jpg>) ![alt text](<001easy ques_240117_182923(18).jpg>) ![alt text](<001easy ques_240117_182923(19).jpg>) ![alt text](<001easy ques_240117_182923(20).jpg>) ![alt text](<001easy ques_240117_182923(21).jpg>) ![alt text](<001easy ques_240117_182923(22).jpg>) ![alt text](<001easy ques_240117_182923(23).jpg>) 
+
+**Time Complexity: `O(n * m)`** — every cell is visited a constant number of times across the whole grid. **Space Complexity: `O(n * m)`** worst case for the recursion stack (a grid that is entirely land, forming one connected component).
+
+## Q6. Rotting Oranges (LeetCode 994)
+
+**Problem:** You are given an `m x n` `grid` where each cell can have one of three values:
+- `0` representing an empty cell,
+- `1` representing a fresh orange, or
+- `2` representing a rotten orange.
+
+Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten.
+
+Return *the minimum number of minutes that must elapse until no cell has a fresh orange*. If *this is impossible, return* `-1`.
+
+**Example 1:**
+```
+Input: grid = [[2,1,1],[1,1,0],[0,1,1]]
+Output: 4
+```
+
+**Example 2:**
+```
+Input: grid = [[2,1,1],[0,1,1],[1,0,1]]
+Output: -1
+Explanation: The orange in the bottom left corner (row 2, column 0) is
+never rotten, because rotting only happens 4-directionally.
+```
+
+**Example 3:**
+```
+Input: grid = [[0,2]]
+Output: 0
+Explanation: Since there are already no fresh oranges at minute 0, the
+answer is just 0.
+```
+
+**Constraints:**
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 10`
+- `grid[i][j]` is `0`, `1`, or `2`.
+
+**Approach:** This is a multi-source BFS — every initially-rotten orange starts in the queue simultaneously (at "minute 0"), and the BFS spreads outward level by level, each level representing one minute passing. Since the answer needs the *time* something happens, not just reachability, **BFS is the right tool here, not DFS** — BFS naturally processes things in order of "distance" (here, time), and can track the running maximum time directly as it goes level by level, whereas DFS would need extra bookkeeping to recover the correct minimum time. This is a general rule of thumb worth remembering: whenever a question asks for shortest time/distance, reach for BFS; otherwise DFS is usually simpler.
+
+
+
+ 
 
 ```cpp
 class Solution{
@@ -705,7 +1086,374 @@ Here is the Complexity Analysis for the Rotting Oranges (BFS) solution. Let $N$ 
 > **Optimization Note:** You can achieve $O(1)$ auxiliary space (excluding the queue) if you modify the input grid directly (e.g., changing 1 to 2 to mark it as visited) instead of using a separate `vis` array. The Queue space remains $O(N \times M)$.
 
 
-![alt text](<001easy ques_240117_182923(24).jpg>) ![alt text](<001easy ques_240117_182923(25).jpg>) ![alt text](<001easy ques_240117_182923(26).jpg>) ![alt text](<001easy ques_240117_182923(27).jpg>) ![alt text](<001easy ques_240117_182923(28).jpg>) ![alt text](<001easy ques_240117_182923(29).jpg>) ![alt text](<001easy ques_240117_182923(30).jpg>) ![alt text](<001easy ques_240117_182923(31).jpg>) ![alt text](<001easy ques_240117_182923(32).jpg>) ![alt text](<001easy ques_240117_182923(33).jpg>) ![alt text](<001easy ques_240117_182923(34).jpg>) ![alt text](<001easy ques_240117_182923(35).jpg>) ![alt text](<001easy ques_240117_182923(36).jpg>) ![alt text](<001easy ques_240117_182923(37).jpg>) ![alt text](<001easy ques_240117_182923(38).jpg>) ![alt text](<001easy ques_240117_182923(39).jpg>) ![alt text](<001easy ques_240117_182923(40).jpg>) ![alt text](<001easy ques_240117_182923(41).jpg>) ![alt text](<001easy ques_240117_182923(42).jpg>) ![alt text](<001easy ques_240117_182923(43).jpg>) ![alt text](<001easy ques_240117_182923(44).jpg>) ![alt text](<001easy ques_240117_182923(45).jpg>) ![alt text](<001easy ques_240117_182923(46).jpg>) ![alt text](<001easy ques_240117_182923(47).jpg>) ![alt text](<001easy ques_240117_182923(48).jpg>) ![alt text](<001easy ques_240117_182923(49).jpg>) ![alt text](<001easy ques_240117_182923(50).jpg>) ![alt text](<001easy ques_240117_182923(51).jpg>) ![alt text](<001easy ques_240117_182923(52).jpg>) ![alt text](<001easy ques_240117_182923(53).jpg>) ![alt text](<001easy ques_240117_182923(54).jpg>) ![alt text](<001easy ques_240117_182923(55).jpg>) ![alt text](<001easy ques_240117_182923(56).jpg>) ![alt text](<001easy ques_240117_182923(57).jpg>) ![alt text](<001easy ques_240117_182923(58).jpg>) 
+**Java** (same logic as the fixed C++ above, added since only C++ existed):
+```java
+class Solution {
+    private boolean isPossibleToadd(int i, int j, int[][] grid, boolean[][] vis, int n, int m) {
+        if (i < 0 || i >= n || j < 0 || j >= m) return false;
+        if (grid[i][j] != 1 || vis[i][j] == true) return false;
+        return true;
+    }
+
+    public int orangesRotting(int[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
+
+        boolean[][] vis = new boolean[n][m];
+        Queue<int[]> q = new LinkedList<>();
+        int fresh = 0;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 2) {
+                    q.offer(new int[]{0, i, j});
+                    vis[i][j] = true;
+                } else if (grid[i][j] == 1) {
+                    fresh++;
+                }
+            }
+        }
+
+        int[][] dir = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        int t = 0;
+
+        while (!q.isEmpty()) {
+            int[] rem = q.poll();
+            int tm = rem[0], i = rem[1], j = rem[2];
+            t = Math.max(t, tm);
+
+            for (int k = 0; k < 4; k++) {
+                int newi = i + dir[k][0];
+                int newj = j + dir[k][1];
+                if (isPossibleToadd(newi, newj, grid, vis, n, m)) {
+                    vis[newi][newj] = true;
+                    fresh--;
+                    q.offer(new int[]{tm + 1, newi, newj});
+                }
+            }
+        }
+
+        return fresh == 0 ? t : -1;
+    }
+}
+```
+
+## Q7. Is Graph Bipartite? (LeetCode 785)
+
+**Problem:** There is an **undirected** graph with `n` nodes, where each node is numbered between `0` and `n - 1`. You are given a 2D array `graph`, where `graph[u]` is an array of nodes that node `u` is adjacent to. More formally, for each `v` in `graph[u]`, there is an undirected edge between node `u` and node `v`. The graph has the following properties:
+- There are no self-edges (`graph[u]` does not contain `u`).
+- There are no parallel edges (`graph[u]` does not contain duplicate values).
+- If `v` is in `graph[u]`, then `u` is in `graph[v]` (the graph is undirected).
+- The graph may not be connected, meaning there may be two nodes `u` and `v` such that there is no path between them.
+
+A graph is **bipartite** if the nodes can be partitioned into two independent sets `A` and `B` such that **every** edge in the graph connects a node in set `A` and a node in set `B`.
+
+Return `true` *if and only if it is bipartite*.
+
+**Example 1:**
+```
+Input: graph = [[1,2,3],[0,2],[0,1,3],[0,2]]
+Output: false
+Explanation: There is no way to partition the nodes into
+two independent sets such that every edge connects a node
+in one and a node in the other.
+```
+
+**Example 2:**
+```
+Input: graph = [[1,3],[0,2],[1,3],[0,2]]
+Output: true
+Explanation: We can partition the nodes into two sets: {0, 2} and {1, 3}.
+```
+
+**Approach — 2-coloring via BFS:** try to color the graph using exactly two colors such that no two adjacent nodes share a color. Start any unvisited node with color `+1`; every neighbor it hasn't colored yet gets the opposite color (`-1 * currentColor`); if a neighbor is *already* colored and it doesn't have the opposite color, the graph can't be 2-colored, so it isn't bipartite. Using `+1`/`-1` as the two colors (instead of, say, `0`/`1`) conveniently leaves `0` free to mean "uncolored".
+
+**Dry run** on a 5-cycle `0-1-2-3-4-0` (an odd cycle, which is never bipartite): start at `0` with color `1`. Color `1` with `-1`, color `4` with `-1` (both neighbors of `0`). From `1`, color `2` with `1`. From `4`, color `3` with `1`. Now `2` (color `1`) and `3` (color `1`) are adjacent — but they share the *same* color, so the check fails and the graph is correctly identified as **not bipartite** (odd cycles are the classic non-bipartite example).
+
+**Java:**
+```java
+class Solution {
+    public class pair {
+        int v, color;
+        pair(int v, int color) {
+            this.v = v;
+            this.color = color;
+        }
+    }
+
+    public boolean isBipartite(int[][] graph) {
+        int[] vis = new int[graph.length];
+        for (int v = 0; v < graph.length; v++) {
+            if (vis[v] == 0) {
+                boolean isbipartite = traverse(graph, vis, v);
+                if (isbipartite == false)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean traverse(int[][] graph, int[] vis, int v) {
+        LinkedList<pair> q = new LinkedList<>();
+        q.addLast(new pair(v, 1));
+        while (q.size() > 0) {
+            pair p = q.removeFirst();
+            if (vis[p.v] != 0) {
+                int old_color = vis[p.v];
+                int new_color = p.color;
+                if (old_color == new_color) continue;
+                else return false;
+            }
+            vis[p.v] = p.color;
+            for (int i = 0; i < graph[p.v].length; i++) {
+                if (vis[graph[p.v][i]] == 0)
+                    q.addLast(new pair(graph[p.v][i], -1 * p.color));
+            }
+        }
+        return true;
+    }
+}
+```
+
+**C++:**
+```cpp
+class Solution {
+    struct pair_ {
+        int v, color;
+        pair_(int v, int color) : v(v), color(color) {}
+    };
+
+    bool traverse(vector<vector<int>>& graph, vector<int>& vis, int v) {
+        deque<pair_> q;
+        q.push_back(pair_(v, 1));
+        while (q.size() > 0) {
+            pair_ p = q.front();
+            q.pop_front();
+            if (vis[p.v] != 0) {
+                int old_color = vis[p.v];
+                int new_color = p.color;
+                if (old_color == new_color) continue;
+                else return false;
+            }
+            vis[p.v] = p.color;
+            for (int i = 0; i < (int)graph[p.v].size(); i++) {
+                if (vis[graph[p.v][i]] == 0)
+                    q.push_back(pair_(graph[p.v][i], -1 * p.color));
+            }
+        }
+        return true;
+    }
+
+public:
+    bool isBipartite(vector<vector<int>>& graph) {
+        vector<int> vis(graph.size(), 0);
+        for (int v = 0; v < (int)graph.size(); v++) {
+            if (vis[v] == 0) {
+                if (!traverse(graph, vis, v)) return false;
+            }
+        }
+        return true;
+    }
+};
+```
+
+**An equally valid DFS version of the same 2-coloring idea:**
+```java
+class Solution {
+    public boolean isBipartite(int[][] graph) {
+        int[] vis = new int[graph.length];
+        for (int v = 0; v < graph.length; v++) {
+            if (vis[v] == 0) {
+                boolean isbipartite = traverseDFS(graph, vis, v, 1);
+                if (isbipartite == false)
+                    return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean traverseDFS(int[][] graph, int[] vis, int v, int color) {
+        vis[v] = color;
+        for (var nbr : graph[v]) {
+            if (vis[nbr] == 0) {
+                boolean isbip = traverseDFS(graph, vis, nbr, -1 * color);
+                if (isbip == false) return false;
+            } else {
+                int oldcolor = vis[nbr];
+                int newcolor = -1 * color;
+                if (oldcolor != newcolor) return false;
+            }
+        }
+        return true;
+    }
+}
+```
+
+**Time Complexity: `O(V + E)`** — standard BFS/DFS traversal, visiting every node and edge once. **Space Complexity: `O(V)`** for the `vis` array, plus `O(V)` for the BFS queue / DFS recursion stack.
+
+## Q8. Bus Routes (LeetCode 815)
+
+**Problem:** You are given an array `routes` representing bus routes where `routes[i]` is a bus route that the `i`th bus repeats forever.
+- For example, if `routes[0] = [1, 5, 7]`, this means that the `0`th bus travels in the sequence `1 -> 5 -> 7 -> 1 -> 5 -> 7 -> 1 -> ...` forever.
+
+You will start at the bus stop `source` (You are not on any bus initially), and you want to go to the bus stop `target`. You can travel between bus stops by buses only.
+
+Return *the least number of buses you must take to travel from* `source` *to* `target`. Return `-1` if it is not possible.
+
+**Example 1:**
+```
+Input: routes = [[1,2,7],[3,6,7]], source = 1, target = 6
+Output: 2
+Explanation: The best strategy is take the first bus to reach
+bus stop 7, then take the second bus to reach bus stop 6.
+```
+
+**Example 2:**
+```
+Input: routes = [[7,12],[4,5,15],[6],[15,19],[9,12,13]], source = 15, target = 12
+Output: -1
+```
+ ![alt text](<001easy ques_240117_182923(47).jpg>) ![alt text](<001easy ques_240117_182923(48).jpg>) ![alt text](<001easy ques_240117_182923(49).jpg>) ![alt text](<001easy ques_240117_182923(50).jpg>) ![alt text](<001easy ques_240117_182923(51).jpg>) ![alt text](<001easy ques_240117_182923(52).jpg>) ![alt text](<001easy ques_240117_182923(53).jpg>) ![alt text](<001easy ques_240117_182923(54).jpg>) ![alt text](<001easy ques_240117_182923(55).jpg>) ![alt text](<001easy ques_240117_182923(56).jpg>) ![alt text](<001easy ques_240117_182923(57).jpg>)
+
+**Approach:** Think of each **bus** (not each stop) as a node. Build a `HashMap<stop, Set<busIndex>>` recording which buses visit each stop, so it's easy to find "all buses reachable from this stop." Then, treat two buses as connected if they share at least one common stop (you can transfer between them there). Do a BFS starting from **every bus that visits `source`** simultaneously (level 0), where each BFS "hop" represents boarding one more bus; the answer is the number of hops needed to first reach any bus that visits `target`.
+
+**Dry run** on `routes = [[1,2,7],[3,6,7]]`, `source = 1`, `target = 6`: bus `0` visits `{1,2,7}`, bus `1` visits `{3,6,7}`. Starting from `source = 1`: bus `0` visits stop `1`, so BFS starts at bus `0` (1 bus taken so far). From bus `0`, its stops are `{1,2,7}`; stop `7` is also visited by bus `1`, so bus `1` is reachable with one more transfer (2 buses total). Bus `1` visits `target = 6` — done. **Answer: 2**, matching the expected output.
+
+**Java:**
+```java
+class Solution {
+    public int numBusesToDestination(int[][] routes, int source, int target) {
+        if (source == target) return 0;
+
+        int n = routes.length;
+        Map<Integer, List<Integer>> stopToBuses = new HashMap<>();
+        for (int bus = 0; bus < n; bus++) {
+            for (int stop : routes[bus]) {
+                stopToBuses.computeIfAbsent(stop, k -> new ArrayList<>()).add(bus);
+            }
+        }
+
+        boolean[] visitedBus = new boolean[n];
+        Queue<Integer> q = new LinkedList<>();
+
+        // Start with every bus that visits `source`
+        for (int bus : stopToBuses.getOrDefault(source, new ArrayList<>())) {
+            visitedBus[bus] = true;
+            q.offer(bus);
+        }
+
+        int buses = 1;
+        while (!q.isEmpty()) {
+            int size = q.size();
+            for (int k = 0; k < size; k++) {
+                int bus = q.poll();
+                for (int stop : routes[bus]) {
+                    if (stop == target) return buses;
+                    for (int nextBus : stopToBuses.getOrDefault(stop, new ArrayList<>())) {
+                        if (!visitedBus[nextBus]) {
+                            visitedBus[nextBus] = true;
+                            q.offer(nextBus);
+                        }
+                    }
+                }
+            }
+            buses++;
+        }
+        return -1;
+    }
+}
+```
+
+**C++:**
+```cpp
+class Solution {
+public:
+    int numBusesToDestination(vector<vector<int>>& routes, int source, int target) {
+        if (source == target) return 0;
+
+        int n = routes.size();
+        unordered_map<int, vector<int>> stopToBuses;
+        for (int bus = 0; bus < n; bus++) {
+            for (int stop : routes[bus]) {
+                stopToBuses[stop].push_back(bus);
+            }
+        }
+
+        vector<bool> visitedBus(n, false);
+        queue<int> q;
+
+        for (int bus : stopToBuses[source]) {
+            visitedBus[bus] = true;
+            q.push(bus);
+        }
+
+        int buses = 1;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int k = 0; k < size; k++) {
+                int bus = q.front();
+                q.pop();
+                for (int stop : routes[bus]) {
+                    if (stop == target) return buses;
+                    for (int nextBus : stopToBuses[stop]) {
+                        if (!visitedBus[nextBus]) {
+                            visitedBus[nextBus] = true;
+                            q.push(nextBus);
+                        }
+                    }
+                }
+            }
+            buses++;
+        }
+        return -1;
+    }
+};
+```
+
+**Time Complexity: `O(N^2 * M)`**, where `N` is the number of routes and `M` is the average route length — building `stopToBuses` costs `O(N*M)`, and in the worst case the BFS visits every bus and re-scans each of its stops. **Space Complexity: `O(N*M)`** for the `stopToBuses` map, plus `O(N)` for the `visitedBus` array and queue.
+
+## Q9. Number of Distinct Islands (GFG)
+
+**Problem:** Given a boolean 2D matrix `grid` of size `n * m`. You have to find the number of distinct islands where a group of connected 1s (horizontally or vertically) forms an island. Two islands are considered to be distinct if and only if one island is equal to another (not rotated or reflected).
+
+**Example 1:**
+```
+Input:
+grid[][] = {{1, 1, 0, 0, 0},
+            {1, 1, 0, 0, 0},
+            {0, 0, 0, 1, 1},
+            {0, 0, 0, 1, 1}}
+Output:
+1
+Explanation:
+Island 1, 1 at the top left corner is same as island
+1, 1 at the bottom right corner.
+```
+
+**Example 2:**
+```
+Input:
+grid[][] = {{1, 1, 0, 1, 1},
+            {1, 0, 0, 0, 0},
+            {0, 0, 0, 0, 1},
+            {1, 1, 0, 1, 1}}
+Output:
+3
+Explanation:
+Distinct islands are: 1, 1 at the top left corner;
+1, 1 at the top right corner and 1 at the bottom
+right corner. We ignore the island 1, 1 at the
+bottom left corner since 1, 1 it is identical to the
+top right corner.
+```
+
+**Expected Time Complexity:** `O(n * m)`.
+**Expected Space Complexity:** `O(n * m)`.
+
+**Constraints:**
+- `1 <= n, m <= 500`
+- `grid[i][j] == 0` or `grid[i][j] == 1`
+
 
 ## My code
 
@@ -919,6 +1667,52 @@ int main() {
 }
 
 ```
+
+**Java** (same logic, added since only C++ existed):
+```java
+class Solution {
+    private final int[] delRow = {-1, 0, 1, 0};
+    private final int[] delCol = {0, -1, 0, 1};
+
+    private boolean isValid(int i, int j, int n, int m) {
+        return i >= 0 && j >= 0 && i < n && j < m;
+    }
+
+    private void dfs(int row, int col, int[][] grid, int baseRow, int baseCol, StringBuilder shape) {
+        int n = grid.length, m = grid[0].length;
+
+        grid[row][col] = 0;
+
+        shape.append(row - baseRow).append(",").append(col - baseCol).append(" ");
+
+        for (int d = 0; d < 4; d++) {
+            int nRow = row + delRow[d];
+            int nCol = col + delCol[d];
+            if (isValid(nRow, nCol, n, m) && grid[nRow][nCol] == 1) {
+                dfs(nRow, nCol, grid, baseRow, baseCol, shape);
+            }
+        }
+    }
+
+    public int countDistinctIslands(int[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
+        Set<String> shapes = new HashSet<>();
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    StringBuilder shape = new StringBuilder();
+                    dfs(i, j, grid, i, j, shape);
+                    shapes.add(shape.toString());
+                }
+            }
+        }
+        return shapes.size();
+    }
+}
+```
+
 This approach relies on **Translation Invariance**.
 
 When you find an island, you treat the first cell found (top-left) as the **Base** (`baseRow`, `baseCol`). For every other cell in that island, you store its position as `(row - baseRow, col - baseCol)`.
@@ -1034,7 +1828,7 @@ public:
 
 
 
-# 130. Surrounded Regions
+# Q10. 130. Surrounded Regions
 
 **Medium**
 
@@ -1232,6 +2026,65 @@ public:
     }
 };
 ```
+
+**Java** (same logic, added since only C++ existed):
+```java
+class Solution {
+    int[][] dir = {{0, -1}, {0, 1}, {1, 0}, {-1, 0}};
+
+    boolean isValid(int i, int j, int n, int m) {
+        return i >= 0 && i < n && j >= 0 && j < m;
+    }
+
+    // Standard DFS just to mark connected 'O's as '#'
+    void dfs(int i, int j, char[][] grid, int n, int m) {
+        grid[i][j] = '#'; // Mark as "Safe" (connected to boundary)
+
+        for (int k = 0; k < 4; k++) {
+            int newi = i + dir[k][0];
+            int newj = j + dir[k][1];
+
+            if (isValid(newi, newj, n, m) && grid[newi][newj] == 'O') {
+                dfs(newi, newj, grid, n, m);
+            }
+        }
+    }
+
+    public char[][] fill(char[][] grid) {
+        int n = grid.length;
+        if (n == 0) return grid;
+        int m = grid[0].length;
+
+        // Step 1: Check boundaries (Rows)
+        for (int i = 0; i < n; i++) {
+            if (grid[i][0] == 'O') dfs(i, 0, grid, n, m);         // Left border
+            if (grid[i][m - 1] == 'O') dfs(i, m - 1, grid, n, m); // Right border
+        }
+
+        // Step 1: Check boundaries (Cols)
+        for (int j = 0; j < m; j++) {
+            if (grid[0][j] == 'O') dfs(0, j, grid, n, m);         // Top border
+            if (grid[n - 1][j] == 'O') dfs(n - 1, j, grid, n, m); // Bottom border
+        }
+
+        // Step 2: Post-process the grid
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 'O') {
+                    grid[i][j] = 'X'; // Captured! (Was not reached by boundary DFS)
+                } else if (grid[i][j] == '#') {
+                    grid[i][j] = 'O'; // Restore Safe ones
+                }
+            }
+        }
+
+        return grid;
+    }
+}
+```
+
+**Time Complexity: `O(n * m)`** — every cell is visited a constant number of times: once by the boundary DFS (if it's connected to the border), and once more in the final sweep. **Space Complexity: `O(n * m)`** worst case for the recursion stack (e.g. a board that's entirely `'O'`).
+
 ### We can use it in no of enclaves
 
 ```cpp
