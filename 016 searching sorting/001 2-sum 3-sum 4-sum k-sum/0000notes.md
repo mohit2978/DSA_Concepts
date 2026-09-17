@@ -68,7 +68,7 @@ class Solution {
 }
 ```
 
-cannot use sorting one as order needs to be maintained as need to return indices!!
+cannot use sorting one as order needs to be maintained as need to return indices!!so we stored indexes in map ,but if there is no index needed can use this below without map and return elements
 
 
 ```cpp
@@ -192,39 +192,8 @@ This reasoning only holds because the array is **sorted**, which is what makes e
 * **Another approach** &#8212; for every `a[i]`, binary-search for `(target - a[i])` &#8594; `O(n log n)`.
 * **The efficient one** &#8212; `O(n)` if the array is already sorted. If we have to sort it ourselves, the total becomes `O(n log n)`.
 
-### Java
 
-```java
-class Solution {
-    public int[] twoSum(int[] arr, int tar) {
-        int i=0;
-        int j=arr.length-1;
-        int[] res=new int[2];
-        int sum=arr[i]+arr[j];
-        while(i<j){
-            if(sum==tar){
-                res[0]=i+1;
-                res[1]=j+1;
-                return res;
-            }
-            if(sum<tar){
-                sum-=arr[i++];
-                sum+=arr[i];
-            }else if(sum>tar){
-                sum-=arr[j--];
-                sum+=arr[j];
-            }
-        }
-        return res;
-    }
-}
-```
-
-
-
-This version keeps a running `sum`: it first removes the element being left behind, then adds the new one.
-
-### Another implementation, with no `sum` variable at all
+as already sorted so no need to sort but approach is this only
 
 **Java**
 
@@ -560,6 +529,62 @@ public:
 * **Time `O(n^2)`.** The outer loop runs `n` times and each iteration calls a Two Sum that is `O(n)`, giving `n x n`. The `O(n log n)` sort at the start is dominated by that. Brute force would be `O(n^3)`, so fixing one element and reducing to Two Sum saves a whole factor of `n`.
 * **Space `O(log n)` to `O(n)` for the sort**, plus the output list. No hash map is needed at all, which is the payoff of sorting first.
 * **How duplicates are avoided at two levels.** The outer loop skips repeated values of the fixed element, and the inner Two Sum skips repeated values of the pair. Both are needed &#8212; skipping at only one level still lets duplicate triplets through.
+
+
+## Full solution 
+
+
+## 3-sum 
+
+3-sum just `nums[i]+nums[j]+nums[k]=0`
+
+so its just 2-sum of `nums[i]+nums[j]=-nums[k]`
+
+
+
+```cpp
+
+class Solution {
+  void getAns(vector<vector<int>>& tres,vector<vector<int>>& res,int el){
+        for(vector<int>temp:tres){
+            res.push_back({el,temp[0],temp[1]});
+        }
+    }
+    vector<vector<int>> twoSum(vector<int>& a,int tar,int si,int ei){
+        vector<vector<int>> ans;
+        while(si<ei){
+            int sum=a[si]+a[ei];
+            if(sum==tar){
+                ans.push_back({a[si],a[ei]});
+                si++;
+                ei--;
+                while(si<ei && a[si]==a[si-1]) si++;
+                while(si<ei && a[ei]==a[ei+1]) ei--;
+            }else if(sum>tar) ei--;
+            else si++;
+        }
+        return ans;
+    }
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        vector<vector<int>> res;
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        for(int i=0;i<n;){
+           vector<vector<int>> tres= twoSum(nums,-nums[i],i+1,n-1);
+           getAns(tres,res,nums[i]);
+           i++;
+           while(i<n && nums[i]==nums[i-1]) i++;
+        }
+        return res;
+    }
+};
+
+```
+
+Time Complexity:O(n log n) for sorting + O(n * n) for nested loops in threeSum and twoSum, resulting in O(n^2) overall.
+
+Space Complexity:O(1) excluding the output array, as only a constant amount of extra space is used for variables. If we consider the space taken by the output array, then it will depend on the number of triplets formed. In the worst-case scenario, where many triplets are formed, the space complexity could be O(n^2).
 
 ---
 
