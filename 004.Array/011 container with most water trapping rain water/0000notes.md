@@ -162,7 +162,7 @@ class Solution {
 
 ---
 
-## Q6. Maximum Sum in the Configuration
+## Q3. Maximum Sum in the Configuration
 
 ### Question
 
@@ -269,7 +269,7 @@ class Solution {
 
 ---
 
-## Q7. Container With Most Water
+## Q4. Container With Most Water
 
 ### Question
 
@@ -373,3 +373,36 @@ class Solution {
 
 - **Time:** `O(n)`
 - **Auxiliary space:** `O(1)`
+
+
+
+## Q5. Trapping Rain Water
+
+
+ ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(7).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(8).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(9).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(10).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(11).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(12).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(13).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(14).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(15).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(16).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(17).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(18).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(19).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(20).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(21).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(22).jpg>) 
+
+
+
+```cpp
+class Solution
+{
+public:
+    int trap(vector<int> &arr){
+        int n=arr.size();
+        int i=0;
+        int j=n-1;
+        int lmax=0;
+        int rmax=0;
+        int water=0;
+        while(i<j){
+            lmax=max(arr[i],lmax);
+            rmax=max(arr[j],rmax);
+
+            water+=(lmax<rmax?(lmax-arr[i++]):(rmax-arr[j--]));
+        }
+        return water;
+
+    }
+};
+```
+

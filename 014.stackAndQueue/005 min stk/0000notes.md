@@ -1,38 +1,106 @@
-# Notes
 
-
+## Q1 Remove Duplicate Letters
 ![alt text](<005min stk duplicate ltters trapping rain_231121_014732.jpg>)
 
 
 
-![alt text](<005min stk duplicate ltters trapping rain_231121_014732(1).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(2).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(3).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(4).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(5).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(6).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(7).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(8).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(9).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(10).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(11).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(12).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(13).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(14).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(15).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(16).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(17).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(18).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(19).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(20).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(21).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(22).jpg>) 
+![alt text](<005min stk duplicate ltters trapping rain_231121_014732(1).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(2).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(3).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(4).jpg>) ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(5).jpg>) 
+
+## Q2 Smallest SUbsequence of Distinct characters
+
+![alt text](<005min stk duplicate ltters trapping rain_231121_014732(6).jpg>)
+
+
+## Q3 Min Stack
+
+
+### Problem Statement — LeetCode 155. Min Stack (Medium)
+
+Design a stack that supports push, pop, top, and retrieving the minimum element in **constant time**.
+
+Implement the `MinStack` class:
+- `MinStack()` initializes the stack object.
+- `void push(int val)` pushes the element `val` onto the stack.
+- `void pop()` removes the element on the top of the stack.
+- `int top()` gets the top element of the stack.
+- `int getMin()` retrieves the minimum element in the stack.
+
+> You must implement a solution with **O(1) time complexity** for each function.
+
+**Constraints:**
+- `-2^31 <= val <= 2^31 - 1`
+- Methods `pop`, `top` and `getMin` operations will always be called on **non-empty** stacks.
+- At most `3 * 10^4` calls will be made to `push`, `pop`, `top`, and `getMin`.
+
+---
+
+### Example 1
+
+**Input:**
+```
+["MinStack","push","push","push","getMin","pop","top","getMin"]
+[[], [-2], [0], [-3], [], [], [], []]
+```
+
+**Output:**
+```
+[null, null, null, null, -3, null, 0, -2]
+```
+
+**Explanation:**
+```cpp
+MinStack minStack = new MinStack();
+minStack.push(-2);
+minStack.push(0);
+minStack.push(-3);
+minStack.getMin(); // return -3
+minStack.pop();
+minStack.top();    // return 0
+minStack.getMin(); // return -2
+```
+
 
 ```cpp
-class Solution
-{
+class MinStack {
 public:
-    int trap(vector<int> &arr){
-        int n=arr.size();
-        int i=0;
-        int j=n-1;
-        int lmax=0;
-        int rmax=0;
-        int water=0;
-        while(i<j){
-            lmax=max(arr[i],lmax);
-            rmax=max(arr[j],rmax);
+    stack<long long> st;
+    long long min = 0;
 
-            water+=(lmax<rmax?(lmax-arr[i++]):(rmax-arr[j--]));
+    MinStack() {}
+
+    void push(int val) {
+        if (st.size() == 0) {
+            st.push(val);
+            min = val;
+        } else {
+            if (val < min) {
+                st.push(val + (val - min));  // encoded value = 2*val - min
+                min = val;
+            } else {
+                st.push(val);
+            }
         }
-        return water;
+    }
 
+    void pop() {
+        if (st.top() < min)
+            min = min + (min - st.top());  // restore prevMin
+        st.pop();
+    }
+
+    int top() {
+        if (st.top() < min)
+            return (int)min;
+        return (int)st.top();
+    }
+
+    int getMin() {
+        return (int)min;
     }
 };
 ```
 
-![alt text](<005min stk duplicate ltters trapping rain_231121_014732(23).jpg>)
- ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(24).jpg>)
-  ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(25).jpg>) 
+---
 
 
   ```Text
@@ -236,10 +304,6 @@ Let's trace: **Push 3, Push 5, Push 2, Push 1**.
 
 ### Summary
 We use **$2x - min$** because it guarantees the stored value is always smaller than the new minimum, acting as a flag that tells us: *"Stop! You need to rollback the minimum here."*
-
-  ![alt text](<005min stk duplicate ltters trapping rain_231121_014732(26).jpg>)
-   
-
 
 
 
