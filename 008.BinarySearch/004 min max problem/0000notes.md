@@ -281,11 +281,42 @@ int roseGarden(int n,vector<int> nums, int k, int m) {
   }
 };
  ```
+# Q3 Equilibrium Point
 
+## Problem Description
+Given an array `A` of `n` positive numbers. The task is to find the first Equilibrium Point in an array. 
 
-![alt text](<005bs min max problems_231231_215058.jpg>)
+Equilibrium Point in an array is a position such that the sum of elements before it is equal to the sum of elements after it.
+
+**Note:** Return the index of Equilibrium point. (1-based index)
+
+## Examples
+
+**Example 1:**
+- **Input:** `n = 5`, `A[] = {1, 3, 5, 2, 2}`
+- **Output:** `3`
+- **Explanation:** The equilibrium point is at position 3 as elements before it $(1 + 3) =$ elements after it $(2 + 2)$.
+
+**Example 2:**
+- **Input:** `n = 1`, `A[] = {1}`
+- **Output:** `1`
+- **Explanation:** Since it is the only element, hence it is the only equilibrium point.
+
+## Your Task
+The task is to complete the function `equilibriumPoint()` which takes the array `A` and `n` as input parameters and returns the point of equilibrium. Return `-1` if no such point exists.
+
+## Complexity
+- **Expected Time Complexity:** $O(n)$
+- **Expected Auxiliary Space:** $O(1)$
+
+## Constraints
+- $1 \le n \le 10^6$
+- $1 \le A[i] \le 10^8$
+
 
  ![alt text](<005bs min max problems_231231_215058(1).jpg>) 
+
+ # Q4 find k closest elements
  ![alt text](<005bs min max problems_231231_215058(2).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(3).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(4).jpg>) 
@@ -302,6 +333,10 @@ int roseGarden(int n,vector<int> nums, int k, int m) {
  ![alt text](<005bs min max problems_231231_215058(15).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(16).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(17).jpg>) 
+
+
+# Q5 Koko eating bananas
+
  ![alt text](<005bs min max problems_231231_215058(18).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(19).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(20).jpg>) 
@@ -355,8 +390,8 @@ then if possible d to do in h time then we need to find more less so ei=mid-1
 
 else si=mid+1
 
- 
-  ![alt text](<005bs min max problems_231231_215058(31).jpg>) 
+ # Q6 sqrt(x)
+![alt text](<005bs min max problems_231231_215058(31).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(32).jpg>)
  ![alt text](<005bs min max problems_231231_215058(33).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(34).jpg>) 
@@ -454,6 +489,8 @@ The time complexity is O(log(M) * log(N)) due to the binary search from 2 to M-1
 - Space Complexity
 The space complexity is O(1) as it uses a constant amount of extra space.
  
+# Q7 maximum area serving cake 
+
  ![alt text](<005bs min max problems_231231_215058(35).jpg>) 
  
 
@@ -463,7 +500,10 @@ The space complexity is O(1) as it uses a constant amount of extra space.
  ![alt text](<005bs min max problems_231231_215058(38).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(39).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(40).jpg>) 
- ![alt text](<005bs min max problems_231231_215058(41).jpg>) 
+ ![alt text](<005bs min max problems_231231_215058(41).jpg>)
+
+ # Q8 minimise maximum distance to station
+
  ![alt text](<005bs min max problems_231231_215058(42).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(43).jpg>) 
  ![alt text](<005bs min max problems_231231_215058(44).jpg>) 
@@ -512,7 +552,7 @@ class Solution {
 
  ![alt text](<005bs min max problems_231231_215058(57).jpg>)
 
- # Q3 Agggresive cows
+ # Q9 Agggresive cows
 
 ## AGGRCOW - Aggressive cows
 
@@ -601,39 +641,6 @@ Full code
 #include<bits/stdc++.h>
 using namespace std;
 
-#define ff              first
-#define ss              second
-#define ll             long long
-#define lli 				long long int
-#define pb              push_back
-#define mp              make_pair
-#define pii             pair<int,int>
-#define vi              vector<int>
-#define mii             map<int,int>
-#define umii			unordered_map<int, int>
-#define pq_max          priority_queue<int>
-#define pq_min          priority_queue<int,vi,greater<int> >
-#define setbits(x)      __builtin_popcountll(x)
-#define zrobits(x)      __builtin_ctzll(x)
-#define mod             1000000007
-#define inf             1e18
-#define ps(x,y)         fixed<<setprecision(y)<<x
-#define mid(s,e)         (s+(e-s)/2)
-#define mk(arr,n,type)  type *arr=new type[n];
-#define w(t)            int t; cin>>t; while(t--)
-#define DEBUG(x) 		cout << '>' << #x << ':' << x << endl;
-#define REP(i,n) 		for(int i=0;i<(n);i++)
-#define FOR(i,a,b) 		for(int i=(a);i<=(b);i++)
-#define FORD(i,a,b) 	for(int i=(a);i>=(b);i--)
-
-void fio()
-{
-    ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);
-    #ifndef ONLINE_JUDGE
-        freopen("input.txt", "r", stdin);
-        freopen("output.txt", "w", stdout);
-    #endif
-}
 int agressiveCows(){
     int n,c;
     cin>>n>>c;
@@ -702,7 +709,7 @@ public:
 };
 ```
 
-# Q4 2485. Find the Pivot Integer
+# Q10 2485. Find the Pivot Integer
 
 **Difficulty:** Easy
 **Topics:** Math, Prefix Sum
@@ -769,7 +776,7 @@ class Solution {
 }
 ```
 
-# Q5 book allocation problem 
+# Q11 book allocation problem 
 
 
 Given an array nums of n integers, where nums[i] represents the number of pages in the i-th book, and an integer m representing the number of students, allocate all the books to the students so that each student gets at least one book, each book is allocated to only one student, and the allocation is contiguous.
