@@ -1,4 +1,4 @@
- ## Q Search in Rotated Sorted Array I
+ # Q1 Search in Rotated Sorted Array I
 
 Given an integer array `nums`, sorted in ascending order (with distinct values) and a target value `k`. The array is rotated at some pivot point that is unknown.
 
@@ -90,6 +90,8 @@ seee
 
 ![alt text](image-3.png)
  
+# Q2 search in rotated sorted array-2
+
  ![alt text](<003rotated array_240105_131613(6).jpg>) ![alt text](<003rotated array_240105_131613(7).jpg>) ![alt text](<003rotated array_240105_131613(8).jpg>)
 
 ![alt text](<003rotated array_240105_131613(9).jpg>) 
@@ -135,7 +137,7 @@ public:
 ```
 ![alt text](image-4.png)
 
-## Q Find min in rotated sorted array
+# Q3 Find min in rotated sorted array
 
 Given an integer array nums of size N, sorted in ascending order with distinct values, and then rotated an unknown number of times (between 1 and N), find the minimum element in the array.
 
@@ -349,8 +351,50 @@ This property is why this template is so powerful for finding **Insert Positions
 ### Summary
 Because the pointers "cross" by exactly one unit, you have a perfect snapshot of the boundary where the target would belong. 
 
+# Q4 find min in rotated sorted array II
 
- ![alt text](<003rotated array_240105_131613(14).jpg>) ![alt text](<003rotated array_240105_131613(15).jpg>) 
+**Difficulty:** Hard
+
+## Problem Description
+
+Suppose an array of length `n` sorted in ascending order is **rotated** between `1` and `n` times. For example, the array `nums = [0,1,4,4,5,6,7]` might become:
+- `[4,5,6,7,0,1,4]` if it was rotated `4` times.
+- `[0,1,4,4,5,6,7]` if it was rotated `7` times.
+
+Notice that **rotating** an array `[a[0], a[1], a[2], ..., a[n-1]]` 1 time results in the array `[a[n-1], a[0], a[1], a[2], ..., a[n-2]]`.
+
+Given the sorted rotated array `nums` that may contain **duplicates**, return *the minimum element of this array*.
+
+You must decrease the overall operation steps as much as possible.
+
+## Examples
+
+**Example 1:**
+- **Input:** `nums = [1,3,5]`
+- **Output:** `1`
+
+**Example 2:**
+- **Input:** `nums = [2,2,2,0,1]`
+- **Output:** `0`
+
+## Constraints
+
+- `n == nums.length`
+- `1 <= n <= 5000`
+- `-5000 <= nums[i] <= 5000`
+- `nums` is sorted and rotated between `1` and `n` times.
+
+**Follow up:** This problem is similar to **Find Minimum in Rotated Sorted Array**, but `nums` may contain **duplicates**. Would this affect the runtime complexity? How and why?
+
+## Complexity
+- **Time Complexity:**
+  - **Average Case:** $O(\log n)$
+  - **Worst Case:** $O(n)$ (when elements are identical e.g., `nums[si] == nums[mid] == nums[ei]`, pointers can only be shrunk by 1 step at a time)
+- **Space Complexity:** $O(1)$
+
+ 
+ 
+![alt text](<003rotated array_240105_131613(15).jpg>) 
  
  ![alt text](<003rotated array_240105_131613(16).jpg>)
 
@@ -415,7 +459,7 @@ We use `continue` to prevent the code from executing the rest of the binary sear
 
 solution by rajneesh is also worst case O(n) solution !! Both are same!!
 
-
+# Q5 find peak element
  
   ![alt text](<003rotated array_240105_131613(17).jpg>) ![alt text](<003rotated array_240105_131613(18).jpg>) 
 ![alt text](<003rotated array_240105_131613(19).jpg>)
@@ -458,7 +502,7 @@ Space Complexity: As no additional space is used, so the Space Complexity is O(1
 
 
 
-## Find how many time array is rotated
+# Q6 Find how many time array is rotated
 
 Given an integer array nums of size n, sorted in ascending order with distinct values. The array has been right rotated an unknown number of times, between 0 and n-1 (including). Determine the number of rotations performed on the array.
 
