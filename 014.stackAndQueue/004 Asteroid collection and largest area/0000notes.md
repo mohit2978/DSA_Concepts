@@ -1,42 +1,49 @@
-# Notes
+
 ![alt text](<004asteroid collection largest area others_231121_163402.jpg>)
-![alt text](<004asteroid collection largest area others_231121_163402(1).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(2).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(3).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(4).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(5).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(6).jpg>)
+![alt text](<004asteroid collection largest area others_231121_163402(1).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(2).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(3).jpg>) ![alt text](<004asteroid collection largest area others_231121_163402(4).jpg>)  ![alt text](<004asteroid collection largest area others_231121_163402(6).jpg>)
 
-```cpp
-vector<int> asteroidCollision(vector<int> &arr)
-{
-    stack<int> st;
+see readable understandable code
 
-    int n = arr.size();
-    for (int ele : arr)
-    {
-        if (ele > 0)
-        {
-            st.push(ele);
-            continue;
+only +ve -ve gives the collision  so on stack we have positive and incoming is negative
+
+so base case is if positive incoming push it on stack
+
+now in case of negative and on TOS we have postive and that positive magnitute is less than the incoming negative so that positive will be destroyed so pop it and check again 
+
+if stack becomes empty or on top we have negative so push the incoming negative,this is also base case as negative and negative will never collide
+
+if TOS has element same as incoming but in postive so  again collision  then both will be destroyed pop TOS as incoming is never pushed to stack
+
+```java
+class Solution {
+    public int[] asteroidCollision(int[] arr) {
+        LinkedList<Integer> stk = new LinkedList<>();
+
+        int n = arr.length;
+        for (int ele : arr) {
+            if (ele > 0) {
+                stk.addFirst(ele);
+                continue;
+            }
+
+            while (stk.size() != 0 && stk.getFirst() > 0 && stk.getFirst() < -ele)
+                stk.removeFirst();
+            if (stk.size() == 0 || stk.getFirst() < 0)
+                stk.addFirst(ele);
+            else if (stk.getFirst() == -ele)
+                stk.removeFirst();
+
         }
 
-        while (st.size() != 0 && st.top() > 0 && st.top() < -ele)
-            st.pop();
-
-        if (st.size() != 0 && st.top() == -ele)
-            st.pop();
-        else if (st.size() == 0 || st.top() < 0)
-            st.push(ele);
-        else//if you do not put this else then also it works perfect
-        {
+        int[] ans = new int[stk.size()];
+        int idx = stk.size() - 1;
+        while (stk.size() != 0) {
+            ans[idx--] = stk.getFirst();
+            stk.removeFirst();
         }
-    }
 
-    vector<int> ans(st.size(), 0);
-    int idx = st.size() - 1;
-    while (st.size() != 0)
-    {
-        ans[idx--] = st.top();
-        st.pop();
+        return ans;
     }
-
-    return ans;
 }
 ```
 
