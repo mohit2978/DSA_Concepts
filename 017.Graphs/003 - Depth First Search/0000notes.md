@@ -3,19 +3,6 @@
 
 A connected component is a maximal group of vertices in which every vertex can be reached from every other vertex. Return a list of components, with each component containing its vertices.
 
-
-![Connected components examples: 1, 2, and 3 components](img-connected-components-examples.svg)
-
-
-### DFS approach
-
-1. Create one visited array for the entire graph and an empty result list.
-2. Scan all vertices from `0` to `V - 1`.
-3. Whenever a vertex is unvisited, create a fresh temporary component list and start DFS there.
-4. DFS marks the current vertex and adds it to that component, then explores its neighbours.
-5. After DFS returns, append the completed component to the result.
-
-
 ### Java DFS
 
 ```java
@@ -228,7 +215,7 @@ The same matrix can have a different island count under these two definitions.
 ---
 
  
-  ## Q3. Is the Graph Connected?
+  # Q3. Is the Graph Connected?
 
 An undirected graph is connected when every vertex is reachable from every other vertex. Use the same component traversal and return `true` exactly when the number of components is one.
 
@@ -252,7 +239,7 @@ bool isConnected(const vector<vector<int>>& graph) {
 
 Both versions use the DFS component function above.
 
-## Q4. Perfect Friends: Pairs from Different Components
+# Q4. Perfect Friends: Pairs from Different Components
 
 There are `n` students with IDs `0` through `n - 1`. The next `k` pairs describe students belonging to the same club. Build an undirected graph by adding each pair in both directions. Students connected directly or indirectly belong to the same group. Count unordered pairs of students from different groups.
 
@@ -400,7 +387,7 @@ void printPairs(const vector<vector<int>>& components) {
 
 
 
-## Q5. Number of Islands: Zero Is Land, Four Directions
+# Q5. Number of Islands: Zero Is Land, Four Directions
 
 In this version, `0` represents land and `1` represents water. Each cell is connected only to its north, east, west, and south neighbours. Count the groups of connected zeroes. This convention is separate from the earlier `1`-as-land, eight-direction examples.
 
@@ -596,7 +583,7 @@ int main() {
 }
 ```
 
-## Q6. Number of Islands: One Is Land, Eight Directions
+# Q6. Number of Islands: One Is Land, Eight Directions
 
 The following existing C++ implementations use character `'1'` as land and include diagonal neighbours. They therefore solve a different adjacency convention from the zero-land problem above. The DFS Java example earlier uses the same eight-direction land convention with integer `1` cells.          
 
@@ -1361,7 +1348,7 @@ class DirectedCycleDetection {
 
 
 
-## Q10. Largest Island: Number of Land Cells
+# Q10. Largest Island: Number of Land Cells
 
 The existing `largest_island.cpp` uses `1` as land and four-direction adjacency. DFS returns `1` for the current land cell plus the sizes returned by unvisited land neighbours. The outer scan keeps the largest component size. The sample prints `8`.
 
@@ -1485,7 +1472,7 @@ public class LargestIsland {
 }
 ```
 
-## Q11. Longest Increasing Path Sequence in a Matrix
+# Q11. Longest Increasing Path Sequence in a Matrix
 
 Move up, down, left, or right only to a strictly larger value. The existing C++ logic marks cells visited and stores the maximum number of further **moves** from each cell in `cache`. A cell with no larger neighbour has cache value zero. The final `+1` converts the best number of moves to the number of cells in the sequence.
 
@@ -1592,6 +1579,116 @@ public class LongestPathSequence {
     public static void main(String[] args) {
         int[][] matrix = {{9, 9, 4}, {6, 6, 8}, {2, 1, 1}};
         System.out.println(longestPathSequence(matrix));
+    }
+}
+```
+
+# Q12. Number of Closed Islands
+
+**LeetCode:** [1254. Number of Closed Islands](https://leetcode.com/problems/number-of-closed-islands/)
+
+### Problem Description
+
+Given a 2D `grid` consists of `0`s (land) and `1`s (water). An **island** is a maximal 4-directionally connected group of `0`s and a **closed island** is an island totally (all left, top, right, bottom) surrounded by `1`s.
+
+Return the *number of closed islands*.
+
+---
+
+### Examples
+
+#### Example 1:
+
+![Example 1](https://assets.leetcode.com/uploads/2019/10/31/sample_3_1610.png)
+
+```text
+Input: grid = [[1,1,1,1,1,1,1,0],[1,0,0,0,0,1,1,0],[1,0,1,0,1,1,1,0],[1,0,0,0,0,1,0,1],[1,1,1,1,1,1,1,0]]
+Output: 2
+Explanation: 
+Islands in gray are closed because they are completely surrounded by water (group of 1s).
+```
+
+#### Example 2:
+
+![Example 2](https://assets.leetcode.com/uploads/2019/10/31/sample_4_1610.png)
+
+```text
+Input: grid = [[0,0,1,0,0],[0,1,0,1,0],[0,1,1,1,0]]
+Output: 1
+Explanation: 
+No islands in gray are closed because they are not completely surrounded by water.
+```
+
+#### Example 3:
+
+![Example 3](https://assets.leetcode.com/uploads/2019/10/31/sample_5_1610.png)
+
+```text
+Input: grid = [[1,1,1,1,1,1,1],
+               [1,0,0,0,0,0,1],
+               [1,0,1,1,1,0,1],
+               [1,0,1,0,1,0,1],
+               [1,0,1,1,1,0,1],
+               [1,0,0,0,0,0,1],
+               [1,1,1,1,1,1,1]]
+Output: 2
+```
+
+---
+
+### Constraints
+
+- `1 <= grid.length, grid[0].length <= 100`
+- `0 <= grid[i][j] <= 1`
+
+---
+
+### Solution (Java)
+
+```java
+class Solution {
+    private void dfs1(int[][] grid, int i, int j) {
+        if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] == 1 || grid[i][j] == 2)
+            return;
+
+        grid[i][j] = 2;
+        dfs1(grid, i + 1, j);
+        dfs1(grid, i, j + 1);
+        dfs1(grid, i - 1, j);
+        dfs1(grid, i, j - 1);
+
+    }
+
+    public int closedIsland(int[][] grid) {
+        int n = grid.length;
+        int m = grid[0].length;
+        for (int i = 0; i < n; i++) {
+            if (grid[i][0] == 0)
+                dfs1(grid, i, 0);
+
+            if (grid[i][m - 1] == 0)
+                dfs1(grid, i, m - 1);
+
+        }
+
+        for (int i = 0; i < m; i++) {
+            if (grid[0][i] == 0)
+                dfs1(grid, 0, i);
+            if (grid[n - 1][i] == 0)
+                dfs1(grid, n - 1, i);
+        }
+
+        int ans = 0;
+
+        for (int i = 1; i < n - 1; i++) {
+            for (int j = 1; j < m - 1; j++) {
+                if(grid[i][j]==0){
+                    dfs1(grid,i,j);
+                    ans++;
+                }
+            }
+        }
+        return ans;
     }
 }
 ```
