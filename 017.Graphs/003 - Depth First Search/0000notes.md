@@ -6,8 +6,7 @@ A connected component is a maximal group of vertices in which every vertex can b
 ### Java DFS
 
 ```java
-static void visit(List<List<Integer>> graph, int v, boolean[] vis,
-                      List<Integer> component) {
+static void visit(List<List<Integer>> graph, int v, boolean[] vis,List<Integer> component) {
         if (vis[v]) return;
         vis[v] = true;
         component.add(v);
@@ -418,9 +417,7 @@ Read the row count, column count, and then the grid rows:
 ### Java program
 
 ```java
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+
 
 public class ZeroLandIslands {
    
@@ -945,6 +942,31 @@ Imagine a party where **Vertices ($V$)** are people and **Edges ($E$)** are the 
 
 ## Iterative DFS with an explicit stack
 
+
+# Stack Limit in DFS Context
+
+**Stack limit** refers to the maximum depth of the **call stack** that a program can use before it crashes with a `StackOverflowError` (Java) or similar error.
+
+## Why This Matters for DFS
+
+When you use **recursive DFS**, each recursive call:
+- Pushes a new frame onto the call stack (storing local variables, return address, etc.)
+- That frame stays on the stack until the recursion returns
+
+If your grid is very large (e.g., 10⁴ x 10⁴) and the island is huge and winding, your recursion could go **thousands of levels deep** — one call per cell visited before backtracking.
+
+## The Problem
+
+- Most languages have a **default stack size** (e.g., Java's default thread stack is often ~512KB–1MB)
+- Each recursive call consumes some stack space
+- Too many nested calls → stack space exhausted → **StackOverflowError**
+
+This is independent of your **heap memory** (where the grid/arrays live) — it's specifically about how deep your function call chain can go.
+
+---
+
+
+
 ```java
 static List<Integer> dfsIterative(int start, List<List<Integer>> graph) {
     boolean[] visited = new boolean[graph.size()];
@@ -968,6 +990,27 @@ static List<Integer> dfsIterative(int start, List<List<Integer>> graph) {
     return order;
 }
 ```
+# Estimating Stack Usage
+
+ if `m*n` can be up to **10^5**, your recursion could go **10^5 levels deep** in the worst case (e.g., a snake-like island covering the whole grid).
+
+## How to Estimate Stack Frame Size
+
+Each recursive call reserves stack space for:
+- Function parameters (e.g., `row`, `col`, `grid` reference, `k`, etc.)
+- Local variables declared inside that call
+- Return address + saved registers (JVM overhead)
+
+A typical simple recursive method in Java might use roughly **50–200 bytes per frame**, depending on how many parameters/locals you have.
+
+## Rough Math
+
+If one frame ≈ 100 bytes:
+```
+100 bytes × 100,000 calls = 10,000,000 bytes ≈ 9.5 MB
+```
+
+Java's default thread stack size is often **512 KB to 1 MB** (platform-dependent). So 10^5 recursive calls could **easily exceed** that default limit.
 
 For both approaches:
 
@@ -1685,6 +1728,92 @@ class Solution {
                 if(grid[i][j]==0){
                     dfs1(grid,i,j);
                     ans++;
+                }
+            }
+        }
+        return ans;
+    }
+}
+```
+
+
+# Q13. Count Islands With Total Value Divisible by K
+
+**LeetCode:** [3619. Count Islands With Total Value Divisible by K](https://leetcode.com/problems/count-islands-with-total-value-divisible-by-k/)
+
+### Problem Description
+
+You are given an `m x n` matrix `grid` and a positive integer `k`. An **island** is a group of **positive** integers (representing land) that are **4-directionally** connected (horizontally or vertically).
+
+The **total value** of an island is the sum of the values of all cells in the island.
+
+Return the number of islands with a total value **divisible by** `k`.
+
+---
+
+### Examples
+
+#### Example 1:
+
+![Example 1](https://assets.leetcode.com/uploads/2025/03/06/example1griddrawio-1.png)
+
+```text
+Input: grid = [[0,2,1,0,0],[0,5,0,0,5],[0,0,1,0,0],[0,1,4,7,0],[0,2,0,0,8]], k = 5
+Output: 2
+Explanation: 
+The grid contains four islands. The islands highlighted in blue have a total value that is divisible by 5, while the islands highlighted in red do not.
+```
+
+#### Example 2:
+
+![Example 2](https://assets.leetcode.com/uploads/2025/03/06/example2griddrawio.png)
+
+```text
+Input: grid = [[3,0,3,0], [0,3,0,3], [3,0,3,0]], k = 3
+Output: 6
+Explanation: 
+The grid contains six islands, each with a total value that is divisible by 3.
+```
+
+---
+
+### Constraints
+
+- `m == grid.length`
+- `n == grid[i].length`
+- `1 <= m, n <= 1000`
+- `1 <= m * n <= 10^5`
+- `0 <= grid[i][j] <= 10^6`
+- `1 <= k <= 10^6`
+
+---
+
+
+```java
+class Solution {
+    private long dfs1(int[][] grid, int i, int j) {
+        if (i < 0 || i >= grid.length || j < 0 || j >= grid[0].length || grid[i][j] == 0 || grid[i][j] == -2)
+            return 0;
+
+   
+        long ans = grid[i][j];
+             grid[i][j] = -2;
+        ans += dfs1(grid, i + 1, j);
+        ans += dfs1(grid, i, j + 1);
+        ans += dfs1(grid, i - 1, j);
+        ans += dfs1(grid, i, j - 1);
+        return ans;
+    }
+
+    public int countIslands(int[][] grid, int k) {
+        int n = grid.length;
+        int m = grid[0].length;
+        int ans=0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] != 0 && grid[i][j]!=-2) {
+                    if (dfs1(grid, i, j) % k == 0)
+                        ans++;
                 }
             }
         }
