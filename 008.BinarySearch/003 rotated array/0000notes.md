@@ -26,10 +26,17 @@ Find the index at which `k` is present, and if `k` is not present, return `-1`.
 
 ***
 
-![alt text](<003rotated array_240105_131613(1).jpg>) ![alt text](<003rotated array_240105_131613(2).jpg>) ![alt text](<003rotated array_240105_131613(3).jpg>) ![alt text](<003rotated array_240105_131613(4).jpg>) ![alt text](<003rotated array_240105_131613(5).jpg>) 
  
  
+![alt text](Scanned_20261106-2120-01.jpg)
 
+`2<8` case right to 2 is sorted as after 8 as 8 is lo it should be increasing. so here right half is sorted.This is else case of code
+
+
+ else left half is sorted .If case of code
+
+
+ now why `if else` inside as there is possibility that element we searching for is not in sorted part . 
 
 ```cpp
 class Solution {
@@ -81,24 +88,14 @@ seee
         }
 ``` 
 
-![alt text](image.png)
 
-
-![alt text](image-1.png)
-
-![alt text](image-2.png)
-
-![alt text](image-3.png)
  
 # Q2 search in rotated sorted array-2
 
- ![alt text](<003rotated array_240105_131613(6).jpg>) ![alt text](<003rotated array_240105_131613(7).jpg>) ![alt text](<003rotated array_240105_131613(8).jpg>)
-
-![alt text](<003rotated array_240105_131613(9).jpg>) 
 
 ![alt text](<003rotated array_240105_131613(10).jpg>) 
 
-
+![alt text](Scanned_20261106-2120-02.jpg)
 ```cpp
 
 class Solution {
@@ -135,7 +132,7 @@ public:
     }
 };
 ```
-![alt text](image-4.png)
+
 
 # Q3 Find min in rotated sorted array
 
@@ -180,7 +177,9 @@ n == nums.length
  All the integers of nums are unique.
  nums is sorted and rotated between 1 and n times.
 
-![alt text](image-5.png)
+![alt text](Scanned_20261106-2120-03.jpg) ![alt text](Scanned_20261106-2120-04.jpg)
+
+if we had max in rotated sorted array then we would have searched from `arr[lo]`
 
 ```cpp
 class Solution {
@@ -202,9 +201,7 @@ class Solution {
 }
 ```
 
-![alt text](image-6.png)
 
-![alt text](image-9.png)
 
 ![alt text](<003rotated array_240105_131613(12).jpg>)
 |
@@ -214,142 +211,6 @@ class Solution {
 
 
 
-
-```cpp
-class Solution {
-
-public:
-    int findMin(vector<int> &arr)  {
-      int si=0;
-      int ei=arr.size()-1;
-       int ans = INT_MAX;  
-      while(si<=ei){
-        int mid=(si+ei)/2;
-        if(arr[mid]>=arr[si]){//si to mid is sorted and min is si
-            ans = min(ans, arr[si]);  
-            si=mid+1;
-        }else{//arr[mid]<arr[si] so arr[si] is not min and si to mid we have a j which is min or mid is that j so need to go on left
-            ans = min(ans, arr[mid]);  
-            ei=mid-1;
-        }
-      }
-      return ans;
-    }
-};
-```
-### Your Code = "Exhaust and Harvest"
-
-Your code uses the **Template 1** skeleton to scan the entire relevant search space. 
-
-* **Goal:** Find the minimum value in the array.
-* **Action:** Unlike a standard search, we **never** return inside the loop.
-* **Logic:** We "harvest" the potential answer (`ans = min(ans, nums[mid])`) and then **Keep Going** until the search space is absolutely exhausted ($si > ei$).
-
----
-
-### Why this works safely (The "Safety Net")
-
-The biggest danger of using **Template 1** (`hi = mid - 1`) for finding a minimum is that you might accidentally **discard the answer**.
-
-Imagine the following scenario:
-1.  Your code looks at `nums[mid]`.
-2.  `nums[mid]` happens to be the **actual minimum** of the entire array.
-3.  The logic then executes `ei = mid - 1`.
-
-**The Risk:** You just threw the answer out of your search range! 
-
-**The Safety Net:** Because you "harvested" the value into your `ans` variable *before* updating the pointers, it doesn't matter if you discard `mid`. The answer is already safely stored in your "pocket" (the `ans` variable).
-
----
-
-### Comparison: Harvesting vs. Shrinking
-
-| Feature | Your "Harvest" Approach | Standard Template 2 |
-| :--- | :--- | :--- |
-| **Pointers** | `ei = mid - 1` (Discard `mid`) | `ei = mid` (Keep `mid`) |
-| **Storage** | Uses an external `ans` variable. | The answer is the final `lo` pointer. |
-| **Loop Type** | `while (si <= ei)` | `while (lo < hi)` |
-| **Strategy** | Scan everything; remember the best. | Narrow the range until only the best remains. |
-
----
-
-### Summary
-Your approach is very robust. By updating `ans` at every step, you turn the Binary Search into a "Smart Probe" that remembers the best thing it has seen, allowing you to use the simpler `si <= ei` template without fear of losing the minimum.
-
-### The One "Gotcha" (Be Ready for This)
-
-Some strict interviewers expect the **Template 2** solution (converging to a single index without an `ans` variable) because it is considered the "Classical" solution to this specific problem.
-
-If you write your "Exhaust and Harvest" solution, they might ask:
-> "Can you do this without the extra `ans` variable, just by narrowing the index?"
-
----
-
-### How to handle that
-You don't have to panic. You can stick to your guns by explaining **why** you chose your approach. You can say:
-
-> "I prefer using the explicit `ans` variable because it allows me to use the standard `lo <= hi` template. This eliminates the risk of **off-by-one errors** or **infinite loops** that are common when trying to narrow down to a single index. It achieves the same $O(\log N)$ Time and $O(1)$ Space complexity while being more robust."
-
----
-
-### Why this is a "Power Move"
-Most interviewers will accept that answer immediately because it shows **engineering maturity**. You are demonstrating that you:
-1.  Understand the underlying mechanics of the templates.
-2.  Prioritize **readable, bug-free code** over "clever" pointer manipulation.
-3.  Are aware of the trade-offs in different implementations.
-
----
-
-### Summary Table: Engineering Trade-offs
-
-| Feature | Your Approach (Harvest) | Classical Approach (Converge) |
-| :--- | :--- | :--- |
-| **Safety** | High (Hard to loop infinitely) | Medium (Requires precise updates) |
-| **Clarity** | Very Clear (Logic is explicit) | Concise (Elegant but subtle) |
-| **Memory** | $O(1)$ | $O(1)$ |
-| **Performance** | Identical | Identical |
-
-
-
-When using `while(lo <= hi)`, the loop always terminates with:
-$$lo = hi + 1$$
-
-Here is the mathematical proof using the **"Last Man Standing"** scenario.
-
----
-
-### The Final Step (When `lo == hi`)
-Eventually, the search narrows down to a single element. Let's say `lo` and `hi` both point to index **5**.
-* `lo = 5`
-* `hi = 5`
-* `mid = 5`
-
-Now, the code executes one of two paths:
-
-#### Path A: You go Right (`lo = mid + 1`)
-* Code executes: `lo = 5 + 1 = 6`.
-* `hi` stays at **5**.
-* **Result:** `lo (6) > hi (5)`.
-* **Gap:** `lo` is exactly `hi + 1`.
-
-#### Path B: You go Left (`hi = mid - 1`)
-* Code executes: `hi = 5 - 1 = 4`.
-* `lo` stays at **5**.
-* **Result:** `lo (5) > hi (4)`.
-* **Gap:** `lo` is exactly `hi + 1`.
-
----
-
-### Why is this useful?
-This property is why this template is so powerful for finding **Insert Positions** or **Boundaries**. At the moment the loop breaks:
-
-* **`lo`** ends up pointing to the first element **GREATER** than the target (the correct position to insert the target).
-* **`hi`** ends up pointing to the last element **SMALLER** than the target.
-
----
-
-### Summary
-Because the pointers "cross" by exactly one unit, you have a perfect snapshot of the boundary where the target would belong. 
 
 # Q4 find min in rotated sorted array II
 
@@ -462,7 +323,7 @@ solution by rajneesh is also worst case O(n) solution !! Both are same!!
 # Q5 find peak element
  
   ![alt text](<003rotated array_240105_131613(17).jpg>) ![alt text](<003rotated array_240105_131613(18).jpg>) 
-![alt text](<003rotated array_240105_131613(19).jpg>)
+
 
 ```java
 class Solution {
@@ -490,13 +351,25 @@ class Solution {
       }
 }
 ```
+Here we  are handing `mid=0` and `mid=n-2` case if another case as those are edge cases and we might need to check if `mid-1>0` and  `mid+1<n` so we wanted to avoid that
+
+
+`if(arr[mid]<arr[mid-1] && arr[mid]>arr[mid+1]) hi=mid-1; ` decreasing part of mountain 
+
+better write as `if(arr[mid-1]>arr[mid] && arr[mid]>arr[mid+1]) hi=mid-1; `
+
+
+ `elements at mid-1>mid>mid+1` so we put hi=mid-1 as we need to find peak
+
+
+ else we are in increasing part so lo=mid+1
 
 Complexity Analysis: 
 Time Complexity:O(logN), N is size of the given array. As binary search is being used to find the minimum.
 
 Space Complexity: As no additional space is used, so the Space Complexity is O(1).
 
- ![alt text](<003rotated array_240105_131613(20).jpg>) 
+
 
 
 
